@@ -1,6 +1,6 @@
 // ==PREPROCESSOR==
 // @name "JS Playlist"
-// @version "2022-mod"
+// @version "2023"
 // @author "Br3tt aka Falstaff"
 // @import "%fb2k_component_path%helpers.txt"
 // @import "%fb2k_component_path%samples\jsplaylist\inputbox.js"

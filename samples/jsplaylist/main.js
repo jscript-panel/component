@@ -1450,9 +1450,6 @@ String.prototype.repeat = function (num) {
 	return new Array(g + 1).join(this);
 }
 
-window.MinWidth = 360;
-window.MinHeight = 200;
-
 var g_script_version = "v2022";
 var g_middle_clicked = false;
 var g_middle_click_timeout = false;

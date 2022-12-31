@@ -522,15 +522,21 @@ function _thumbs() {
 		this.images = [];
 		this.thumbs = [];
 
-		var files = _getFiles(this.folder, this.exts);
-		if (this.properties.source.value == 1 && files.length > 1) {
+		this.files = _getFiles(this.folder, this.exts);
+		if (this.properties.source.value == 1 && this.files.length > 1) {
 			this.default_file = this.folder + this.defaults[this.artist];
-			var tmp = _.indexOf(files, this.default_file);
+			var tmp = _.indexOf(this.files, this.default_file);
 			if (tmp > -1) {
-				files.splice(tmp, 1);
-				files.unshift(this.default_file);
+				this.files.splice(tmp, 1);
+				this.files.unshift(this.default_file);
 			}
 		}
+
+		var total_file_size = 0;
+		var files = this.files.filter((function (item) {
+			total_file_size += utils.GetFileSize(item);
+			return total_file_size < this.properties.size_limit.value;
+		}).bind(this));
 
 		files.forEach((function (item) {
 			var image = utils.LoadImage(item);
@@ -604,7 +610,7 @@ function _thumbs() {
 			}
 			window.Repaint();
 		}
-		if (this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.images.length) {
+		if (this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.files.length) {
 			this.update();
 		}
 	}, this);
@@ -620,6 +626,7 @@ function _thumbs() {
 	this.my = 0;
 	this.images = [];
 	this.thumbs = [];
+	this.files = [];
 	this.limits = [1, 3, 5, 10, 15, 20];
 	this.modes = ['grid', 'left', 'right', 'top', 'bottom', 'off'];
 	this.pxs = [75, 100, 150, 200, 250, 300];
@@ -648,6 +655,7 @@ function _thumbs() {
 		aspect : new _p('2K3.THUMBS.ASPECT', image.crop_top),
 		auto_download : new _p('2K3.THUMBS.AUTO.DOWNLOAD', false),
 		circular : new _p('2K3.THUMBS.CIRCULAR', false),
+		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
 	};
 	this.close_btn = new _sb(chars.close, 0, 0, _scale(12), _scale(12), _.bind(function () { return this.properties.mode.value == 0 && this.overlay; }, this), _.bind(function () { this.enable_overlay(false); }, this));
 	window.SetInterval(this.interval_func, 1000);

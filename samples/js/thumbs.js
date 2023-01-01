@@ -421,7 +421,11 @@ function _thumbs() {
 		case 1054:
 		case 1055:
 			this.properties.mode.value = idx - 1050;
-			this.size(true);
+			if (this.properties.mode.value != 5 && this.thumbs.length == 0) {
+				this.update();
+			} else {
+				this.size(true);
+			}
 			window.Repaint();
 			break;
 		case 1075:
@@ -436,7 +440,7 @@ function _thumbs() {
 			break;
 		case 1399:
 			this.properties.circular.toggle();
-			this.update();
+			this.size(true);
 			window.Repaint();
 			break;
 		case 1400:
@@ -542,7 +546,9 @@ function _thumbs() {
 			var image = utils.LoadImage(item);
 			if (image) {
 				this.images.push(image);
-				this.thumbs.push(this.make_thumb(image));
+				if (this.properties.mode.value != 5) {
+					this.thumbs.push(this.make_thumb(image));
+				}
 			}
 		}).bind(this));
 

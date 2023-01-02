@@ -422,10 +422,9 @@ function _thumbs() {
 		case 1055:
 			this.properties.mode.value = idx - 1050;
 			if (this.properties.mode.value != 5 && this.thumbs.length == 0) {
-				this.update();
-			} else {
-				this.size(true);
+				this.create_thumbs();
 			}
+			this.size(true);
 			window.Repaint();
 			break;
 		case 1075:
@@ -497,7 +496,7 @@ function _thumbs() {
 		}
 	}
 
-	this.make_thumb = function (img) {
+	this.create_thumb = function (img) {
 		var size = this.properties.px.value;
 
 		if (img.Width < img.Height) {
@@ -519,12 +518,27 @@ function _thumbs() {
 		return square;
 	}
 
+	this.create_thumbs = function () {
+		_dispose.apply(null, this.thumbs);
+		this.thumbs = [];
+
+		this.images.forEach((function (image) {
+			this.thumbs.push(this.create_thumb(image));
+		}).bind(this));
+
+		if (!this.circular_mask) {
+			this.circular_mask = utils.CreateImage(512, 512);
+			var temp_gr = this.circular_mask.GetGraphics();
+			temp_gr.FillEllipse(256, 256, 256, 256, RGB(0, 0, 0));
+			this.circular_mask.ReleaseGraphics();
+			temp_gr = null;
+		}
+	}
+
 	this.update = function () {
 		this.image = 0;
 		_dispose.apply(null, this.images);
-		_dispose.apply(null, this.thumbs);
 		this.images = [];
-		this.thumbs = [];
 
 		this.files = _getFiles(this.folder, this.exts);
 		if (this.properties.source.value == 1 && this.files.length > 1) {
@@ -536,30 +550,23 @@ function _thumbs() {
 			}
 		}
 
+		var size_limit = this.properties.size_limit.value;
 		var total_file_size = 0;
-		var files = this.files.filter((function (item) {
+		var files = this.files.filter(function (item) {
 			total_file_size += utils.GetFileSize(item);
-			return total_file_size < this.properties.size_limit.value;
-		}).bind(this));
+			return total_file_size < size_limit;
+		});
 
 		files.forEach((function (item) {
 			var image = utils.LoadImage(item);
 			if (image) {
 				this.images.push(image);
-				if (this.properties.mode.value != 5) {
-					this.thumbs.push(this.make_thumb(image));
-				}
 			}
 		}).bind(this));
 
-		if (!this.circular_mask) {
-			this.circular_mask = utils.CreateImage(512, 512);
-			var temp_gr = this.circular_mask.GetGraphics();
-			temp_gr.FillEllipse(256, 256, 256, 256, RGB(0, 0, 0));
-			this.circular_mask.ReleaseGraphics();
-			temp_gr = null;
+		if (this.properties.mode.value != 5) {
+			this.create_thumbs();
 		}
-
 		this.size(true);
 		window.Repaint();
 	}

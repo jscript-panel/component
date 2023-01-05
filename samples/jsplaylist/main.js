@@ -807,7 +807,7 @@ function on_key_down(vkey) {
 					break;
 				case VK_F5:
 					g_image_cache.reset();
-					window.SetTimeout(function (item) {
+					window.SetTimeout(function () {
 						window.Reload();
 					}, 50);
 					break;

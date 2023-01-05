@@ -798,7 +798,7 @@ function on_key_down(vkey) {
 				case VK_F2:
 					// rename playlist (playlist manager panel visible)
 					if (cPlaylistManager.visible && playlist_can_rename(g_active_playlist)) {
-						p.playlistManager.inputbox = new oInputbox(p.playlistManager.w - p.playlistManager.border - p.playlistManager.scrollbarWidth - scale(40), cPlaylistManager.rowHeight - 10, plman.GetPlaylistName(g_active_playlist), "", "renamePlaylist()", 0, 12, 225);
+						p.playlistManager.inputbox = new oInputbox(p.playlistManager.w - p.playlistManager.border - p.playlistManager.scrollbarWidth - scale(40), cPlaylistManager.rowHeight - 10, plman.GetPlaylistName(g_active_playlist), "", "renamePlaylist()");
 						p.playlistManager.inputboxID = g_active_playlist;
 						// activate box content + selection activated
 						if (cPlaylistManager.inputbox_timeout) window.ClearTimeout(cPlaylistManager.inputbox_timeout);

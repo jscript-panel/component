@@ -4,8 +4,7 @@ var cInputbox = {
 	clipboard: null
 };
 
-function oInputbox(w, h, default_text, empty_text, func, id, font_size) {
-	this.id = id;
+function oInputbox(w, h, default_text, empty_text, func) {
 	this.w = w;
 	this.h = h;
 	this.textcolor = RGB(0, 0, 0);
@@ -19,8 +18,6 @@ function oInputbox(w, h, default_text, empty_text, func, id, font_size) {
 	this.stext = "";
 	this.prev_text = "";
 	this.func = func;
-	this.launch_timeout = false;
-	this.autovalidation = false;
 	this.edit = false;
 	this.select = false;
 	this.hover = false;
@@ -437,11 +434,13 @@ function oInputbox(w, h, default_text, empty_text, func, id, font_size) {
 				break;
 			case VK_TAB:
 			case VK_RETURN:
+				window.SetCursor(IDC_ARROW);
 				if (this.edit && this.text.length >= 0) {
 					eval(this.func);
 				}
 				break;
 			case VK_ESCAPE:
+				window.SetCursor(IDC_ARROW);
 				if (this.edit) {
 					this.edit = false;
 					this.text_selected = "";
@@ -696,19 +695,6 @@ function oInputbox(w, h, default_text, empty_text, func, id, font_size) {
 				break;
 			}
 		}
-
-		// autosearch: has text changed after on_key or on_char ?
-		if (this.autovalidation) {
-			if (this.text != this.prev_text) {
-				// launch timer to process the search
-				if (this.launch_timeout) window.ClearTimeout(this.launch_timeout);
-				this.launch_timeout = window.SetTimeout(function () {
-					this.launch_timeout = false;
-					eval(this.func);
-				}, 500);
-				this.prev_text = this.text;
-			}
-		}
 	}
 
 	this.on_char = function (code, mask) {
@@ -749,19 +735,6 @@ function oInputbox(w, h, default_text, empty_text, func, id, font_size) {
 				this.select = false;
 			}
 			this.repaint();
-		}
-
-		// autosearch: has text changed after on_key or on_char ?
-		if (this.autovalidation) {
-			if (this.text != this.prev_text) {
-				// launch timer to process the search
-				if (this.launch_timeout) window.ClearTimeout(this.launch_timeout);
-				this.launch_timeout = window.SetTimeout(function () {
-					this.launch_timeout = false;
-					eval(this.func);
-				}, 500);
-				this.prev_text = this.text;
-			}
 		}
 	}
 }

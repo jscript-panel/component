@@ -845,15 +845,8 @@ function on_key_up(vkey) {
 
 function on_key_down(vkey) {
 	if (brw.inputboxID >= 0) {
-		switch (vkey) {
-		case VK_ESCAPE:
-		case 222:
-			brw.inputboxID = -1;
-			brw.repaint();
-			break;
-		default:
-			brw.inputbox.on_key_down(vkey);
-		}
+		if (vkey == VK_ESCAPE) brw.inputboxID = -1;
+		brw.inputbox.on_key_down(vkey);
 	} else {
 		var mask = GetKeyboardMask();
 

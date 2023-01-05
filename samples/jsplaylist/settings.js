@@ -595,8 +595,7 @@ function oTextBox(id, x, y, w, h, label, value, parentPageId) {
 	this.value = value;
 	this.func = "settings_textboxes_action";
 
-	this.inputbox = new oInputbox(this.w, this.h, this.value, "", this.func + "(" + this.parentPageId + ", " + this.id + ")", this.id, p.settings.txtHeight, 255);
-	this.inputbox.autovalidation = false;
+	this.inputbox = new oInputbox(this.w, this.h, this.value, "", this.func + "(" + this.parentPageId + ", " + this.id + ")");
 
 	this.draw = function (gr) {
 		this.ly = this.y - (p.settings.pages[this.parentPageId].offset * cSettings.rowHeight);

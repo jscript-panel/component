@@ -5,7 +5,7 @@ var cInputbox = {
 }
 
 function oInputbox(w, h, default_text, empty_text, textcolor, backcolor, bordercolor, backselectioncolor, func) {
-	this.font = _font("arial", 11, 0);
+	this.font = _font("Consolas", 11, 0);
 	this.w = w;
 	this.h = h;
 	this.textcolor = textcolor;
@@ -33,7 +33,7 @@ function oInputbox(w, h, default_text, empty_text, textcolor, backcolor, borderc
 	this.setSize = function (w, h, font_size) {
 		this.w = w;
 		this.h = h;
-		this.font = _font("arial", font_size - 2, 0);
+		this.font = _font("Consolas", font_size - 2, 0);
 	}
 
 	this.draw = function (gr, x, y) {
@@ -416,11 +416,13 @@ function oInputbox(w, h, default_text, empty_text, textcolor, backcolor, borderc
 				this.repaint();
 				break;
 			case VK_RETURN:
+				window.SetCursor(IDC_ARROW);
 				if (this.edit && this.text.length >= 0) {
 					eval(this.func);
 				}
 				break;
 			case VK_ESCAPE:
+				window.SetCursor(IDC_ARROW);
 				if (this.edit) {
 					this.edit = false;
 					this.text_selected = "";

@@ -1298,15 +1298,20 @@ function get_colors() {
 }
 
 function get_wallpaper() {
-	if (!properties.showwallpaper) return null;
+	var img = null;
+	if (!properties.showwallpaper) return img;
 
 	var metadb = fb.GetNowPlaying();
-	if (!metadb) return null;
+	if (!metadb) return img;
 
 	if (properties.wallpapertype == -1) {
-		var img = utils.LoadImage(fb.ProfilePath + properties.wallpaperpath);
+		if (utils.IsFile(properties.wallpaperpath)) {
+			img = utils.LoadImage(properties.wallpaperpath);
+		} else {
+			img = utils.LoadImage(fb.ProfilePath + properties.wallpaperpath);
+		}
 	} else {
-		var img = metadb.GetAlbumArt(properties.wallpapertype);
+		img = metadb.GetAlbumArt(properties.wallpapertype);
 	}
 
 	if (img && properties.wallpaperblurred) {

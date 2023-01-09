@@ -29,7 +29,7 @@ function _list(mode, x, y, w, h) {
 	}
 
 	this.paint = function (gr) {
-		if (this.items == 0) {
+		if (this.count == 0) {
 			return;
 		}
 		switch (true) {
@@ -38,7 +38,7 @@ function _list(mode, x, y, w, h) {
 			this.text_width = Math.round(this.w / 2) + 30;
 			var lastfm_charts_bar_x = this.x + this.text_x + this.text_width + 10;
 			var unit_width = (this.w - lastfm_charts_bar_x - _scale(50)) / this.data[0].playcount;
-			for (var i = 0; i < Math.min(this.items, this.rows); i++) {
+			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				var bar_width = Math.ceil(unit_width * this.data[i + this.offset].playcount);
 				this.draw_row(gr, this.data[i + this.offset].rank + '.', panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_x - 5, panel.row_height, DWRITE_TEXT_ALIGNMENT_TRAILING);
 				this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x + this.text_x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
@@ -48,7 +48,7 @@ function _list(mode, x, y, w, h) {
 			break;
 		case this.mode == 'musicbrainz' && this.properties.mode.value == 0: // releases
 			this.text_width = this.w - this.spacer_w - 10;
-			for (var i = 0; i < Math.min(this.items, this.rows); i++) {
+			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				if (this.data[i + this.offset].url == 'SECTION_HEADER') {
 					this.draw_row(gr, this.data[i + this.offset].name, panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
 				} else {
@@ -60,7 +60,7 @@ function _list(mode, x, y, w, h) {
 		case this.mode == 'properties':
 		case this.mode == 'properties_other_info':
 			this.text_width = this.w - this.text_x;
-			for (var i = 0; i < Math.min(this.items, this.rows); i++) {
+			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				if (this.data[i + this.offset].value == 'SECTION_HEADER') {
 					this.draw_row(gr, this.data[i + this.offset].name, panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_x - 10, panel.row_height);
 				} else {
@@ -72,7 +72,7 @@ function _list(mode, x, y, w, h) {
 		default: // other last.fm / musicbrainz links
 			this.text_x = 0;
 			this.text_width = this.w;
-			for (var i = 0; i < Math.min(this.items, this.rows); i++) {
+			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
 			}
 			break;
@@ -88,7 +88,7 @@ function _list(mode, x, y, w, h) {
 		case !panel.metadb:
 			this.artist = '';
 			this.data = [];
-			this.items = 0;
+			this.count = 0;
 			window.Repaint();
 			break;
 		case this.mode == 'properties':
@@ -136,13 +136,13 @@ function _list(mode, x, y, w, h) {
 
 	this.wheel = function (s) {
 		if (this.containsXY(this.mx, this.my)) {
-			if (this.items > this.rows) {
+			if (this.count > this.rows) {
 				var offset = this.offset - (s * 3);
 				if (offset < 0) {
 					offset = 0;
 				}
-				if (offset + this.rows > this.items) {
-					offset = this.items - this.rows;
+				if (offset + this.rows > this.count) {
+					offset = this.count - this.rows;
 				}
 				if (this.offset != offset) {
 					this.offset = offset;
@@ -161,7 +161,7 @@ function _list(mode, x, y, w, h) {
 		window.SetCursor(IDC_ARROW);
 		if (this.containsXY(x, y)) {
 			this.index = Math.floor((y - this.y - _scale(12)) / panel.row_height) + this.offset;
-			this.in_range = this.index >= this.offset && this.index < this.offset + Math.min(this.rows, this.items);
+			this.in_range = this.index >= this.offset && this.index < this.offset + Math.min(this.rows, this.count);
 			switch (true) {
 			case this.up_btn.move(x, y):
 			case this.down_btn.move(x, y):
@@ -519,7 +519,7 @@ function _list(mode, x, y, w, h) {
 			_dispose(fileinfo);
 			break;
 		}
-		this.items = this.data.length;
+		this.count = this.data.length;
 		this.offset = 0;
 		this.index = 0;
 		window.Repaint();
@@ -547,7 +547,7 @@ function _list(mode, x, y, w, h) {
 	}
 
 	this.reset = function () {
-		this.items = 0;
+		this.count = 0;
 		this.data = [];
 		this.artist = '';
 		panel.item_focus_change();
@@ -853,13 +853,13 @@ function _list(mode, x, y, w, h) {
 	this.my = 0;
 	this.index = 0;
 	this.offset = 0;
-	this.items = 0;
+	this.count = 0;
 	this.text_x = 0;
 	this.spacer_w = 0;
 	this.artist = '';
 	this.filename = '';
 	this.filenames = {};
 	this.up_btn = new _sb(chars.up, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset > 0; }, this), _.bind(function () { this.wheel(1); }, this));
-	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset < this.items - this.rows; }, this), _.bind(function () { this.wheel(-1); }, this));
+	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset < this.count - this.rows; }, this), _.bind(function () { this.wheel(-1); }, this));
 	this.init();
 }

@@ -20,12 +20,12 @@ list.update = function () {
 		});
 	}).bind(this));
 
-	this.items = this.data.length;
+	this.count = this.data.length;
 }
 
 list.paint = function (gr) {
 	var font_segoe_ui = CreateFontString("Segoe UI", panel.fonts.size);
-	for (var i = 0; i < Math.min(this.items, this.rows); i++) {
+	for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 		var name = this.data[i + this.offset].name;
 		gr.WriteText(name, font_segoe_ui, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height), this.column_width, panel.row_height, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP);
 		gr.WriteText(name, CreateFontString(name, panel.fonts.size), panel.colours.text, this.x + this.column_width, this.y + _scale(12) + (i * panel.row_height), this.w, panel.row_height, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP)

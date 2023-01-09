@@ -1530,7 +1530,7 @@ var tfo = {
 	groupkey : fb.TitleFormat(ppt.groupkey_tf + " ^^ $crc32(%path%)"),
 }
 
-var foo_playcount = fb.CheckComponent("foo_playcount");
+var foo_playcount = utils.Version < 30200 ? utils.CheckComponent("foo_playcount") : fb.CheckComponent("foo_playcount");
 
 var g_active_playlist = plman.ActivePlaylist;
 var g_focus_id = getFocusId();

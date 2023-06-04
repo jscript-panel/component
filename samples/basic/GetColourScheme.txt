@@ -1,0 +1,52 @@
+// ==PREPROCESSOR==
+// @name "GetColourScheme"
+// @author "marc2003"
+// @import "%fb2k_component_path%helpers.txt"
+// ==/PREPROCESSOR==
+
+// Tracks playlist selection
+
+var img = null;
+var arr = [];
+on_item_focus_change();
+
+function on_item_focus_change() {
+	if (img) {
+		img.Dispose();
+		img = null;
+	}
+
+	arr = [];
+	var metadb = fb.GetFocusItem();
+	if (metadb) {
+		img = metadb.GetAlbumArt(); // omitting the type defaults to front
+
+		if (img) {
+			arr = img.GetColourScheme(10).toArray();
+		}
+	}
+	window.Repaint();
+}
+
+function on_paint(gr) {
+	if (img && arr.length) {
+		gr.DrawImage(img, 0, 0, 300, 300, 0, 0, img.Width, img.Height);
+		for (var i = 0; i < arr.length; i++) {
+			var bar_colour = arr[i];
+			gr.FillRectangle(300, i * 30, window.Width - 300, 30, bar_colour);
+
+			/*
+			The 2nd WriteText arg is the font. Leaving it as an empty string so defaults of Segoe UI and 16px are used.
+
+			See helpers.txt in the component directory for the DetermineTextColour function
+			which calculates whether to use black or white for the text colour depending on
+			the background colour.
+			*/
+			gr.WriteText('Some text', '', DetermineTextColour(bar_colour), 300, i * 30, window.Width - 300, 30, 2, 2);
+		}
+	}
+}
+
+function on_playlist_switch() {
+	on_item_focus_change();
+}

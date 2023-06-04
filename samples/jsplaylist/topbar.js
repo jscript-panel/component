@@ -1,0 +1,63 @@
+function oTopBar() {
+	this.setSize = function (x, y, w, h) {
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+		this.visible = (h > 0);
+		this.setButtons();
+	}
+
+	this.setDatas = function () {
+		var item_count = plman.GetPlaylistItemCount(g_active_playlist);
+		var totalDurationText = p.list ? utils.FormatDuration(plman.GetPlaylistItems(g_active_playlist).CalcTotalDuration()) : "";
+
+		this.line1 = plman.GetPlaylistName(g_active_playlist);
+		this.line2 = plman.PlaylistCount == 0 ? "no playlist" : item_count > 0 ? (item_count + (item_count > 1 ? " tracks. " : " track. ") + totalDurationText) : "empty playlist";
+	}
+
+	this.setButtons = function () {
+		var close_off = utils.CreateImage(18, 18);
+		var gb = close_off.GetGraphics();
+		gb.WriteText(chars.close, g_font_awesome_12, blendColours(g_colour_background, g_colour_text, 0.75), 0, 0, 18, 18, 2, 2);
+		close_off.ReleaseGraphics();
+
+		this.button = new button(close_off, close_off, close_off);
+	}
+
+	this.draw = function (gr) {
+		if (this.visible) {
+			gr.FillRectangle(this.x, this.y, this.w, this.h, g_colour_background);
+			gr.DrawImage(this.logo, this.x, this.y, this.h, this.h, 0, 0, this.logo.Width, this.logo.Height);
+			gr.WriteText(this.line1, g_font_19_1, g_colour_text, this.x + this.h, this.y + 2, this.w - this.h - 20, height(g_font_19_1), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+			gr.WriteText(this.line2, g_font_12_1, setAlpha(g_colour_text, 180), this.x + this.h, this.y + 2 + height(g_font_19_1), this.w - this.h - 20, height(g_font_12_1), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+			this.button.draw(gr, this.x + this.w - 20, this.y + 4);
+		}
+	}
+
+	this.buttonCheck = function (event, x, y) {
+		var state = this.button.checkstate(event, x, y);
+		switch (event) {
+		case "lbtn_down":
+			if (state == ButtonStates.down) {
+				this.buttonClicked = true;
+			}
+			break;
+		case "lbtn_up":
+			if (this.buttonClicked && state == ButtonStates.hover) {
+				// action
+				cTopBar.visible = false;
+				window.SetProperty("JSPLAYLIST.TopBar.Visible", cTopBar.visible);
+				resize_panels();
+				full_repaint();
+			}
+			break;
+		}
+		return state;
+	}
+
+	this.line1 = "";
+	this.line2 = "";
+	this.logo = utils.LoadImage(fb.ComponentPath + "samples\\images\\foobar2000.png");
+	this.setDatas();
+}

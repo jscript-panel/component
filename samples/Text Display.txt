@@ -1,0 +1,101 @@
+// ==PREPROCESSOR==
+// @name "Text Display"
+// @author "marc2003"
+// @import "%fb2k_component_path%helpers.txt"
+// @import "%fb2k_component_path%samples\js\lodash.min.js"
+// @import "%fb2k_component_path%samples\js\common.js"
+// @import "%fb2k_component_path%samples\js\panel.js"
+// @import "%fb2k_component_path%samples\js\albumart.js"
+// @import "%fb2k_component_path%samples\js\text_display.js"
+// ==/PREPROCESSOR==
+
+// https://jscript-panel.github.io/gallery/text-display/
+
+var panel = new _panel({ custom_background : true });
+var albumart = new _albumart(0, 0, 0, 0);
+var text = new _text_display(LM, 0, 0, 0);
+
+panel.item_focus_change();
+
+function on_colours_changed() {
+	panel.colours_changed();
+	text.refresh(true);
+}
+
+function on_font_changed() {
+	panel.font_changed();
+	text.refresh(true);
+}
+
+function on_item_focus_change() {
+	panel.item_focus_change();
+}
+
+function on_metadb_changed() {
+	albumart.metadb_changed();
+	text.metadb_changed();
+}
+
+function on_mouse_lbtn_up(x, y) {
+	text.lbtn_up(x, y);
+}
+
+function on_mouse_move(x, y) {
+	text.move(x, y);
+}
+
+function on_mouse_rbtn_up(x, y) {
+	return panel.rbtn_up(x, y, text);
+}
+
+function on_mouse_wheel(s) {
+	text.wheel(s);
+}
+
+function on_paint(gr) {
+	panel.paint(gr);
+	text.paint(gr);
+}
+
+function on_playback_dynamic_info_track() {
+	text.refresh();
+}
+
+function on_playback_new_track() {
+	panel.item_focus_change();
+}
+
+function on_playback_pause() {
+	text.refresh();
+}
+
+function on_playback_stop(reason) {
+	text.refresh();
+}
+
+function on_playback_time() {
+	text.playback_time();
+}
+
+function on_playlist_items_added() {
+	panel.item_focus_change();
+}
+
+function on_playlist_items_removed() {
+	panel.item_focus_change();
+}
+
+function on_playlist_items_reordered() {
+	text.refresh();
+}
+
+function on_playlist_switch() {
+	panel.item_focus_change();
+}
+
+function on_size() {
+	panel.size();
+	text.w = panel.w - (LM * 2);
+	text.h = panel.h;
+	text.size();
+}

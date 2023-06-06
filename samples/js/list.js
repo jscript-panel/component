@@ -247,7 +247,7 @@ function _list(mode, x, y, w, h) {
 			panel.m.CheckMenuRadioItem(1200, 1201, this.properties.mode.value + 1200);
 			panel.m.AppendMenuSeparator();
 			if (!_isUUID(this.mb_id)) {
-				panel.m.AppendMenuItem(MF_GRAYED, 1203, 'Artist MBID missing. Use Musicbrainz Picard or foo_musicbrainz to tag your files.');
+				panel.m.AppendMenuItem(MF_GRAYED, 0, 'Artist MBID missing. Use Musicbrainz Picard or foo_musicbrainz to tag your files.');
 				panel.m.AppendMenuSeparator();
 			}
 			break;
@@ -316,13 +316,6 @@ function _list(mode, x, y, w, h) {
 		case 1302:
 			this.properties.tech.toggle();
 			panel.item_focus_change();
-			break;
-		case 1400:
-			var tmp = utils.InputBox('Enter title formatting', window.Name, this.properties.tf.value);
-			this.properties.tf.value = tmp || this.properties.tf.default_;
-			_dispose(this.tfo);
-			this.tfo = fb.TitleFormat(this.properties.tf.value);
-			this.update();
 			break;
 		case 1999:
 			_explorer(this.filename);
@@ -517,7 +510,7 @@ function _list(mode, x, y, w, h) {
 					this.text_x = Math.max(this.text_x, panel.calc_text_width(item.name) + 20);
 				}
 			}, this);
-			_dispose(fileinfo);
+			fileinfo.Dispose();
 			break;
 		}
 		this.count = this.data.length;

@@ -6,7 +6,7 @@ function _thumbs() {
 		switch (true) {
 		case panel.w < this.properties.px.value || panel.h < this.properties.px.value || this.properties.mode.value == 5: // off
 			this.nc = true;
-			_dispose(this.img);
+			if (this.img) this.img.Dispose();
 			this.img = null;
 			this.w = 0;
 			this.h = 0;
@@ -24,7 +24,7 @@ function _thumbs() {
 			this.img_rows = Math.ceil(this.thumbs.length / this.columns);
 			if (this.nc && this.thumbs.length) {
 				this.nc = false;
-				_dispose(this.img);
+				if (this.img) this.img.Dispose();
 				this.img = null;
 				this.img = utils.CreateImage(Math.min(this.columns, this.thumbs.length) * this.properties.px.value, this.img_rows * this.properties.px.value);
 				var temp_gr = this.img.GetGraphics();
@@ -53,7 +53,7 @@ function _thumbs() {
 			this.rows = Math.ceil(this.h / this.properties.px.value);
 			if (this.nc && this.thumbs.length) {
 				this.nc = false;
-				_dispose(this.img);
+				if (this.img) this.img.Dispose();
 				this.img = null;
 				this.img = utils.CreateImage(this.properties.px.value, this.properties.px.value * this.thumbs.length);
 				var temp_gr = this.img.GetGraphics();
@@ -77,7 +77,7 @@ function _thumbs() {
 			this.columns = Math.ceil(this.w / this.properties.px.value);
 			if (this.nc && this.thumbs.length) {
 				this.nc = false;
-				_dispose(this.img);
+				if (this.img) this.img.Dispose();
 				this.img = null;
 				this.img = utils.CreateImage(this.properties.px.value * this.thumbs.length, this.properties.px.value);
 				var temp_gr = this.img.GetGraphics();

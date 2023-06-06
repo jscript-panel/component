@@ -11,10 +11,8 @@ var arr = [];
 on_item_focus_change();
 
 function on_item_focus_change() {
-	if (img) {
-		img.Dispose();
-		img = null;
-	}
+	if (img) img.Dispose();
+	img = null;
 
 	arr = [];
 	var metadb = fb.GetFocusItem();

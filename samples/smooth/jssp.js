@@ -997,36 +997,37 @@ function oBrowser() {
 	}, ppt.refreshRate);
 
 	this.context_menu = function (x, y, id, row_id) {
-		var _menu = window.CreatePopupMenu();
-		var _context = fb.CreateContextMenuManager();
-		var _add = window.CreatePopupMenu();
+		var menu = window.CreatePopupMenu();
+		var add = window.CreatePopupMenu();
+		var context = fb.CreateContextMenuManager();
 
-		var flag = EnableMenuIf(playlist_can_remove_items(g_active_playlist));
+		var remove_flag = EnableMenuIf(playlist_can_remove_items(g_active_playlist));
 
-		_menu.AppendMenuItem(flag, 1, "Crop");
-		_menu.AppendMenuItem(flag, 2, "Remove");
-		_menu.AppendMenuItem(MF_STRING, 3, "Invert Selection");
-		_menu.AppendMenuSeparator();
-		_menu.AppendMenuItem(flag, 4, "Cut");
-		_menu.AppendMenuItem(MF_STRING, 5, "Copy");
-		_menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(g_active_playlist) && fb.CheckClipboardContents()), 6, "Paste");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(remove_flag, 1, "Crop");
+		menu.AppendMenuItem(remove_flag, 2, "Remove");
+		menu.AppendMenuItem(MF_STRING, 3, "Invert Selection");
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(remove_flag, 4, "Cut");
+		menu.AppendMenuItem(MF_STRING, 5, "Copy");
+		menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(g_active_playlist) && fb.CheckClipboardContents()), 6, "Paste");
+		menu.AppendMenuSeparator();
 
-		_add.AppendMenuItem(MF_STRING, 10, "New Playlist");
+		add.AppendMenuItem(MF_STRING, 10, "New Playlist");
 		if (plman.PlaylistCount > 0) {
-			_add.AppendMenuSeparator();
+			add.AppendMenuSeparator();
 		}
 		for (var i = 0; i < plman.PlaylistCount; i++) {
-			_add.AppendMenuItem(EnableMenuIf(i != g_active_playlist && playlist_can_add_items(i)), 100 + i, plman.GetPlaylistName(i));
+			add.AppendMenuItem(EnableMenuIf(i != g_active_playlist && playlist_can_add_items(i)), 100 + i, plman.GetPlaylistName(i));
 		}
-		_add.AppendTo(_menu, MF_STRING, "Add to");
-		_menu.AppendMenuSeparator();
+		add.AppendTo(menu, MF_STRING, "Add to");
+		menu.AppendMenuSeparator();
 
-		var items = plman.GetPlaylistSelectedItems(g_active_playlist);
-		_context.InitContextPlaylist();
-		_context.BuildMenu(_menu, 1000);
+		var selected_items = plman.GetPlaylistSelectedItems(g_active_playlist);
+		context.InitContextPlaylist();
+		context.BuildMenu(menu, 1000);
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
 
 		switch (true) {
 		case idx == 0:
@@ -1043,12 +1044,12 @@ function oBrowser() {
 			plman.InvertSelection(g_active_playlist);
 			break;
 		case idx == 4:
-			items.CopyToClipboard();
+			selected_items.CopyToClipboard();
 			plman.UndoBackup(g_active_playlist);
 			plman.RemovePlaylistSelection(g_active_playlist);
 			break;
 		case idx == 5:
-			items.CopyToClipboard();
+			selected_items.CopyToClipboard();
 			break;
 		case idx == 6:
 			var base = getFocusId();
@@ -1065,76 +1066,75 @@ function oBrowser() {
 		case idx == 10:
 			var pl = plman.CreatePlaylist();
 			plman.ActivePlaylist = pl;
-			plman.InsertPlaylistItems(pl, 0, items);
+			plman.InsertPlaylistItems(pl, 0, selected_items);
 			break;
 		case idx < 1000:
 			var pl = idx - 100;
 			plman.UndoBackup(pl);
-			plman.InsertPlaylistItems(pl, plman.GetPlaylistItemCount(pl), items);
+			plman.InsertPlaylistItems(pl, plman.GetPlaylistItemCount(pl), selected_items);
 			break;
 		case idx >= 1000:
-			_context.ExecuteByID(idx - 1000);
+			context.ExecuteByID(idx - 1000);
 			break;
 		}
-		items.Dispose();
-		_add.Dispose();
-		_context.Dispose();
-		_menu.Dispose();
+		selected_items.Dispose();
+		context.Dispose();
 		return true;
 	}
 
 	this.settings_context_menu = function (x, y) {
-		var _menu = window.CreatePopupMenu();
-		var _menu1 = window.CreatePopupMenu();
-		var _menu2 = window.CreatePopupMenu();
-		var _menu3 = window.CreatePopupMenu();
-		var _menu4 = window.CreatePopupMenu();
+		var menu = window.CreatePopupMenu();
+		var sub1 = window.CreatePopupMenu();
+		var sub2 = window.CreatePopupMenu();
+		var sub3 = window.CreatePopupMenu();
+		var sub4 = window.CreatePopupMenu();
 
-		_menu.AppendMenuItem(CheckMenuIf(ppt.showHeaderBar), 1, "Header Bar");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(CheckMenuIf(ppt.showHeaderBar), 1, "Header Bar");
+		menu.AppendMenuSeparator();
 
 		var colour_flag = EnableMenuIf(ppt.enableCustomColours);
-		_menu1.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
-		_menu1.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
-		_menu1.AppendMenuSeparator();
-		_menu1.AppendMenuItem(colour_flag, 4, "Text");
-		_menu1.AppendMenuItem(colour_flag, 5, "Background");
-		_menu1.AppendMenuItem(colour_flag, 6, "Selected background");
-		_menu1.AppendTo(_menu, MF_STRING, "Colours");
-		_menu.AppendMenuSeparator();
+		sub1.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
+		sub1.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
+		sub1.AppendMenuSeparator();
+		sub1.AppendMenuItem(colour_flag, 4, "Text");
+		sub1.AppendMenuItem(colour_flag, 5, "Background");
+		sub1.AppendMenuItem(colour_flag, 6, "Selected background");
+		sub1.AppendTo(menu, MF_STRING, "Colours");
+		menu.AppendMenuSeparator();
 
-		_menu2.AppendMenuItem(MF_STRING, 10, "None");
-		_menu2.AppendMenuItem(MF_STRING, 11, "Front cover of playing track");
-		_menu2.AppendMenuItem(MF_STRING, 12, "Custom image");
-		_menu2.CheckMenuRadioItem(10, 12, ppt.wallpapermode + 10);
-		_menu2.AppendMenuSeparator();
-		_menu2.AppendMenuItem(EnableMenuIf(ppt.wallpapermode == 2), 13, "Custom image path...");
-		_menu2.AppendMenuSeparator();
-		_menu2.AppendMenuItem(GetMenuFlags(ppt.wallpapermode != 0, ppt.wallpaperblurred), 14, "Blur");
-		_menu2.AppendTo(_menu, MF_STRING, "Background Wallpaper");
+		sub2.AppendMenuItem(MF_STRING, 10, "None");
+		sub2.AppendMenuItem(MF_STRING, 11, "Front cover of playing track");
+		sub2.AppendMenuItem(MF_STRING, 12, "Custom image");
+		sub2.CheckMenuRadioItem(10, 12, ppt.wallpapermode + 10);
+		sub2.AppendMenuSeparator();
+		sub2.AppendMenuItem(EnableMenuIf(ppt.wallpapermode == 2), 13, "Custom image path...");
+		sub2.AppendMenuSeparator();
+		sub2.AppendMenuItem(GetMenuFlags(ppt.wallpapermode != 0, ppt.wallpaperblurred), 14, "Blur");
+		sub2.AppendTo(menu, MF_STRING, "Background Wallpaper");
 
-		_menu3.AppendMenuItem(CheckMenuIf(ppt.showGroupHeaders), 20, "Enable");
-		_menu3.AppendMenuSeparator();
-		_menu3.AppendMenuItem(MF_GRAYED, 0, "Rows");
-		_menu3.AppendMenuItem(EnableMenuIf(ppt.showGroupHeaders), 21, "1");
-		_menu3.AppendMenuItem(EnableMenuIf(ppt.showGroupHeaders), 22, "2");
-		_menu3.AppendMenuItem(EnableMenuIf(ppt.showGroupHeaders), 23, "3");
-		_menu3.CheckMenuRadioItem(21, 23, ppt.groupHeaderRowsNumber + 20);
-		_menu3.AppendMenuSeparator();
-		_menu3.AppendMenuItem(GetMenuFlags(ppt.showGroupHeaders && ppt.groupHeaderRowsNumber > 1, ppt.autoFill), 24, "Album Art: Auto-fill");
-		_menu3.AppendTo(_menu, MF_STRING, "Group Headers");
+		sub3.AppendMenuItem(CheckMenuIf(ppt.showGroupHeaders), 20, "Enable");
+		sub3.AppendMenuSeparator();
+		sub3.AppendMenuItem(MF_GRAYED, 0, "Rows");
+		sub3.AppendMenuItem(EnableMenuIf(ppt.showGroupHeaders), 21, "1");
+		sub3.AppendMenuItem(EnableMenuIf(ppt.showGroupHeaders), 22, "2");
+		sub3.AppendMenuItem(EnableMenuIf(ppt.showGroupHeaders), 23, "3");
+		sub3.CheckMenuRadioItem(21, 23, ppt.groupHeaderRowsNumber + 20);
+		sub3.AppendMenuSeparator();
+		sub3.AppendMenuItem(GetMenuFlags(ppt.showGroupHeaders && ppt.groupHeaderRowsNumber > 1, ppt.autoFill), 24, "Album Art: Auto-fill");
+		sub3.AppendTo(menu, MF_STRING, "Group Headers");
 
-		_menu4.AppendMenuItem(CheckMenuIf(ppt.doubleRowText), 30, "Double Track Line");
-		_menu4.AppendMenuSeparator()
-		_menu4.AppendMenuItem(GetMenuFlags(!ppt.doubleRowText, ppt.showArtistAlways), 31, "Artist");
-		_menu4.AppendMenuItem(CheckMenuIf(ppt.showRating), 32, "Rating");
-		_menu4.AppendTo(_menu, MF_STRING, "Track Info");
+		sub4.AppendMenuItem(CheckMenuIf(ppt.doubleRowText), 30, "Double Track Line");
+		sub4.AppendMenuSeparator()
+		sub4.AppendMenuItem(GetMenuFlags(!ppt.doubleRowText, ppt.showArtistAlways), 31, "Artist");
+		sub4.AppendMenuItem(CheckMenuIf(ppt.showRating), 32, "Rating");
+		sub4.AppendTo(menu, MF_STRING, "Track Info");
 
-		_menu.AppendMenuSeparator();
-		_menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
-		_menu.AppendMenuItem(MF_STRING, 51, "Configure...");
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
+		menu.AppendMenuItem(MF_STRING, 51, "Configure...");
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
 
 		switch (idx) {
 		case 1:
@@ -1235,11 +1235,7 @@ function oBrowser() {
 			window.ShowConfigure();
 			break;
 		}
-		_menu4.Dispose();
-		_menu3.Dispose();
-		_menu2.Dispose();
-		_menu1.Dispose();
-		_menu.Dispose();
+
 		return true;
 	}
 

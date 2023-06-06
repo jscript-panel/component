@@ -586,8 +586,7 @@ function oList(object_name) {
 		}
 
 		this.focusedTrackId = plman.GetPlaylistFocusItemIndex(g_active_playlist);
-		if (this.handleList)
-			this.handleList.Dispose();
+		if (this.handleList) this.handleList.Dispose();
 		this.handleList = plman.GetPlaylistItems(g_active_playlist);
 		this.count = this.handleList.Count;
 		this.init_groups();
@@ -1059,50 +1058,51 @@ function oList(object_name) {
 		}
 	}
 
-	this.contextMenu = function (x, y, id, row_id) {
-		var _menu = window.CreatePopupMenu();
-		var _colours = window.CreatePopupMenu();
-		var _context = fb.CreateContextMenuManager();
+	this.contextMenu = function (x, y) {
+		var menu = window.CreatePopupMenu();
+		var sub = window.CreatePopupMenu();
+		var context = fb.CreateContextMenuManager();
 
 		var can_remove_flag = EnableMenuIf(playlist_can_remove_items(g_active_playlist));
 		var can_paste_flag = EnableMenuIf(playlist_can_add_items(g_active_playlist) && fb.CheckClipboardContents());
 		var colour_flag = EnableMenuIf(properties.enableCustomColours);
 
-		_menu.AppendMenuItem(MF_STRING, 1, "Panel Settings...");
-		_colours.AppendMenuItem(CheckMenuIf(properties.enableDynamicColours), 2, "Enable Dynamic");
-		_colours.AppendMenuItem(CheckMenuIf(properties.enableCustomColours), 3, "Enable Custom");
-		_colours.AppendMenuSeparator();
-		_colours.AppendMenuItem(colour_flag, 4, "Text");
-		_colours.AppendMenuItem(colour_flag, 5, "Background");
-		_colours.AppendMenuItem(colour_flag, 6, "Selected background");
-		_colours.AppendMenuSeparator();
-		_colours.AppendMenuItem(MF_STRING, 7, "Mood");
-		_colours.AppendTo(_menu, MF_STRING, "Colours");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 1, "Panel Settings...");
+		sub.AppendMenuItem(CheckMenuIf(properties.enableDynamicColours), 2, "Enable Dynamic");
+		sub.AppendMenuItem(CheckMenuIf(properties.enableCustomColours), 3, "Enable Custom");
+		sub.AppendMenuSeparator();
+		sub.AppendMenuItem(colour_flag, 4, "Text");
+		sub.AppendMenuItem(colour_flag, 5, "Background");
+		sub.AppendMenuItem(colour_flag, 6, "Selected background");
+		sub.AppendMenuSeparator();
+		sub.AppendMenuItem(MF_STRING, 7, "Mood");
+		sub.AppendTo(menu, MF_STRING, "Colours");
 
 		var items = plman.GetPlaylistSelectedItems(g_active_playlist);
 		if (items.Count > 0) {
+			menu.AppendMenuSeparator();
+
 			if (items.Count == 1) {
-				_menu.AppendMenuItem(MF_STRING, 9, "Play");
-				_menu.SetDefault(9);
-				_menu.AppendMenuSeparator();
+				menu.AppendMenuItem(MF_STRING, 9, "Play");
+				menu.SetDefault(9);
+				menu.AppendMenuSeparator();
 			}
 
-			_menu.AppendMenuItem(can_remove_flag, 10, "Crop");
-			_menu.AppendMenuItem(can_remove_flag, 11, "Remove");
-			_menu.AppendMenuItem(MF_STRING, 12, "Invert selection");
-			_menu.AppendMenuSeparator();
-			_menu.AppendMenuItem(can_remove_flag, 13, "Cut");
-			_menu.AppendMenuItem(MF_STRING, 14, "Copy");
-			_menu.AppendMenuItem(can_paste_flag , 15, "Paste");
-			_menu.AppendMenuSeparator();
-			_context.InitContextPlaylist();
-			_context.BuildMenu(_menu, 1000);
-		} else {
-			_menu.AppendMenuItem(can_paste_flag, 15, "Paste");
+			menu.AppendMenuItem(can_remove_flag, 10, "Crop");
+			menu.AppendMenuItem(can_remove_flag, 11, "Remove");
+			menu.AppendMenuItem(MF_STRING, 12, "Invert selection");
+			menu.AppendMenuSeparator();
+			menu.AppendMenuItem(can_remove_flag, 13, "Cut");
+			menu.AppendMenuItem(MF_STRING, 14, "Copy");
+			menu.AppendMenuItem(can_paste_flag , 15, "Paste");
+			menu.AppendMenuSeparator();
+			context.InitContextPlaylist();
+			context.BuildMenu(menu, 1000);
 		}
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
+
 		switch (idx) {
 		case 0:
 			break;
@@ -1180,13 +1180,12 @@ function oList(object_name) {
 			clipboard_contents.Dispose();
 			break;
 		default:
-			_context.ExecuteByID(idx - 1000);
+			context.ExecuteByID(idx - 1000);
 			break;
 		}
+
 		items.Dispose();
-		_colours.Dispose();
-		_context.Dispose();
-		_menu.Dispose();
+		context.Dispose();
 		return true;
 	}
 

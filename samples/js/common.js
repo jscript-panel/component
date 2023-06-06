@@ -201,16 +201,19 @@ function _getFiles(folder, exts) {
 }
 
 function _help(x, y, flags) {
-	var m = window.CreatePopupMenu();
+	var menu = window.CreatePopupMenu();
 	_.forEach(ha_links, function (item, i) {
-		m.AppendMenuItem(MF_STRING, i + 100, item[0]);
+		menu.AppendMenuItem(MF_STRING, i + 100, item[0]);
 		if (i == 1) {
-			m.AppendMenuSeparator();
+			menu.AppendMenuSeparator();
 		}
 	});
-	m.AppendMenuSeparator();
-	m.AppendMenuItem(MF_STRING, 1, 'Configure...');
-	var idx = m.TrackPopupMenu(x, y, flags);
+	menu.AppendMenuSeparator();
+	menu.AppendMenuItem(MF_STRING, 1, 'Configure...');
+
+	var idx = menu.TrackPopupMenu(x, y, flags);
+	menu.Dispose();
+
 	switch (true) {
 	case idx == 0:
 		break;
@@ -221,7 +224,6 @@ function _help(x, y, flags) {
 		utils.Run(ha_links[idx - 100][1]);
 		break;
 	}
-	_dispose(m);
 }
 
 function _isUUID(value) {
@@ -257,6 +259,8 @@ function _menu(x, y, flags) {
 	var help = new _main_menu_helper('Help', 6000, menu);
 
 	var idx = menu.TrackPopupMenu(x, y, flags);
+	menu.Dispose();
+
 	switch (true) {
 	case idx == 0:
 		break;
@@ -279,15 +283,16 @@ function _menu(x, y, flags) {
 		help.mm.ExecuteByID(idx - 6000);
 		break;
 	}
-	_dispose(menu, file, edit, view, playback, library, help);
+
+	file.mm.Dispose();
+	edit.mm.Dispose();
+	view.mm.Dispose();
+	playback.mm.Dispose();
+	library.mm.Dispose();
+	help.mm.Dispose();
 }
 
 function _main_menu_helper(name, base_id, main_menu) {
-	this.Dispose = function () {
-		this.mm.Dispose();
-		this.popup.Dispose();
-	}
-
 	this.popup = window.CreatePopupMenu();
 	this.mm = fb.CreateMainMenuManager(name);
 	this.mm.BuildMenu(this.popup, base_id);

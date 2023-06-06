@@ -47,9 +47,9 @@ function refresh() {
 			tmp.push(utils.FormatFileSize(items.CalcTotalSize()));
 		}
 	}
+	items.Dispose();
 	right_text = tmp.join(' :: ');
 	window.Repaint();
-	_dispose(items);
 }
 
 function on_mouse_lbtn_dblclk() {
@@ -57,27 +57,35 @@ function on_mouse_lbtn_dblclk() {
 }
 
 function on_mouse_rbtn_up(x, y) {
-	var m = window.CreatePopupMenu();
-	var s = window.CreatePopupMenu();
-	var c = fb.CreateContextMenuManager();
-	var col = window.CreatePopupMenu();
+	var menu = window.CreatePopupMenu();
+	var sub = window.CreatePopupMenu();
+	var colour_menu = window.CreatePopupMenu();
+
+	var context = fb.CreateContextMenuManager();
 	if (fb.IsPlaying) {
-		c.InitNowPlaying();
-		c.BuildMenu(s, 1);
-		s.AppendTo(m, MF_STRING, 'Now playing');
-		m.AppendMenuSeparator();
+		context.InitNowPlaying();
+		context.BuildMenu(sub, 1);
+		sub.AppendTo(menu, MF_STRING, 'Now playing');
+		menu.AppendMenuSeparator();
 	}
-	m.AppendMenuItem(CheckMenuIf(properties.name.enabled), 10000, 'Show playlist name');
-	m.AppendMenuItem(CheckMenuIf(properties.count.enabled), 10001, 'Show playlist item count');
-	m.AppendMenuItem(CheckMenuIf(properties.duration.enabled), 10002, 'Show playlist duration');
-	m.AppendMenuItem(CheckMenuIf(properties.size.enabled), 10003, 'Show playlist size');
-	m.AppendMenuSeparator();
-	col.AppendMenuItem(MF_STRING, 10004, 'Background...');
-	col.AppendMenuItem(MF_STRING, 10005, 'Text...');
-	col.AppendTo(m, MF_STRING, 'Colours');
-	m.AppendMenuSeparator();
-	m.AppendMenuItem(MF_STRING, 10010, 'Configure...');
-	var idx = m.TrackPopupMenu(x, y);
+	menu.AppendMenuItem(MF_STRING, 10000, 'Show playlist name');
+	menu.CheckMenuItem(10000, properties.name.enabled);
+	menu.AppendMenuItem(MF_STRING, 10001, 'Show playlist item count');
+	menu.CheckMenuItem(10001, properties.count.enabled);
+	menu.AppendMenuItem(MF_STRING, 10002, 'Show playlist duration');
+	menu.CheckMenuItem(10002, properties.duration.enabled);
+	menu.AppendMenuItem(MF_STRING, 10003, 'Show playlist size');
+	menu.CheckMenuItem(10003, properties.size.enabled);
+	menu.AppendMenuSeparator();
+	colour_menu.AppendMenuItem(MF_STRING, 10004, 'Background...');
+	colour_menu.AppendMenuItem(MF_STRING, 10005, 'Text...');
+	colour_menu.AppendTo(menu, MF_STRING, 'Colours');
+	menu.AppendMenuSeparator();
+	menu.AppendMenuItem(MF_STRING, 10010, 'Configure...');
+
+	var idx = menu.TrackPopupMenu(x, y);
+	menu.Dispose();
+
 	switch (idx) {
 	case 0:
 		break;
@@ -109,10 +117,11 @@ function on_mouse_rbtn_up(x, y) {
 		window.ShowConfigure();
 		break;
 	default:
-		c.ExecuteByID(idx - 1);
+		context.ExecuteByID(idx - 1);
 		break;
 	}
-	_dispose(m, s, c, col);
+
+	context.Dispose();
 	return true;
 }
 

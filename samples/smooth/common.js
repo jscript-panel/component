@@ -254,10 +254,8 @@ function button(normal, hover, down) {
 }
 
 function setWallpaperImg() {
-	if (g_wallpaperImg) {
-		g_wallpaperImg.Dispose();
-		g_wallpaperImg = null;
-	}
+	if (g_wallpaperImg) g_wallpaperImg.Dispose();
+	g_wallpaperImg = null;
 
 	switch (ppt.wallpapermode) {
 	case 0:

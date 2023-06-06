@@ -550,34 +550,36 @@ function oBrowser() {
 	}, ppt.refreshRate);
 
 	this.context_menu = function (x, y, albumIndex) {
-		var _menu = window.CreatePopupMenu();
-		var _menu1 = window.CreatePopupMenu();
-		var _context = fb.CreateContextMenuManager();
-		var _add = window.CreatePopupMenu();
+		var menu = window.CreatePopupMenu();
+		var sub = window.CreatePopupMenu();
+		var add = window.CreatePopupMenu()
+		var context = fb.CreateContextMenuManager();;
 		var ap = plman.ActivePlaylist;
 
-		_menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(ap)), 1, "Add to current playlist");
-		_menu.AppendMenuItem(MF_STRING, 2, "Add to new playlist");
+		menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(ap)), 1, "Add to current playlist");
+		menu.AppendMenuItem(MF_STRING, 2, "Add to new playlist");
 
 		for (var i = 0; i < plman.PlaylistCount; i++) {
-			_add.AppendMenuItem(EnableMenuIf(playlist_can_add_items(i)), i + 10, plman.GetPlaylistName(i));
+			add.AppendMenuItem(EnableMenuIf(playlist_can_add_items(i)), i + 10, plman.GetPlaylistName(i));
 		}
-		_add.AppendTo(_menu, MF_STRING, "Add to other playlist");
-		_menu.AppendMenuSeparator();
+		add.AppendTo(menu, MF_STRING, "Add to other playlist");
+		menu.AppendMenuSeparator();
 
-		_menu1.AppendMenuItem(MF_STRING, 1000, "Send to default playlist and play");
-		_menu1.AppendMenuItem(MF_STRING, 1001, "Send to default playlist");
-		_menu1.CheckMenuRadioItem(1000, 1001, ppt.sendto_playlist_play ? 1000 : 1001);
-		_menu1.AppendMenuSeparator();
+		sub.AppendMenuItem(MF_STRING, 1000, "Send to default playlist and play");
+		sub.AppendMenuItem(MF_STRING, 1001, "Send to default playlist");
+		sub.CheckMenuRadioItem(1000, 1001, ppt.sendto_playlist_play ? 1000 : 1001);
+		sub.AppendMenuSeparator();
 
-		_menu1.AppendMenuItem(MF_STRING, 1002, "Default playlist name")
-		_menu1.AppendTo(_menu, MF_STRING, "Double click");
+		sub.AppendMenuItem(MF_STRING, 1002, "Default playlist name")
+		sub.AppendTo(menu, MF_STRING, "Double click");
 
-		_menu.AppendMenuSeparator();
-		_context.InitContext(this.groups[albumIndex].handles);
-		_context.BuildMenu(_menu, 10000);
+		menu.AppendMenuSeparator();
+		context.InitContext(this.groups[albumIndex].handles);
+		context.BuildMenu(menu, 10000);
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
+
 		switch (true) {
 		case idx == 0:
 			break;
@@ -611,56 +613,55 @@ function oBrowser() {
 			}
 			break;
 		default:
-			_context.ExecuteByID(idx - 10000);
+			context.ExecuteByID(idx - 10000);
 			break;
 		}
-		_add.Dispose();
-		_context.Dispose();
-		_menu1.Dispose();
-		_menu.Dispose();
+
+		context.Dispose();
 		return true;
 	}
 
 	this.settings_context_menu = function (x, y) {
-		var _menu = window.CreatePopupMenu();
-		var _menu1 = window.CreatePopupMenu();
+		var menu = window.CreatePopupMenu();
+		var sub = window.CreatePopupMenu();
 
-		_menu.AppendMenuItem(CheckMenuIf(ppt.showHeaderBar), 1, "Header Bar");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(CheckMenuIf(ppt.showHeaderBar), 1, "Header Bar");
+		menu.AppendMenuSeparator();
 
 		var colour_flag = EnableMenuIf(ppt.enableCustomColours);
-		_menu1.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
-		_menu1.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
-		_menu1.AppendMenuSeparator();
-		_menu1.AppendMenuItem(colour_flag, 4, "Text");
-		_menu1.AppendMenuItem(colour_flag, 5, "Background");
-		_menu1.AppendMenuItem(colour_flag, 6, "Selected background");
-		_menu1.AppendTo(_menu, MF_STRING, "Colours");
-		_menu.AppendMenuSeparator();
+		sub.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
+		sub.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
+		sub.AppendMenuSeparator();
+		sub.AppendMenuItem(colour_flag, 4, "Text");
+		sub.AppendMenuItem(colour_flag, 5, "Background");
+		sub.AppendMenuItem(colour_flag, 6, "Selected background");
+		sub.AppendTo(menu, MF_STRING, "Colours");
+		menu.AppendMenuSeparator();
 
-		_menu.AppendMenuItem(MF_STRING, 20, "Album");
-		_menu.AppendMenuItem(MF_STRING, 21, "Artist");
-		_menu.AppendMenuItem(MF_STRING, 22, "Album Artist");
-		_menu.CheckMenuRadioItem(20, 22, 20 + ppt.tagMode);
-		_menu.AppendMenuSeparator();
-		_menu.AppendMenuItem(MF_STRING, 23, "Sort pattern...");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 20, "Album");
+		menu.AppendMenuItem(MF_STRING, 21, "Artist");
+		menu.AppendMenuItem(MF_STRING, 22, "Album Artist");
+		menu.CheckMenuRadioItem(20, 22, 20 + ppt.tagMode);
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 23, "Sort pattern...");
+		menu.AppendMenuSeparator();
 
-		_menu.AppendMenuItem(MF_STRING, 30, "Column");
-		_menu.AppendMenuItem(MF_STRING, 31, "Column + Album Art");
-		_menu.AppendMenuItem(MF_STRING, 32, "Album Art Grid (Original style)");
-		_menu.AppendMenuItem(MF_STRING, 33, "Album Art Grid (Overlayed text)");
-		_menu.CheckMenuRadioItem(30, 33, 30 + ppt.panelMode);
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 30, "Column");
+		menu.AppendMenuItem(MF_STRING, 31, "Column + Album Art");
+		menu.AppendMenuItem(MF_STRING, 32, "Album Art Grid (Original style)");
+		menu.AppendMenuItem(MF_STRING, 33, "Album Art Grid (Overlayed text)");
+		menu.CheckMenuRadioItem(30, 33, 30 + ppt.panelMode);
+		menu.AppendMenuSeparator();
 
-		_menu.AppendMenuItem(CheckMenuIf(ppt.showAllItem), 40, "Show all items");
-		_menu.AppendMenuItem(GetMenuFlags(ppt.panelMode == 1 || ppt.panelMode == 2, ppt.autoFill), 41, "Album Art: Auto-fill");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(CheckMenuIf(ppt.showAllItem), 40, "Show all items");
+		menu.AppendMenuItem(GetMenuFlags(ppt.panelMode == 1 || ppt.panelMode == 2, ppt.autoFill), 41, "Album Art: Auto-fill");
+		menu.AppendMenuSeparator();
 
-		_menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
-		_menu.AppendMenuItem(MF_STRING, 51, "Configure...");
+		menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
+		menu.AppendMenuItem(MF_STRING, 51, "Configure...");
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
 
 		switch (idx) {
 		case 1:
@@ -756,8 +757,6 @@ function oBrowser() {
 			window.ShowConfigure();
 			break;
 		}
-		_menu1.Dispose();
-		_menu.Dispose();
 		return true;
 	}
 

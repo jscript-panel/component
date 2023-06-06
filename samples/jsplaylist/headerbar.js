@@ -539,39 +539,40 @@ function oHeaderBar() {
 	}
 
 	this.contextMenu = function (x, y, column_index) {
-		var _menu = window.CreatePopupMenu();
-		var _groups = window.CreatePopupMenu();
-		var _columns = window.CreatePopupMenu();
+		var menu = window.CreatePopupMenu();
+		var groups = window.CreatePopupMenu();
+		var columns = window.CreatePopupMenu();
 
-		_groups.AppendMenuItem(CheckMenuIf(properties.showgroupheaders), 2, "Enable Groups");
+		groups.AppendMenuItem(CheckMenuIf(properties.showgroupheaders), 2, "Enable Groups");
 
 		if (properties.showgroupheaders) {
-			_groups.AppendMenuSeparator();
+			groups.AppendMenuSeparator();
 			var groupByMenuIdx = 20;
 			var totalGroupBy = p.list.groupby.length;
 			for (var i = 0; i < totalGroupBy; i++) {
-				_groups.AppendMenuItem(MF_STRING, groupByMenuIdx + i, p.list.groupby[i].label);
+				groups.AppendMenuItem(MF_STRING, groupByMenuIdx + i, p.list.groupby[i].label);
 			}
-			_groups.CheckMenuRadioItem(groupByMenuIdx, groupByMenuIdx + totalGroupBy - 1, cGroup.pattern_idx + groupByMenuIdx);
+			groups.CheckMenuRadioItem(groupByMenuIdx, groupByMenuIdx + totalGroupBy - 1, cGroup.pattern_idx + groupByMenuIdx);
 		}
 
-		_groups.AppendTo(_menu, MF_STRING, "Groups");
-		_menu.AppendMenuSeparator();
+		groups.AppendTo(menu, MF_STRING, "Groups");
+		menu.AppendMenuSeparator();
 
 		// Columns submenu entries
 		var columnMenuIdx = 100;
 		for (var i = 0; i < this.columns.length; i++) {
 			var label = this.columns[i].label;
 			if (i == column_index) label = "[" + label + "]";
-			_columns.AppendMenuItem(CheckMenuIf(this.columns[i].w > 0), columnMenuIdx + i, label);
+			columns.AppendMenuItem(CheckMenuIf(this.columns[i].w > 0), columnMenuIdx + i, label);
 		}
+		columns.AppendTo(menu, MF_STRING, "Columns");
+		menu.AppendMenuSeparator();
 
-		_columns.AppendTo(_menu, MF_STRING, "Columns");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(CheckMenuIf(cList.enableExtraLine), 5, "Double Track Line");
 
-		_menu.AppendMenuItem(CheckMenuIf(cList.enableExtraLine), 5, "Double Track Line");
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
 
-		var idx = _menu.TrackPopupMenu(x, y);
 		switch (true) {
 		case idx == 2:
 			properties.showgroupheaders = !properties.showgroupheaders;
@@ -667,9 +668,6 @@ function oHeaderBar() {
 			update_playlist();
 			break;
 		}
-		_groups.Dispose();
-		_columns.Dispose();
-		_menu.Dispose();
 		this.columnRightClicked = -1;
 		full_repaint();
 		return true;

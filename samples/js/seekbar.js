@@ -156,7 +156,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		panel.s10.AppendMenuItem(MF_STRING, 1013, 'Clear older than 30 days');
 		panel.s10.AppendMenuItem(MF_STRING, 1014, 'Clear older than 90 days');
 		panel.s10.AppendMenuSeparator();
-		panel.s10.AppendMenuItem(MF_GRAYED, 1020, 'In use: ' + utils.FormatFileSize(size));
+		panel.s10.AppendMenuItem(MF_GRAYED, 0, 'In use: ' + utils.FormatFileSize(size));
 		panel.s10.AppendTo(panel.m, MF_STRING, 'Cached images');
 	}
 
@@ -227,7 +227,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		}
 
 		this.clear_image = function () {
-			_dispose(this.image);
+			if (this.image) this.image.Dispose();
 			this.image = null;
 		}
 

@@ -99,7 +99,10 @@ function _panel(options) {
 			this.m.AppendMenuSeparator();
 		}
 		this.m.AppendMenuItem(MF_STRING, 120, 'Configure...');
+
 		var idx = this.m.TrackPopupMenu(x, y);
+		this.m.Dispose();
+
 		switch (true) {
 		case idx == 0:
 			break;
@@ -132,7 +135,6 @@ function _panel(options) {
 			}
 			break;
 		}
-		_dispose(this.m, this.s1, this.s2, this.s3, this.s10, this.s11, this.s12, this.s13);
 		return true;
 	}
 

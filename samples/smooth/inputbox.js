@@ -268,13 +268,16 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 	}
 
 	this.show_context_menu = function (x, y) {
-		var _menu = window.CreatePopupMenu();
+		var menu = window.CreatePopupMenu();
 		cInputbox.clipboard = utils.GetClipboardText();
-		_menu.AppendMenuItem(EnableMenuIf(this.select), 1, "Cut");
-		_menu.AppendMenuItem(EnableMenuIf(this.select), 2, "Copy");
-		_menu.AppendMenuSeparator();
-		_menu.AppendMenuItem(EnableMenuIf(cInputbox.clipboard), 3, "Paste");
-		var idx = _menu.TrackPopupMenu(x, y);
+		menu.AppendMenuItem(EnableMenuIf(this.select), 1, "Cut");
+		menu.AppendMenuItem(EnableMenuIf(this.select), 2, "Copy");
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(EnableMenuIf(cInputbox.clipboard), 3, "Paste");
+
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
+
 		switch (idx) {
 		case 1:
 			if (this.edit && this.select) {
@@ -327,7 +330,6 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 			}
 			break;
 		}
-		_menu.Dispose();
 	}
 
 	this.on_key_down = function (vkey) {

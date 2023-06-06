@@ -91,7 +91,7 @@ function _rating(x, y, h, colour) {
 			var f = panel.metadb.GetFileInfo();
 			var idx = f.MetaFind(this.properties.tag.value);
 			var ret = idx > -1 ? f.MetaValue(idx, 0) : 0;
-			_dispose(f);
+			f.Dispose();
 			return ret;
 		default:
 			return 0;
@@ -112,7 +112,7 @@ function _rating(x, y, h, colour) {
 			handles.UpdateFileInfoFromJSON(JSON.stringify(obj));
 			break;
 		}
-		_dispose(handles);
+		handles.Dispose();
 	}
 
 	this.get_max = function () {

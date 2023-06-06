@@ -357,7 +357,7 @@ function _text(mode, x, y, w, h) {
 			this.tidy = function (value) {
 				var tfo = fb.TitleFormat('$replace($lower($ascii(' + _fbEscape(value) + ')), & ,, and ,)');
 				var str = tfo.EvalWithMetadb(panel.metadb);
-				_dispose(tfo);
+				tfo.Dispose();
 				return str;
 			}
 

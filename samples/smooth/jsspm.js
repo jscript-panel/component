@@ -636,68 +636,69 @@ function oBrowser() {
 	}
 
 	this.context_menu = function (x, y, id) {
-		var _menu = window.CreatePopupMenu();
-		var _newplaylist = window.CreatePopupMenu();
-		var _autoplaylist = window.CreatePopupMenu();
-		var _restore = window.CreatePopupMenu();
-		var _items = window.CreatePopupMenu();
-		var _context = fb.CreateContextMenuManager();
+		var menu = window.CreatePopupMenu();
+		var newplaylist = window.CreatePopupMenu();
+		var autoplaylist = window.CreatePopupMenu();
+		var restore = window.CreatePopupMenu();
+		var items = window.CreatePopupMenu();
+		var context = fb.CreateContextMenuManager();
 
 		var count = plman.PlaylistCount;
 		var recycler_count = plman.RecyclerCount;
 		var history = [];
 
 		for (var i = 0; i < autoplaylists.length; i++) {
-			_autoplaylist.AppendMenuItem(MF_STRING, 200 + i, autoplaylists[i][0]);
+			autoplaylist.AppendMenuItem(MF_STRING, 200 + i, autoplaylists[i][0]);
 		}
 
-		_menu.AppendMenuItem(MF_STRING, 100, "Load Playlist...");
-		_newplaylist.AppendMenuItem(MF_STRING, 101, "New Playlist");
-		_newplaylist.AppendMenuItem(MF_STRING, 102, "New Autoplaylist");
-		_autoplaylist.AppendTo(_newplaylist, MF_STRING, "Preset AutoPlaylists");
-		_newplaylist.AppendTo(_menu, MF_STRING, "Add");
+		menu.AppendMenuItem(MF_STRING, 100, "Load Playlist...");
+		newplaylist.AppendMenuItem(MF_STRING, 101, "New Playlist");
+		newplaylist.AppendMenuItem(MF_STRING, 102, "New Autoplaylist");
+		autoplaylist.AppendTo(newplaylist, MF_STRING, "Preset AutoPlaylists");
+		newplaylist.AppendTo(menu, MF_STRING, "Add");
 
 		if (recycler_count > 0) {
 			for (var i = 0; i < recycler_count; i++) {
 				history.push(i);
-				_restore.AppendMenuItem(MF_STRING, 10 + i, plman.GetRecyclerName(i));
+				restore.AppendMenuItem(MF_STRING, 10 + i, plman.GetRecyclerName(i));
 			}
-			_restore.AppendMenuSeparator();
-			_restore.AppendMenuItem(MF_STRING, 99, "Clear history");
-			_restore.AppendTo(_menu, MF_STRING, "Restore");
+			restore.AppendMenuSeparator();
+			restore.AppendMenuItem(MF_STRING, 99, "Clear history");
+			restore.AppendTo(menu, MF_STRING, "Restore");
 		}
-		_menu.AppendMenuSeparator();
-		_menu.AppendMenuItem(EnableMenuIf(count > 1), 1, "Sort playlists A-Z");
-		_menu.AppendMenuItem(EnableMenuIf(count > 1), 2, "Sort playlists Z-A");
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(EnableMenuIf(count > 1), 1, "Sort playlists A-Z");
+		menu.AppendMenuItem(EnableMenuIf(count > 1), 2, "Sort playlists Z-A");
 
 		if (id > -1) {
-			_menu.AppendMenuSeparator();
+			menu.AppendMenuSeparator();
 			var lock_name = plman.GetPlaylistLockName(id);
 
-			_menu.AppendMenuItem(MF_STRING, 3, "Duplicate this playlist");
-			_menu.AppendMenuItem(EnableMenuIf(playlist_can_rename(id)), 4, "Rename this playlist\tF2");
-			_menu.AppendMenuItem(EnableMenuIf(playlist_can_remove(id)), 5, "Remove this playlist\tDel");
-			_menu.AppendMenuSeparator();
+			menu.AppendMenuItem(MF_STRING, 3, "Duplicate this playlist");
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_rename(id)), 4, "Rename this playlist\tF2");
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_remove(id)), 5, "Remove this playlist\tDel");
+			menu.AppendMenuSeparator();
 			if (plman.IsAutoPlaylist(id)) {
-				_menu.AppendMenuItem(MF_STRING, 6, lock_name + " properties");
-				_menu.AppendMenuItem(MF_STRING, 7, "Convert to a normal playlist");
+				menu.AppendMenuItem(MF_STRING, 6, lock_name + " properties");
+				menu.AppendMenuItem(MF_STRING, 7, "Convert to a normal playlist");
 			} else {
 				var is_locked = plman.IsPlaylistLocked(id);
 				var is_mine = lock_name == "JScript Panel 3";
 
-				_menu.AppendMenuItem(EnableMenuIf(is_mine || !is_locked), 8, "Edit playlist lock...");
-				_menu.AppendMenuItem(EnableMenuIf(is_mine), 9, "Remove playlist lock");
+				menu.AppendMenuItem(EnableMenuIf(is_mine || !is_locked), 8, "Edit playlist lock...");
+				menu.AppendMenuItem(EnableMenuIf(is_mine), 9, "Remove playlist lock");
 			}
 			var playlist_items = plman.GetPlaylistItems(id);
 			if (playlist_items.Count > 0) {
-				_menu.AppendMenuSeparator();
-				_context.InitContext(playlist_items);
-				_context.BuildMenu(_items, 1000);
-				_items.AppendTo(_menu, MF_STRING, 'Items');
+				menu.AppendMenuSeparator();
+				context.InitContext(playlist_items);
+				context.BuildMenu(items, 1000);
+				items.AppendTo(menu, MF_STRING, 'Items');
 			}
 		}
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
 
 		switch (true) {
 		case idx == 0:
@@ -756,53 +757,50 @@ function oBrowser() {
 			plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item[0], item[1], ppt.autoplaylist_sort_pattern);
 			break;
 		case idx >= 1000:
-			_context.ExecuteByID(idx - 1000);
+			context.ExecuteByID(idx - 1000);
 			break;
 		}
-		_context.Dispose();
-		_items.Dispose();
-		_restore.Dispose();
-		_autoplaylist.Dispose();
-		_newplaylist.Dispose();
-		_menu.Dispose();
+
+		context.Dispose();
 		this.repaint();
 		return true;
 	}
 
 	this.settings_context_menu = function (x, y) {
-		var _menu = window.CreatePopupMenu();
-		var _menu1 = window.CreatePopupMenu();
-		var _menu2 = window.CreatePopupMenu();
+		var menu = window.CreatePopupMenu();
+		var sub1 = window.CreatePopupMenu();
+		var sub2 = window.CreatePopupMenu();
 
-		_menu.AppendMenuItem(CheckMenuIf(ppt.showHeaderBar), 1, "Header Bar");
-		_menu.AppendMenuSeparator();
+		menu.AppendMenuItem(CheckMenuIf(ppt.showHeaderBar), 1, "Header Bar");
+		menu.AppendMenuSeparator();
 
 		var colour_flag = EnableMenuIf(ppt.enableCustomColours);
-		_menu1.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
-		_menu1.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
-		_menu1.AppendMenuSeparator();
-		_menu1.AppendMenuItem(colour_flag, 4, "Text");
-		_menu1.AppendMenuItem(colour_flag, 5, "Background");
-		_menu1.AppendMenuItem(colour_flag, 6, "Selected background");
-		_menu1.AppendTo(_menu, MF_STRING, "Colours");
-		_menu.AppendMenuSeparator();
+		sub1.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
+		sub1.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
+		sub1.AppendMenuSeparator();
+		sub1.AppendMenuItem(colour_flag, 4, "Text");
+		sub1.AppendMenuItem(colour_flag, 5, "Background");
+		sub1.AppendMenuItem(colour_flag, 6, "Selected background");
+		sub1.AppendTo(menu, MF_STRING, "Colours");
+		menu.AppendMenuSeparator();
 
-		_menu2.AppendMenuItem(MF_STRING, 10, "None");
-		_menu2.AppendMenuItem(MF_STRING, 11, "Front cover of playing track");
-		_menu2.AppendMenuItem(MF_STRING, 12, "Custom image");
-		_menu2.CheckMenuRadioItem(10, 12, ppt.wallpapermode + 10);
-		_menu2.AppendMenuSeparator();
-		_menu2.AppendMenuItem(EnableMenuIf(ppt.wallpapermode == 2), 13, "Custom image path...");
-		_menu2.AppendMenuSeparator();
+		sub2.AppendMenuItem(MF_STRING, 10, "None");
+		sub2.AppendMenuItem(MF_STRING, 11, "Front cover of playing track");
+		sub2.AppendMenuItem(MF_STRING, 12, "Custom image");
+		sub2.CheckMenuRadioItem(10, 12, ppt.wallpapermode + 10);
+		sub2.AppendMenuSeparator();
+		sub2.AppendMenuItem(EnableMenuIf(ppt.wallpapermode == 2), 13, "Custom image path...");
+		sub2.AppendMenuSeparator();
 
-		_menu2.AppendMenuItem(GetMenuFlags(ppt.wallpapermode != 0, ppt.wallpaperblurred), 14, "Blur");
-		_menu2.AppendTo(_menu, MF_STRING, "Background Wallpaper");
-		_menu.AppendMenuSeparator();
+		sub2.AppendMenuItem(GetMenuFlags(ppt.wallpapermode != 0, ppt.wallpaperblurred), 14, "Blur");
+		sub2.AppendTo(menu, MF_STRING, "Background Wallpaper");
 
-		_menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
-		_menu.AppendMenuItem(MF_STRING, 51, "Configure...");
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
+		menu.AppendMenuItem(MF_STRING, 51, "Configure...");
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
 
 		switch (idx) {
 		case 1:
@@ -866,9 +864,6 @@ function oBrowser() {
 			window.ShowConfigure();
 			break;
 		}
-		_menu2.Dispose();
-		_menu1.Dispose();
-		_menu.Dispose();
 		return true;
 	}
 

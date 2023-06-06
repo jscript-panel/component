@@ -9,7 +9,7 @@ function _albumart(x, y, w, h) {
 			img = panel.metadb.GetAlbumArt(this.properties.id.value);
 		}
 
-		_dispose(this.img);
+		if (this.img) this.img.Dispose();
 		this.img = null;
 		this.tooltip = this.path = '';
 		if (img) {

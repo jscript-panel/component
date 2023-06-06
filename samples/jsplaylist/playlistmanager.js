@@ -331,7 +331,7 @@ function oPlaylistManager() {
 					full_repaint();
 					this.contextMenu(x, y, this.playlists[this.hoverId].idx);
 				} else if (this.ishover && this.inputboxID == -1) {
-					this.contextMenu(x, y, null);
+					this.contextMenu(x, y, -1);
 				}
 			}
 			break;
@@ -456,57 +456,59 @@ function oPlaylistManager() {
 	}
 
 	this.contextMenu = function (x, y, id) {
-		var _menu = window.CreatePopupMenu();
-		var _newplaylist = window.CreatePopupMenu();
-		var _restore = window.CreatePopupMenu();
-		var _items = window.CreatePopupMenu();
-		var _context = fb.CreateContextMenuManager();
+		var menu = window.CreatePopupMenu();
+		var newplaylist = window.CreatePopupMenu();
+		var restore = window.CreatePopupMenu();
+		var items = window.CreatePopupMenu();
+		var context = fb.CreateContextMenuManager();
 
-		_menu.AppendMenuItem(MF_STRING, 1, "Load Playlist...");
-		_newplaylist.AppendMenuItem(MF_STRING, 2, "New Playlist");
-		_newplaylist.AppendMenuItem(MF_STRING, 3, "New Autoplaylist");
-		_newplaylist.AppendTo(_menu, MF_STRING, "Add");
+		menu.AppendMenuItem(MF_STRING, 1, "Load Playlist...");
+		newplaylist.AppendMenuItem(MF_STRING, 2, "New Playlist");
+		newplaylist.AppendMenuItem(MF_STRING, 3, "New Autoplaylist");
+		newplaylist.AppendTo(menu, MF_STRING, "Add");
 
 		var count = plman.RecyclerCount;
 		if (count > 0) {
 			var history = [];
 			for (var i = 0; i < count; i++) {
 				history.push(i);
-				_restore.AppendMenuItem(MF_STRING, 20 + i, plman.GetRecyclerName(i));
+				restore.AppendMenuItem(MF_STRING, 20 + i, plman.GetRecyclerName(i));
 			}
-			_restore.AppendMenuSeparator();
-			_restore.AppendMenuItem(MF_STRING, 4, "Clear history");
-			_restore.AppendTo(_menu, MF_STRING, "Restore...");
+			restore.AppendMenuSeparator();
+			restore.AppendMenuItem(MF_STRING, 4, "Clear history");
+			restore.AppendTo(menu, MF_STRING, "Restore...");
 		}
 
-		if (id != null) {
-			_menu.AppendMenuSeparator();
+		if (id > - 1) {
+			menu.AppendMenuSeparator();
 			var lock_name = plman.GetPlaylistLockName(id);
 
-			_menu.AppendMenuItem(MF_STRING, 5, "Duplicate this playlist");
-			_menu.AppendMenuItem(EnableMenuIf(playlist_can_rename(id)), 6, "Rename this playlist\tF2");
-			_menu.AppendMenuItem(EnableMenuIf(playlist_can_remove(id)), 7, "Remove this playlist\tDel");
-			_menu.AppendMenuSeparator();
+			menu.AppendMenuItem(MF_STRING, 5, "Duplicate this playlist");
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_rename(id)), 6, "Rename this playlist\tF2");
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_remove(id)), 7, "Remove this playlist\tDel");
+			menu.AppendMenuSeparator();
 			if (plman.IsAutoPlaylist(id)) {
-				_menu.AppendMenuItem(MF_STRING, 8, lock_name + " properties");
-				_menu.AppendMenuItem(MF_STRING, 9, "Convert to a normal playlist");
+				menu.AppendMenuItem(MF_STRING, 8, lock_name + " properties");
+				menu.AppendMenuItem(MF_STRING, 9, "Convert to a normal playlist");
 			} else {
 				var is_locked = plman.IsPlaylistLocked(id);
 				var is_mine = lock_name == "JScript Panel 3";
 
-				_menu.AppendMenuItem(EnableMenuIf(is_mine || !is_locked), 10, "Edit playlist lock...");
-				_menu.AppendMenuItem(EnableMenuIf(is_mine), 11, "Remove playlist lock");
+				menu.AppendMenuItem(EnableMenuIf(is_mine || !is_locked), 10, "Edit playlist lock...");
+				menu.AppendMenuItem(EnableMenuIf(is_mine), 11, "Remove playlist lock");
 			}
 			var playlist_items = plman.GetPlaylistItems(id);
 			if (playlist_items.Count > 0) {
-				_menu.AppendMenuSeparator();
-				_context.InitContext(playlist_items);
-				_context.BuildMenu(_items, 1000);
-				_items.AppendTo(_menu, MF_STRING, 'Items');
+				menu.AppendMenuSeparator();
+				context.InitContext(playlist_items);
+				context.BuildMenu(items, 1000);
+				items.AppendTo(menu, MF_STRING, 'Items');
 			}
+			playlist_items.Dispose();
 		}
 
-		var idx = _menu.TrackPopupMenu(x, y);
+		var idx = menu.TrackPopupMenu(x, y);
+		menu.Dispose();
 
 		switch (true) {
 		case idx == 0:
@@ -568,14 +570,10 @@ function oPlaylistManager() {
 			plman.ActivePlaylist = plman.PlaylistCount - 1;
 			break;
 		case idx >= 1000:
-			_context.ExecuteByID(idx - 1000);
+			context.ExecuteByID(idx - 1000);
 			break;
 		}
-		_context.Dispose();
-		_items.Dispose();
-		_newplaylist.Dispose();
-		_restore.Dispose();
-		_menu.Dispose();
+		context.Dispose();
 		cPlaylistManager.rightClickedId = null;
 		full_repaint();
 		return true;

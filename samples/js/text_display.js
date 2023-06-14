@@ -206,7 +206,7 @@ function _text_display(x, y, w, h) {
 	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset > this.ha - this.text_height; }, this), _.bind(function () { this.wheel(-1); }, this));
 
 	this.properties = {
-		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '%artist%$crlf()\r\n%title%$crlf()\r\n[%album%[ - %date%]]'),
+		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '$font(Segoe UI,24)\r\n[🎙️ %artist% ][🎵 %title% ]$crlf()\r\n[💿 %album% ][📅 %date%]$crlf()\r\n[💬 %codec% %__bitrate% kbps ][📊 %__bitspersample% bits ][∿ %samplerate% Hz ][🔊 %channels%]'),
 		halign : new _p('2K3.TEXT.HALIGN', 2),
 		valign : new _p('2K3.TEXT.VALIGN', 2),
 		per_second : new _p('2K3.TEXT.PER.SECOND', false),

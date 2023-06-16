@@ -1128,10 +1128,9 @@ function oBrowser() {
 		sub4.AppendMenuItem(GetMenuFlags(!ppt.doubleRowText, ppt.showArtistAlways), 31, "Artist");
 		sub4.AppendMenuItem(CheckMenuIf(ppt.showRating), 32, "Rating");
 		sub4.AppendTo(menu, MF_STRING, "Track Info");
-
 		menu.AppendMenuSeparator();
-		menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
-		menu.AppendMenuItem(MF_STRING, 51, "Configure...");
+
+		menu.AppendMenuItem(MF_STRING, 50, "Configure...");
 
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
@@ -1229,9 +1228,6 @@ function oBrowser() {
 			this.repaint();
 			break;
 		case 50:
-			window.ShowProperties();
-			break;
-		case 51:
 			window.ShowConfigure();
 			break;
 		}

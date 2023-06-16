@@ -657,8 +657,7 @@ function oBrowser() {
 		menu.AppendMenuItem(GetMenuFlags(ppt.panelMode == 1 || ppt.panelMode == 2, ppt.autoFill), 41, "Album Art: Auto-fill");
 		menu.AppendMenuSeparator();
 
-		menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
-		menu.AppendMenuItem(MF_STRING, 51, "Configure...");
+		menu.AppendMenuItem(MF_STRING, 50, "Configure...");
 
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
@@ -751,9 +750,6 @@ function oBrowser() {
 			this.populate();
 			break;
 		case 50:
-			window.ShowProperties();
-			break;
-		case 51:
 			window.ShowConfigure();
 			break;
 		}

@@ -796,8 +796,7 @@ function oBrowser() {
 		sub2.AppendTo(menu, MF_STRING, "Background Wallpaper");
 
 		menu.AppendMenuSeparator();
-		menu.AppendMenuItem(MF_STRING, 50, "Panel Properties");
-		menu.AppendMenuItem(MF_STRING, 51, "Configure...");
+		menu.AppendMenuItem(MF_STRING, 50, "Configure...");
 
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
@@ -858,9 +857,6 @@ function oBrowser() {
 			this.repaint();
 			break;
 		case 50:
-			window.ShowProperties();
-			break;
-		case 51:
 			window.ShowConfigure();
 			break;
 		}

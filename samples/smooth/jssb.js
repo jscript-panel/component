@@ -831,11 +831,11 @@ function g_sendResponse() {
 	brw.populate();
 }
 
-ppt.sort_album_tf = window.GetProperty("SMOOTH.SORT.ALBUM", "%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%");
-ppt.sort_artist_tf = window.GetProperty("SMOOTH.SORT.ARTIST", "$meta(artist,0) | %date% | %album% | %discnumber% | %tracknumber% | %title%");
-ppt.sort_album_artist_tf = window.GetProperty("SMOOTH.SORT.ALBUM.ARTIST", "%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%");
+ppt.sort_album_tf = window.GetProperty("SMOOTH.SORT.ALBUM", "%album artist% | %album% | %discnumber% | %tracknumber% | %title%");
+ppt.sort_artist_tf = window.GetProperty("SMOOTH.SORT.ARTIST", "$meta(artist,0) | %album% | %discnumber% | %tracknumber% | %title%");
+ppt.sort_album_artist_tf = window.GetProperty("SMOOTH.SORT.ALBUM.ARTIST", "%album artist% | %album% | %discnumber% | %tracknumber% | %title%");
 
-ppt.panelMode = window.GetProperty("SMOOTH.DISPLAY.MODE", 1); // 0 = column, 1 = column + art, 2 = album art grid, 3 - album art grid + overlay text
+ppt.panelMode = window.GetProperty("SMOOTH.DISPLAY.MODE", 2); // 0 = column, 1 = column + art, 2 = album art grid, 3 - album art grid + overlay text
 ppt.sendto_playlist = window.GetProperty("SMOOTH.SENDTO.PLAYLIST", "Library selection");
 ppt.sendto_playlist_play = window.GetProperty("SMOOTH.SENDTO.PLAYLIST.PLAY", true);
 ppt.showAllItem = window.GetProperty("SMOOTH.SHOW.ALL.ITEMS", true);

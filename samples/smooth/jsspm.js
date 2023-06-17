@@ -24,18 +24,11 @@ function on_drag_drop(action, x, y, mask) {
 			action.Effect = 1;
 		}
 	}
-	g_drag_drop_active = false;
 	brw.repaint();
 }
 
-function on_drag_enter() {
-	g_drag_drop_active = true;
-}
-
 function on_drag_leave() {
-	g_drag_drop_active = false;
 	g_drag_drop_target_id = -1;
-	brw.buttonclicked = false;
 	if (cScrollBar.timerID) {
 		window.ClearInterval(cScrollBar.timerID);
 		cScrollBar.timerID = false;
@@ -396,7 +389,7 @@ function oBrowser() {
 					}
 				}
 
-				if (g_drag_drop_active && i == g_drag_drop_target_id && playlist_can_add_items(i)) {
+				if (i == g_drag_drop_target_id && playlist_can_add_items(i)) {
 					gr.DrawRectangle(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_colour_text & 0xa0ffffff);
 				}
 
@@ -943,7 +936,6 @@ var timers = {
 	movePlaylist: false,
 };
 
-var g_drag_drop_active;
 var g_drag_drop_target_id = -1;
 var brw = new oBrowser();
 

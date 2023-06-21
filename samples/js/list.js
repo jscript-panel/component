@@ -510,7 +510,7 @@ function _list(mode, x, y, w, h) {
 					this.text_x = Math.max(this.text_x, panel.calc_text_width(item.name) + 20);
 				}
 			}, this);
-			fileinfo.Dispose();
+			if (fileinfo) fileinfo.Dispose();
 			break;
 		}
 		this.count = this.data.length;
@@ -730,6 +730,7 @@ function _list(mode, x, y, w, h) {
 			}
 
 			this.add_meta = function (f) {
+				if (!f) return;
 				for (var i = 0; i < f.MetaCount; i++) {
 					var name = f.MetaName(i).toUpperCase();
 					var num = f.MetaValueCount(i);
@@ -776,6 +777,7 @@ function _list(mode, x, y, w, h) {
 			}
 
 			this.add_tech = function (f) {
+				if (!f) return;
 				var duration = utils.FormatDuration(Math.max(0, panel.metadb.Length));
 				this.data.push({
 					name : 'DURATION',

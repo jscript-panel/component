@@ -88,10 +88,13 @@ function _rating(x, y, h, colour) {
 		case 1: // foo_playcount
 			return panel.tf('$if2(%rating%,0)');
 		case 2: // file tag
+			var ret = 0;
 			var f = panel.metadb.GetFileInfo();
-			var idx = f.MetaFind(this.properties.tag.value);
-			var ret = idx > -1 ? f.MetaValue(idx, 0) : 0;
-			f.Dispose();
+			if (f) {
+				var idx = f.MetaFind(this.properties.tag.value);
+				ret = idx > -1 ? f.MetaValue(idx, 0) : 0;
+				f.Dispose();
+			}
 			return ret;
 		default:
 			return 0;

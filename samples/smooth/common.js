@@ -119,13 +119,6 @@ function play(playlist, item) {
 	}
 }
 
-function reset_cover_timers() {
-	if (timers.coverDone) {
-		window.ClearTimeout(timers.coverDone);
-		timers.coverDone = false;
-	}
-}
-
 function generate_filename(cachekey, art_id) {
 	var prefix = art_id == 4 ? "artist" : "front";
 	return CACHE_FOLDER + prefix + cachekey + ".jpg";

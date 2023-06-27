@@ -72,7 +72,6 @@ function on_key_down(vkey) {
 		case VK_UP:
 			if (brw.rows.length > 0 && !brw.keypressed && !cScrollBar.timerID) {
 				brw.keypressed = true;
-				reset_cover_timers();
 
 				vk_up();
 				if (!cScrollBar.timerID) {
@@ -85,7 +84,6 @@ function on_key_down(vkey) {
 		case VK_DOWN:
 			if (brw.rows.length > 0 && !brw.keypressed && !cScrollBar.timerID) {
 				brw.keypressed = true;
-				reset_cover_timers();
 
 				vk_down();
 				if (!cScrollBar.timerID) {
@@ -98,7 +96,6 @@ function on_key_down(vkey) {
 		case VK_PGUP:
 			if (brw.rows.length > 0 && !brw.keypressed && !cScrollBar.timerID) {
 				brw.keypressed = true;
-				reset_cover_timers();
 
 				vk_pgup();
 				if (!cScrollBar.timerID) {
@@ -111,7 +108,6 @@ function on_key_down(vkey) {
 		case VK_PGDN:
 			if (brw.rows.length > 0 && !brw.keypressed && !cScrollBar.timerID) {
 				brw.keypressed = true;
-				reset_cover_timers();
 
 				vk_pgdn();
 				if (!cScrollBar.timerID) {

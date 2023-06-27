@@ -64,10 +64,6 @@ function on_paint(gr) {
 	list.paint(gr);
 }
 
-function on_playback_dynamic_info_track() {
-	panel.item_focus_change();
-}
-
 function on_playback_new_track() {
 	panel.item_focus_change();
 }

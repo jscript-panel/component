@@ -190,11 +190,9 @@ function _thumbs() {
 
 	this.playback_time = function () {
 		this.counter++;
-		if (this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.length == 0) {
-			var np = fb.GetNowPlaying();
-			if (panel.metadb.Path == np.Path && panel.metadb.SubSong == np.SubSong) {
-				this.download();
-			}
+		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.length == 0 && !this.history[this.artist]) {
+			this.history[this.artist] = true;
+			this.download();
 		}
 	}
 
@@ -662,6 +660,7 @@ function _thumbs() {
 	this.images = [];
 	this.thumbs = [];
 	this.files = [];
+	this.history = {}; // track auto-downloads, attempt same artist only once per session
 	this.limits = [1, 3, 5, 10, 15, 20];
 	this.modes = ['grid', 'left', 'right', 'top', 'bottom', 'off'];
 	this.pxs = [75, 100, 150, 200, 250, 300];

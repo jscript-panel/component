@@ -199,17 +199,7 @@ function oBrowser() {
 
 	this.populate = function () {
 		this.groups = [];
-
-		if (utils.Version >= 30107) {
-			this.list = fb.GetLibraryItems(g_filter_text);
-		} else {
-			this.list = fb.GetLibraryItems();
-			if (g_filter_text.length) {
-				try {
-					this.list = this.list.GetQueryItems(g_filter_text);
-				} catch (e) {}
-			}
-		}
+		this.list = fb.GetLibraryItems(g_filter_text);
 
 		if (this.list.Count > 0) {
 			var track_tfs = [];

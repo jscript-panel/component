@@ -1440,8 +1440,8 @@ var g_tf2_pattern = "";
 var ww = 0, wh = 0;
 var mouse_x = 0, mouse_y = 0;
 var need_repaint = false;
-var foo_playcount = CheckComponent("foo_playcount");
-var foo_lastfm_playcount_sync = CheckComponent("foo_lastfm_playcount_sync");
+var foo_playcount = fb.CheckComponent("foo_playcount");
+var foo_lastfm_playcount_sync = fb.CheckComponent("foo_lastfm_playcount_sync");
 var tfos = {};
 var tf_group_key = null;
 

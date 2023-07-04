@@ -488,7 +488,7 @@ function _list(mode, x, y, w, h) {
 		case 'properties_other_info':
 			this.text_x = 0;
 			this.filename = panel.metadb.Path;
-			var fileinfo = panel.metadb.GetFileInfo();
+			var fileinfo = panel.metadb.GetFileInfo(true);
 			if (this.mode == 'properties') {
 				if (this.properties.meta.enabled) {
 					this.add_meta(fileinfo);

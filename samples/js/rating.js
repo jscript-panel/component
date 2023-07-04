@@ -146,6 +146,6 @@ function _rating(x, y, h, colour) {
 	this.rating = 0;
 	this.hrating = 0;
 	this.modes = ['Not Set', 'foo_playcount', 'File Tag'];
-	this.foo_playcount = CheckComponent('foo_playcount');
+	this.foo_playcount = fb.CheckComponent('foo_playcount');
 	window.SetTimeout(this.init, 500);
 }

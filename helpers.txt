@@ -287,12 +287,6 @@ function GetNowPlayingColours() {
 	return [];
 }
 
-// Universal for any version
-function CheckComponent(name) {
-	if ('CheckComponent' in utils) return utils.CheckComponent(name);
-	return fb.CheckComponent(name);
-}
-
 function playlist_can_add_items(playlistIndex) {
 	return !(plman.GetPlaylistLockFilterMask(playlistIndex) & PlaylistLockFilterMask.filter_add);
 }

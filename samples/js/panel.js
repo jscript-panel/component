@@ -106,7 +106,7 @@ function _panel(options) {
 		switch (true) {
 		case idx == 0:
 			break;
-		case idx <= 40:
+		case idx <= 16:
 			this.fonts.size.value = idx;
 			this.font_changed();
 			window.Repaint();

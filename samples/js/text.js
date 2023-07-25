@@ -62,11 +62,18 @@ function _text(mode, x, y, w, h) {
 					window.Repaint(); // title might have changed
 					return;
 				}
+
 				this.filename = temp_filename;
-				if (utils.IsFolder(this.filename)) { // yes really!
-					text = utils.ReadTextFile(_.first(_getFiles(this.filename, this.exts)));
+
+				if (utils.IsFolder(this.filename)) {
+					this.filename = _.first(_getFiles(this.filename, this.exts))
+				}
+
+				if (this.properties.utf8.enabled) {
+					text = utils.ReadUTF8(this.filename);
 				} else {
-					text = utils.ReadTextFile(this.filename);
+					var codepage = utils.DetectCharset(this.filename);
+					text = utils.ReadTextFile(this.filename, codepage);
 				}
 				text = text.replace(/\t/g, '    ');
 				break;
@@ -189,12 +196,18 @@ function _text(mode, x, y, w, h) {
 			panel.m.AppendMenuSeparator();
 			panel.m.AppendMenuItem(MF_STRING, 1302, 'Custom path...');
 			panel.m.AppendMenuSeparator();
-			panel.m.AppendMenuItem(CheckMenuIf(this.properties.fixed.enabled), 1400, 'Fixed width font');
+			panel.m.AppendMenuItem(CheckMenuIf(this.properties.fixed.enabled), 1303, 'Fixed width font');
+			panel.m.AppendMenuSeparator();
+			panel.s10.AppendMenuItem(MF_STRING, 1310, 'UTF8');
+			panel.s10.AppendMenuItem(MF_STRING, 1311, 'Auto-detect');
+			panel.s10.CheckMenuRadioItem(1310, 1311, this.properties.utf8.enabled ? 1310 : 1311);
+			panel.s10.AppendTo(panel.m, MF_STRING, 'Encoding');
+			panel.s10.App
 			panel.m.AppendMenuSeparator();
 			break;
 		}
 		if (this.mode != 'console') {
-			panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.filename) || utils.IsFolder(this.filename)), 1999, 'Open containing folder');
+			panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.filename)), 1999, 'Open containing folder');
 			panel.m.AppendMenuSeparator();
 		}
 	}
@@ -240,17 +253,19 @@ function _text(mode, x, y, w, h) {
 			this.properties.filename_tf.value = utils.InputBox('Use title formatting to specify a path to a text file. eg: $directory_path(%path%)\\info.txt\n\nIf you prefer, you can specify just the path to a folder and the first txt or log file will be used.', window.Name, this.properties.filename_tf.value);
 			panel.item_focus_change();
 			break;
-		case 1400:
+		case 1303:
 			this.properties.fixed.toggle();
 			this.reset();
 			panel.item_focus_change();
 			break;
+		case 1310:
+		case 1311:
+			this.properties.utf8.enabled = idx == 1310;
+			this.reset();
+			panel.item_focus_change();
+			break;
 		case 1999:
-			if (utils.IsFile(this.filename)) {
-				_explorer(this.filename);
-			} else {
-				utils.Run(this.filename);
-			}
+			_explorer(this.filename);
 			break;
 		}
 	}
@@ -402,6 +417,7 @@ function _text(mode, x, y, w, h) {
 			this.properties.title_tf = new _p('2K3.TEXT.TITLE.TF', '%artist% - %title%');
 			this.properties.filename_tf = new _p('2K3.TEXT.FILENAME.TF', '$directory_path(%path%)');
 			this.properties.fixed = new _p('2K3.TEXT.FONTS.FIXED', true);
+			this.properties.utf8 = new _p('2K3.TEXT.UTF8', true);
 			this.exts = ['txt', 'log'];
 			break;
 		}

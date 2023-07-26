@@ -10,7 +10,7 @@ function _text(mode, x, y, w, h) {
 
 	this.paint = function (gr) {
 		if (!this.text_layout) return;
-		gr.WriteTextLayout(this.text_layout, panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
+		gr.WriteTextLayout(this.text_layout, this.style_string.length ? this.style_string : panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
 		this.up_btn.paint(gr, panel.colours.text);
 		this.down_btn.paint(gr, panel.colours.text);
 	}
@@ -178,6 +178,8 @@ function _text(mode, x, y, w, h) {
 		case 'console':
 			panel.m.AppendMenuItem(MF_STRING, 1010, 'Clear');
 			panel.m.AppendMenuSeparator();
+			panel.m.AppendMenuItem(CheckMenuIf(this.properties.timestamp.enabled), 1011, 'Show timestamp');
+			panel.m.AppendMenuSeparator();
 			break;
 		case 'lastfm_bio':
 			panel.m.AppendMenuItem(EnableMenuIf(panel.metadb), 1100, 'Force update');
@@ -221,6 +223,11 @@ function _text(mode, x, y, w, h) {
 			break;
 		case 1010:
 			console.ClearBacklog();
+			break;
+		case 1011:
+			this.properties.timestamp.toggle();
+			this.console_refresh();
+			window.Repaint();
 			break;
 		case 1100:
 			this.get();
@@ -381,18 +388,40 @@ function _text(mode, x, y, w, h) {
 		case 'console':
 			this.console_refresh = function () {
 				this.clear_layout();
-				var lines = _(console.GetLines().toArray())
+				var lines = _(console.GetLines(this.properties.timestamp.enabled).toArray())
 					.filter(function (item) {
-						return item.indexOf("Using decoder shim") == -1;
+						return item.indexOf('Using decoder shim') == -1;
 					})
 					.takeRight(100)
 					.value();
-				var text = lines.join('\n');
-				if (text.length) {
+				if (lines.length > 0) {
+					var text = lines.join('\n');
+					var styles = [];
+					styles.push({
+						'Start' : 0,
+						'Length' : text.length,
+						'Colour' : panel.colours.text,
+					});
+					if (this.properties.timestamp.enabled && panel.colours.text != panel.colours.highlight) {
+						var start = 0;
+						for (var i = 0; i < lines.length; i++) {
+							if (line > 0) continue;
+							var line = lines[i];
+							styles.push({
+								'Start' : start,
+								'Length' : 23,
+								'Colour' : panel.colours.highlight,
+							});
+							start += line.length + 1;
+						}
+					}
+					this.style_string = JSON.stringify(styles);
 					this.text_layout = utils.CreateTextLayout(text, panel.fonts.name, _scale(panel.fonts.size.value));
-					this.update();
 				}
+				this.update();
 			}
+
+			this.properties.timestamp = new _p('2K3.TEXT.CONSOLE.TIMESTAMP', false);
 			break;
 		case 'lastfm_bio':
 			this.get = function () {
@@ -441,6 +470,7 @@ function _text(mode, x, y, w, h) {
 	this.album = '';
 	this.filename = '';
 	this.filenames = {};
+	this.style_string = '';
 	this.up_btn = new _sb(chars.up, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset < 0; }, this), _.bind(function () { this.wheel(1); }, this));
 	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset > this.ha - this.text_height; }, this), _.bind(function () { this.wheel(-1); }, this));
 	this.properties = {};

@@ -505,15 +505,15 @@ function oList(object_name) {
 	this.initGroupBy = function () {
 		this.groupby = [];
 
-		var ref = window.GetProperty("JSPLAYLIST.GROUPBY2.ref" , "Album^^Custom").split("^^");
-		var label = window.GetProperty("JSPLAYLIST.GROUPBY2.label" , "Album Artist | Album | Disc^^Folder Structure").split("^^");
-		var tf = window.GetProperty("JSPLAYLIST.GROUPBY2.tf" , "%album artist%%album%%discnumber%^^$replace(%path%,%filename_ext%,)").split("^^");
-		var expandedHeight = window.GetProperty("JSPLAYLIST.GROUPBY2.expandedHeight" , "3^^3").split("^^");
-		var showCover = window.GetProperty("JSPLAYLIST.GROUPBY2.showCover" , "1^^1").split("^^");
-		var l1 = window.GetProperty("JSPLAYLIST.GROUPBY2.l1" , "$if(%album%,%album% ['('Disc %discnumber% of %totaldiscs%')'],)^^$directory(%path%,1)").split("^^");
-		var r1 = window.GetProperty("JSPLAYLIST.GROUPBY2.r1" , "[%date%]^^[%date%]").split("^^");
-		var l2 = window.GetProperty("JSPLAYLIST.GROUPBY2.l2" , "$if(%length%,%album artist%,Stream)^^$directory(%path%,2)").split("^^");
-		var r2 = window.GetProperty("JSPLAYLIST.GROUPBY2.r2" , "$if2(%genre%,Other)^^$if2(%genre%,Other)").split("^^");
+		var ref = window.GetProperty("JSPLAYLIST.GROUPBY2.ref", "Album^^Custom").split("^^");
+		var label = window.GetProperty("JSPLAYLIST.GROUPBY2.label", "Album Artist | Album | Disc^^Folder Structure").split("^^");
+		var tf = window.GetProperty("JSPLAYLIST.GROUPBY2.tf", "%album artist%%album%%discnumber%^^$replace(%path%,%filename_ext%,)").split("^^");
+		var expandedHeight = window.GetProperty("JSPLAYLIST.GROUPBY2.expandedHeight", "3^^3").split("^^");
+		var showCover = window.GetProperty("JSPLAYLIST.GROUPBY2.showCover", "1^^1").split("^^");
+		var l1 = window.GetProperty("JSPLAYLIST.GROUPBY2.l1", "$if(%album%,%album% ['('Disc %discnumber% of %totaldiscs%')'],)^^$directory(%path%,1)").split("^^");
+		var r1 = window.GetProperty("JSPLAYLIST.GROUPBY2.r1", "[%date%]^^[%date%]").split("^^");
+		var l2 = window.GetProperty("JSPLAYLIST.GROUPBY2.l2", "$if(%length%,%album artist%,Stream)^^$directory(%path%,2)").split("^^");
+		var r2 = window.GetProperty("JSPLAYLIST.GROUPBY2.r2", "$if2(%genre%,Other)^^$if2(%genre%,Other)").split("^^");
 
 		this.totalGroupBy = ref.length;
 		for (var i = 0; i < this.totalGroupBy; i++) {
@@ -1094,7 +1094,7 @@ function oList(object_name) {
 			menu.AppendMenuSeparator();
 			menu.AppendMenuItem(can_remove_flag, 13, "Cut");
 			menu.AppendMenuItem(MF_STRING, 14, "Copy");
-			menu.AppendMenuItem(can_paste_flag , 15, "Paste");
+			menu.AppendMenuItem(can_paste_flag, 15, "Paste");
 			menu.AppendMenuSeparator();
 			context.InitContextPlaylist();
 			context.BuildMenu(menu, 1000);

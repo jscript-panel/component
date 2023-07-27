@@ -38,7 +38,7 @@ function _albumart(x, y, w, h) {
 			}
 			this.properties.id.value = id;
 			_tt('');
-			panel.item_focus_change();
+			this.metadb_changed();
 			return true;
 		}
 		return false;
@@ -116,7 +116,7 @@ function _albumart(x, y, w, h) {
 	this.rbtn_up_done = function (idx) {
 		switch (idx) {
 		case 1000:
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1010:
 		case 1011:
@@ -124,7 +124,7 @@ function _albumart(x, y, w, h) {
 		case 1013:
 		case 1014:
 			this.properties.id.value = idx - 1010;
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1020:
 		case 1021:

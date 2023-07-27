@@ -80,7 +80,7 @@ function _rating(x, y, h, colour) {
 			break;
 		}
 		this.w = this.h * this.get_max();
-		panel.item_focus_change();
+		this.metadb_changed();
 	}
 
 	this.get_rating = function () {

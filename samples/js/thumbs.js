@@ -408,12 +408,12 @@ function _thumbs() {
 			this.properties.source.value = idx - 1000;
 			this.artist = '';
 			this.folder = '';
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1002:
 			this.properties.tf.value = utils.InputBox('Enter title formatting or an absolute path to a folder.\n\nYou can specify multiple folders by using | as a separator.', window.Name, this.properties.tf.value);
 			this.folder = '';
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1003:
 			this.download();

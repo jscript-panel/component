@@ -117,8 +117,8 @@ function _list(mode, x, y, w, h) {
 	}
 
 	this.playback_new_track = function () {;
-		panel.item_focus_change();
 		this.time_elapsed = 0;
+		panel.item_focus_change();
 	}
 
 	this.playback_time = function () {
@@ -307,15 +307,15 @@ function _list(mode, x, y, w, h) {
 			break;
 		case 1300:
 			this.properties.meta.toggle();
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1301:
 			this.properties.location.toggle();
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1302:
 			this.properties.tech.toggle();
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1999:
 			_explorer(this.filename);
@@ -544,7 +544,7 @@ function _list(mode, x, y, w, h) {
 		this.count = 0;
 		this.data = [];
 		this.artist = '';
-		panel.item_focus_change();
+		this.metadb_changed();
 	}
 
 	this.init = function () {

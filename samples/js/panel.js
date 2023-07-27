@@ -24,9 +24,9 @@ function _panel(options) {
 		this.fonts.normal = JSON.stringify({Name:this.fonts.name,Size:_scale(this.fonts.size.value)});
 		this.fonts.title = JSON.stringify({Name:this.fonts.name,Size:_scale(this.fonts.size.value),Weight:DWRITE_FONT_WEIGHT_BOLD});
 		this.row_height = _scale(this.fonts.size.value + 4);
+		_.invoke(this.text_objects, 'font_changed');
 		_.invoke(this.list_objects, 'size', true);
-		_.invoke(this.text_objects, 'update', true);
-		_.invoke(this.display_objects, 'refresh' , true);
+		_.invoke(this.display_objects, 'refresh', true);
 	}
 
 	this.draw_header = function (gr, text) {

@@ -8,6 +8,15 @@ function _text(mode, x, y, w, h) {
 		this.update();
 	}
 
+	this.font_changed = function () {
+		if (this.mode == 'console') {
+			this.console_refresh();
+		} else {
+			this.reset();
+			this.metadb_changed();
+		}
+	}
+
 	this.paint = function (gr) {
 		if (!this.text_layout) return;
 		gr.WriteTextLayout(this.text_layout, this.style_string.length ? this.style_string : panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
@@ -16,6 +25,8 @@ function _text(mode, x, y, w, h) {
 	}
 
 	this.metadb_changed = function () {
+		if (this.mode == 'console') return;
+
 		if (panel.metadb) {
 			var text = '';
 
@@ -101,33 +112,18 @@ function _text(mode, x, y, w, h) {
 		}
 	}
 
-	this.update = function (force) {
-		this.text_height = 0;
+	this.update = function () {
+		if (!this.text_layout) {
+			this.text_height = 0;
+			return;
+		}
+
+		this.text_height = this.text_layout.CalcTextHeight(this.w);
 		this.scroll_step = _scale(panel.fonts.size.value) * 4;
 
-		if (this.mode == 'console') {
-			if (force) {
-				this.console_refresh();
-			} else {
-				if (!this.text_layout) return;
-				this.text_height = this.text_layout.CalcTextHeight(this.w);
-				if (this.text_height > this.ha) {
-					this.offset = -(this.text_height - this.ha);
-				} else {
-					this.offset = 0;
-				}
-			}
-		} else {
-			if (force) {
-				this.reset();
-				panel.item_focus_change();
-			} else {
-				if (!this.text_layout) return;
-				this.text_height = this.text_layout.CalcTextHeight(this.w);
-				if (this.text_height < this.ha) this.offset = 0;
-				else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
-			}
-		}
+		if (this.text_height < this.ha) this.offset = 0;
+		else if (this.mode == 'console') this.offset = -(this.text_height - this.ha);
+		else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
 	}
 
 	this.containsXY = function (x, y) {
@@ -219,7 +215,7 @@ function _text(mode, x, y, w, h) {
 		case 1000:
 			_save(this.filename, this.cb);
 			this.artist = '';
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1010:
 			console.ClearBacklog();
@@ -246,11 +242,11 @@ function _text(mode, x, y, w, h) {
 		case 1121:
 			this.properties.lang.value = idx - 1110;
 			this.artist = '';
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1300:
 			this.filename = '';
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1301:
 			this.properties.title_tf.value = utils.InputBox('You can use full title formatting here.', window.Name, this.properties.title_tf.value);
@@ -258,18 +254,18 @@ function _text(mode, x, y, w, h) {
 			break;
 		case 1302:
 			this.properties.filename_tf.value = utils.InputBox('Use title formatting to specify a path to a text file. eg: $directory_path(%path%)\\info.txt\n\nIf you prefer, you can specify just the path to a folder and the first txt or log file will be used.', window.Name, this.properties.filename_tf.value);
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1303:
 			this.properties.fixed.toggle();
 			this.reset();
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1310:
 		case 1311:
 			this.properties.utf8.enabled = idx == 1310;
 			this.reset();
-			panel.item_focus_change();
+			this.metadb_changed();
 			break;
 		case 1999:
 			_explorer(this.filename);

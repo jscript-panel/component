@@ -19,7 +19,7 @@ function _text(mode, x, y, w, h) {
 
 	this.paint = function (gr) {
 		if (!this.text_layout) return;
-		gr.WriteTextLayout(this.text_layout, this.style_string.length ? this.style_string : panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
+		gr.WriteTextLayout(this.text_layout, this.style_string || panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
 		this.up_btn.paint(gr, panel.colours.text);
 		this.down_btn.paint(gr, panel.colours.text);
 	}
@@ -214,7 +214,7 @@ function _text(mode, x, y, w, h) {
 		switch (idx) {
 		case 1000:
 			_save(this.filename, this.cb);
-			this.artist = '';
+			this.reset();
 			this.metadb_changed();
 			break;
 		case 1010:
@@ -241,11 +241,11 @@ function _text(mode, x, y, w, h) {
 		case 1120:
 		case 1121:
 			this.properties.lang.value = idx - 1110;
-			this.artist = '';
+			this.reset();
 			this.metadb_changed();
 			break;
 		case 1300:
-			this.filename = '';
+			this.reset();
 			this.metadb_changed();
 			break;
 		case 1301:
@@ -333,7 +333,7 @@ function _text(mode, x, y, w, h) {
 						.value();
 					console.log(N, content.length ? 'A review was found and saved.' : 'No review was found on the page for this album.');
 					if (_save(f, content)) {
-						this.artist = '';
+						this.reset();
 						panel.item_focus_change();
 					}
 				} else {
@@ -384,6 +384,7 @@ function _text(mode, x, y, w, h) {
 		case 'console':
 			this.console_refresh = function () {
 				this.clear_layout();
+				this.style_string = '';
 				var lines = _(console.GetLines(this.properties.timestamp.enabled).toArray())
 					.filter(function (item) {
 						return item.indexOf('Using decoder shim') == -1;
@@ -391,27 +392,30 @@ function _text(mode, x, y, w, h) {
 					.takeRight(100)
 					.value();
 				if (lines.length > 0) {
-					var text = lines.join('\n');
-					var styles = [];
-					styles.push({
-						'Start' : 0,
-						'Length' : text.length,
-						'Colour' : panel.colours.text,
-					});
+					var CRLF = '\r\n';
+					var text = lines.join(CRLF);
+
 					if (this.properties.timestamp.enabled && panel.colours.text != panel.colours.highlight) {
+						var styles = [];
+						styles.push({
+							'Start' : 0,
+							'Length' : text.length,
+							'Colour' : panel.colours.text,
+						});
+
 						var start = 0;
 						for (var i = 0; i < lines.length; i++) {
-							if (line > 0) continue;
 							var line = lines[i];
 							styles.push({
 								'Start' : start,
 								'Length' : 23,
 								'Colour' : panel.colours.highlight,
 							});
-							start += line.length + 1;
+							start += line.length + CRLF.length;
 						}
+						this.style_string = JSON.stringify(styles);
 					}
-					this.style_string = JSON.stringify(styles);
+
 					this.text_layout = utils.CreateTextLayout(text, panel.fonts.name, _scale(panel.fonts.size.value));
 				}
 				this.update();
@@ -430,7 +434,7 @@ function _text(mode, x, y, w, h) {
 
 			this.download_file_done = function (path, success, error_text) {
 				if (!success) return console.log(N, error_text);
-				this.artist = '';
+				this.reset();
 				panel.item_focus_change();
 			}
 

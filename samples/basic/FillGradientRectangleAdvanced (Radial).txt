@@ -5,9 +5,9 @@
 // ==/PREPROCESSOR==
 
 var brush = {
-	centre : [0, 0], // x and y values
-	radius : [0, 0], // x and y values
-	stops: [
+	Centre : [0, 0], // x and y values
+	Radius : [0, 0], // x and y values
+	Stops: [
 		[ 0.0, RGB(227, 9, 64) ],
 		[ 0.33, RGB(231, 215, 2) ],
 		[ 0.66, RGB(15, 168, 149) ],
@@ -16,8 +16,8 @@ var brush = {
 };
 
 function on_paint(gr) {
-	brush.centre = [window.Width / 2, window.Height / 2];
-	brush.radius = [window.Width / 2, window.Height / 2];
+	brush.Centre = [window.Width / 2, window.Height / 2];
+	brush.Radius = [window.Width / 2, window.Height / 2];
 	var str = JSON.stringify(brush);
 	gr.FillGradientRectangleAdvanced(0, 0, window.Width, window.Height, str);
 }

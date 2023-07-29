@@ -9,7 +9,7 @@ var text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eius
 var layout = null;
 var offset = 0;
 var text_height = 0;
-var style_string = '';
+var colour_string = '';
 
 // split text in to whole words for styling
 var words = text.split(' ');
@@ -17,12 +17,14 @@ var words = text.split(' ');
 refresh();
 
 function refresh() {
-	var styles = [];
+	var fonts = [];
+	var colours = [];
 	var start = 0;
 	words.forEach(function(item, i) {
 		var len = item.length + 1;
-		styles.push({
-			// When using an array of styles, Start and Length are mandatory
+
+		fonts.push({
+			// When using an array of fonts, Start and Length are mandatory
 			Start : start,
 			Length : len,
 			// The following are all optional and may be omitted.
@@ -32,20 +34,24 @@ function refresh() {
 			Weight : Math.round(Math.random() * 800) + 100, // values between 100-900
 			Underline : Math.random() < 0.1,
 			Strikethrough : Math.random() < 0.1,
+		});
+
+		colours.push({
+			// When using an array of colours, Start and Length are mandatory
+			Start : start,
+			Length : len,
 			Colour : RGB(Math.random() * 200, Math.random() * 200, Math.random() * 200),
 		});
+
 		start += len;
 	});
 
-	/*
-	CreateTextLayout2 can't do anything with the Colour property
-	so it will be silently igmored
+	// Stringify the fonts and create the text layout
+	var font_string = JSON.stringify(fonts);
+	layout = utils.CreateTextLayout2(text, font_string);
 
-	We can can pass the same stringified styles array to gr.WriteTextLayout
-	inside on_paint where the colours will be used.
-	*/
-	style_string = JSON.stringify(styles);
-	layout = utils.CreateTextLayout2(text, style_string);
+	// Stringify the colours. This is passed to WriteTextLayout inside on_paint
+	colour_string = JSON.stringify(colours);
 }
 
 var box = {
@@ -63,10 +69,10 @@ function on_paint(gr) {
 	The 2nd arg of gr.WriteTextLayout is the colour which can be a
 	number if you want the same colour for the whole range of text.
 
-	In this example, we're using the stringified styles array created in the
-	refresh method above. The font properties will be ignored.
+	In this example, we're using the stringified colours array created in the
+	refresh method above.
 	*/
-	gr.WriteTextLayout(layout, style_string, box.x, box.y, box.w, box.h, offset);
+	gr.WriteTextLayout(layout, colour_string, box.x, box.y, box.w, box.h, offset);
 }
 
 function on_mouse_wheel(step) {

@@ -48,7 +48,7 @@ function on_mouse_wheel(s) {
 }
 
 function on_paint(gr) {
-	gr.FillRectangle(0, 0, panel.w, panel.h, RGB(0, 0, 0));
+	gr.Clear(RGB(0, 0, 0));
 	seekbar.paint(gr);
 }
 

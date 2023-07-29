@@ -98,7 +98,7 @@ function on_mouse_rbtn_up(x, y) {
 }
 
 function on_paint(gr) {
-	gr.FillRectangle(0, 0, panel.w, panel.h, colours.background);
+	gr.Clear(colours.background);
 	buttons.paint(gr);
 }
 

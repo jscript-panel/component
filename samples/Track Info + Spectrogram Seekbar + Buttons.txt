@@ -173,7 +173,7 @@ function on_mouse_wheel(s) {
 }
 
 function on_paint(gr) {
-	gr.FillRectangle(0, 0, panel.w, panel.h, colours.background);
+	gr.Clear(colours.background);
 	gr.FillRectangle(seekbar.x, seekbar.y, seekbar.w, seekbar.h, colours.seekbar_background);
 	seekbar.paint(gr);
 	DrawRectangle(gr, seekbar.x, seekbar.y, seekbar.w, seekbar.h, seekbar.properties.marker_colour.value);

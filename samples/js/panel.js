@@ -56,7 +56,7 @@ function _panel(options) {
 			var col = this.colours.custom_background.value;
 			break;
 		}
-		gr.FillRectangle(0, 0, this.w, this.h, col);
+		gr.Clear(col);
 	}
 
 	this.rbtn_up = function (x, y, object) {

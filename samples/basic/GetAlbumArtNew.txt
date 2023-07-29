@@ -53,7 +53,7 @@ function on_mouse_move(x, y) {
 
 function on_paint(gr) {
 	var bg = window.IsDefaultUI ? window.GetColourDUI(1) : window.GetColourCUI(3);
-	gr.FillRectangle(0, 0, ww, wh, bg);
+	gr.Clear(bg);
 	if (g_img) {
 		// Keep aspect ratio
 		var scale_w = ww / g_img.Width;

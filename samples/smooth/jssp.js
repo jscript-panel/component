@@ -311,7 +311,7 @@ function on_mouse_wheel(step) {
 }
 
 function on_paint(gr) {
-	gr.FillRectangle(0, 0, ww, wh, g_colour_background);
+	gr.Clear(g_colour_background);
 	if (ppt.wallpapermode && g_wallpaperImg) {
 		drawImage(gr, g_wallpaperImg, brw.x, brw.y, brw.w, brw.h, true, null, ppt.wallpaperopacity);
 	}

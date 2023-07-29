@@ -105,7 +105,7 @@ function on_paint(gr) {
 	if (ww < 10 || wh < 10)
 		return;
 
-	gr.FillRectangle(0, 0, ww, wh, g_colour_background);
+	gr.Clear(g_colour_background);
 	brw.draw(gr);
 
 	if (ppt.showHeaderBar) {

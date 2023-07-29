@@ -39,7 +39,7 @@ var box = {
 }
 
 function on_paint(gr) {
-	gr.FillRectangle(0, 0, window.Width, window.height, RGB(255, 255, 255));
+	gr.Clear(RGB(255, 255, 255));
 	gr.DrawRectangle(box.x, box.y, box.w, box.h, 1, RGB(255, 0, 0));
 	gr.WriteTextLayout(layout, colour_string, box.x, box.y, box.w, box.h, offset);
 }

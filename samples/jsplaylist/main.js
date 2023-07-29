@@ -740,7 +740,7 @@ function on_paint(gr) {
 	if (cSettings.visible) {
 		p.settings && p.settings.draw(gr);
 	} else {
-		gr.FillRectangle(0, 0, ww, wh, g_colour_background);
+		gr.Clear(g_colour_background);
 		if (fb.IsPlaying && properties.showwallpaper && images.wallpaper) {
 			DrawWallpaper(gr);
 		}

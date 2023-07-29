@@ -56,7 +56,7 @@ function make_square(img, size) {
 }
 
 function on_paint(gr) {
-	gr.FillRectangle(0, 0, window.Width, window.Height, RGB(255, 0, 0));
+	gr.Clear(RGB(255, 0, 0));
 	// original image as-is
 	gr.DrawImage(img, 0, 0, img.Width, img.Height, 0, 0, img.Width, img.Height);
 	// squared image, no mask

@@ -1353,7 +1353,7 @@ function get_colours() {
 
 		// check g_theme to make sure window.CreateThemeManager didn't return null
 		// window.IsThemed is a new boolean property for 3.2.11 and later, undefined for previous versions
-		g_themed = g_theme && window.IsThemed; 
+		g_themed = g_theme && window.IsThemed;
 		if (g_themed) {
 			g_theme.SetPartAndStateID(6, 12);
 			g_colour_selected_text = utils.GetSysColour(COLOR_WINDOWTEXT);

@@ -68,14 +68,10 @@ function on_mouse_rbtn_up(x, y) {
 		sub.AppendTo(menu, MF_STRING, 'Now playing');
 		menu.AppendMenuSeparator();
 	}
-	menu.AppendMenuItem(MF_STRING, 10000, 'Show playlist name');
-	menu.CheckMenuItem(10000, properties.name.enabled);
-	menu.AppendMenuItem(MF_STRING, 10001, 'Show playlist item count');
-	menu.CheckMenuItem(10001, properties.count.enabled);
-	menu.AppendMenuItem(MF_STRING, 10002, 'Show playlist duration');
-	menu.CheckMenuItem(10002, properties.duration.enabled);
-	menu.AppendMenuItem(MF_STRING, 10003, 'Show playlist size');
-	menu.CheckMenuItem(10003, properties.size.enabled);
+	menu.AppendMenuItem(CheckMenuIf(properties.name.enabled), 10000, 'Show playlist name');
+	menu.AppendMenuItem(CheckMenuIf(properties.count.enabled), 10001, 'Show playlist item count');
+	menu.AppendMenuItem(CheckMenuIf(properties.duration.enabled), 10002, 'Show playlist duration');
+	menu.AppendMenuItem(CheckMenuIf(properties.size.enabled), 10003, 'Show playlist size');
 	menu.AppendMenuSeparator();
 	colour_menu.AppendMenuItem(MF_STRING, 10004, 'Background...');
 	colour_menu.AppendMenuItem(MF_STRING, 10005, 'Text...');

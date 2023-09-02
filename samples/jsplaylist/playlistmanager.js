@@ -171,14 +171,6 @@ function oPlaylistManager() {
 		}
 
 		gr.FillRectangle(this.x - this.woffset + this.border, this.y + ch - 2, this.w - this.border, 1, g_colour_text & 0x30ffffff);
-		// draw flashing header on lbtn_up after a drag'n drop
-		if (cPlaylistManager.blink_counter > -1) {
-			if (cPlaylistManager.blink_id == -1) {
-				if (cPlaylistManager.blink_counter <= 5 && Math.floor(cPlaylistManager.blink_counter / 2) == Math.ceil(cPlaylistManager.blink_counter / 2)) {
-					gr.DrawRectangle(this.x - this.woffset + this.border + 1, this.y + 1, this.w - this.border - 2, ch - 3, 2, g_colour_text);
-				}
-			}
-		}
 
 		cx = this.x - this.woffset + this.border;
 		for (var i = this.offset; i < this.playlists.length; i++) {
@@ -206,15 +198,6 @@ function oPlaylistManager() {
 				gr.DrawRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, 2, g_colour_text);
 			}
 
-			// draw flashing item on lbtn_up after a drag'n drop
-			if (cPlaylistManager.blink_counter > -1) {
-				if (i == cPlaylistManager.blink_id) {
-					if (cPlaylistManager.blink_counter <= 5 && Math.floor(cPlaylistManager.blink_counter / 2) == Math.ceil(cPlaylistManager.blink_counter / 2)) {
-						gr.DrawRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 3, ch - 3, 2, txt_color);
-					}
-				}
-			}
-
 			gr.WriteText(plman.IsPlaylistLocked(this.playlists[i].idx) ? chars.lock : chars.list, g_font_awesome_20, txt_color, cx, cy, ch, ch, 2, 2);
 
 			// draw INPUTBOX if rename requested
@@ -234,7 +217,7 @@ function oPlaylistManager() {
 			}
 
 			// draw "drag destination bar" on dragging playlist item
-			if (this.ishoverItem && !cPlaylistManager.vscroll_timeout) {
+			if (this.ishoverItem) {
 				if (cPlaylistManager.drag_target_id != this.rowTotal && cPlaylistManager.drag_target_id == i) {
 					if (cPlaylistManager.drag_target_id > cPlaylistManager.drag_source_id) {
 						gr.DrawRectangle(cx + 1, cy + cPlaylistManager.rowHeight, this.w - this.border - this.scrollbarWidth - 2, 1, 2, txt_color);
@@ -311,8 +294,6 @@ function oPlaylistManager() {
 				if (cPlaylistManager.visible) {
 					// prepare drag item to reorder list
 					cPlaylistManager.drag_clicked = true;
-					cPlaylistManager.drag_x = x;
-					cPlaylistManager.drag_y = y;
 					cPlaylistManager.drag_source_id = this.hoverId;
 				}
 			} else if (this.scrollbar.visible) {
@@ -405,8 +386,6 @@ function oPlaylistManager() {
 			cPlaylistManager.drag_moved = false;
 			cPlaylistManager.drag_source_id = -1;
 			cPlaylistManager.drag_target_id = -1;
-			cPlaylistManager.drag_x = -1;
-			cPlaylistManager.drag_y = -1;
 			break;
 		case "drag_over":
 			g_drag_drop_playlist_id = this.hoverId;
@@ -439,11 +418,6 @@ function oPlaylistManager() {
 
 					if (cPlaylistManager.drag_clicked) {
 						cPlaylistManager.drag_moved = true;
-					} else {
-						if (cPlaylistManager.drag_move_timeout) {
-							cPlaylistManager.drag_move_timeout = false;
-							window.ClearTimeout(cPlaylistManager.drag_move_timeout);
-						}
 					}
 				}
 			}

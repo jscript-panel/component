@@ -939,14 +939,6 @@ function on_size() {
 
 	if (!g_init_on_size) {
 		update_playlist();
-		if (cPlaylistManager.visible_on_launch) {
-			if (!cPlaylistManager.init_timeout) {
-				cPlaylistManager.init_timeout = window.SetTimeout(function () {
-					cPlaylistManager.init_timeout = false;
-					togglePlaylistManager();
-				}, 150);
-			}
-		}
 		g_init_on_size = true;
 	}
 }
@@ -1102,7 +1094,6 @@ function togglePlaylistManager() {
 				if (p.playlistManager.woffset <= 0) {
 					p.playlistManager.woffset = 0;
 					cPlaylistManager.visible = false;
-					window.SetProperty("JSPLAYLIST.PlaylistManager.Visible", cPlaylistManager.visible);
 					p.headerBar.button.update(p.headerBar.slide_open, p.headerBar.slide_open, p.headerBar.slide_open);
 					full_repaint();
 					window.ClearInterval(cPlaylistManager.hscroll_interval);
@@ -1116,7 +1107,6 @@ function togglePlaylistManager() {
 				if (p.playlistManager.woffset >= cPlaylistManager.width) {
 					p.playlistManager.woffset = cPlaylistManager.width;
 					cPlaylistManager.visible = true;
-					window.SetProperty("JSPLAYLIST.PlaylistManager.Visible", cPlaylistManager.visible);
 					p.headerBar.button.update(p.headerBar.slide_close, p.headerBar.slide_close, p.headerBar.slide_close);
 					full_repaint();
 					window.ClearInterval(cPlaylistManager.hscroll_interval);
@@ -1202,7 +1192,6 @@ function resize_panels() {
 	p.settings.setSize(0, 0, ww, wh);
 
 	// set Size of PlaylistManager
-	cPlaylistManager.visible_on_launch = cPlaylistManager.visible;
 	if (cPlaylistManager.visible) {
 		cPlaylistManager.visible = g_init_on_size;
 		p.playlistManager.woffset = g_init_on_size ? 0 : cPlaylistManager.width;
@@ -1505,26 +1494,16 @@ var cPlaylistManager = {
 	showStatusBar : true,
 	statusBarHeight : 18,
 	step : 50,
-	visible : window.GetProperty("JSPLAYLIST.PlaylistManager.Visible", false),
-	visible_on_launch : false,
-	drag_move_timeout : false,
+	visible : false,
 	hscroll_interval : false,
-	vscroll_interval : false,
-	vscroll_timeout : false,
-	blink_interval : false,
-	blink_counter : -1,
-	blink_id : null,
 	drag_clicked : false,
 	drag_moved : false,
 	drag_target_id : -1,
 	drag_source_id : -1,
-	drag_x : -1,
-	drag_y : -1,
 	drag_dropped : false,
 	rightClickedId : null,
 	init_timeout : false,
 	inputbox_timeout : false,
-	sortPlaylists_timer : false
 };
 
 var cTopBar = {

@@ -989,14 +989,6 @@ function oList(object_name) {
 				window.ClearInterval(cList.interval);
 				cList.interval = false;
 			}
-			if (cPlaylistManager.vscroll_interval) {
-				window.ClearInterval(cPlaylistManager.vscroll_interval);
-				cPlaylistManager.vscroll_interval = false;
-			}
-			if (cPlaylistManager.vscroll_timeout) {
-				window.ClearTimeout(cPlaylistManager.vscroll_timeout);
-				cPlaylistManager.vscroll_timeout = false;
-			}
 			if (this.mclicked) {
 				window.SetCursor(IDC_ARROW);
 				this.mclicked = false;

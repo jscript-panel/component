@@ -28,6 +28,7 @@ function on_font_changed() {
 }
 
 function on_item_focus_change() {
+	if (panel.selection.value == 0 && fb.IsPlaying) return;
 	panel.item_focus_change();
 }
 
@@ -91,7 +92,7 @@ function on_playlist_items_reordered() {
 }
 
 function on_playlist_switch() {
-	panel.item_focus_change();
+	on_item_focus_change();
 }
 
 function on_size() {

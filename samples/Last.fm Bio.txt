@@ -32,6 +32,7 @@ function on_font_changed() {
 }
 
 function on_item_focus_change() {
+	if (panel.selection.value == 0 && fb.IsPlaying) return;
 	panel.item_focus_change();
 }
 
@@ -66,7 +67,7 @@ function on_paint(gr) {
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 0) panel.item_focus_change();
+	if (type == 0) text.metadb_changed();
 }
 
 function on_playback_new_track() {
@@ -80,7 +81,7 @@ function on_playback_stop(reason) {
 }
 
 function on_playlist_switch() {
-	panel.item_focus_change();
+	on_item_focus_change();
 }
 
 function on_size() {

@@ -19,6 +19,7 @@ function on_colours_changed() {
 }
 
 function on_item_focus_change() {
+	if (panel.selection.value == 0 && fb.IsPlaying) return;
 	panel.item_focus_change();
 }
 
@@ -58,7 +59,7 @@ function on_playback_stop(reason) {
 }
 
 function on_playlist_switch() {
-	panel.item_focus_change();
+	on_item_focus_change();
 }
 
 function on_size() {

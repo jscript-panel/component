@@ -75,8 +75,8 @@ function on_size() {
 
 // get notified of album art changes when listening to a supported stream
 function on_playback_dynamic_info_track(type) {
-	if (type == 1) update_album_art();
 	// type 0 is metadata which we're not interested in
+	if (type == 1) update_album_art();
 }
 
 function on_playback_new_track() {

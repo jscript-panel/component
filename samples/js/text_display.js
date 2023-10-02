@@ -148,6 +148,7 @@ function _text_display(x, y, w, h) {
 		panel.s11.AppendTo(panel.m, MF_STRING, 'Vertical alignment');
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1230, 'Album art background');
+		panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1231, 'Enable blur effect');
 		panel.m.AppendMenuSeparator();
 	}
 
@@ -184,6 +185,10 @@ function _text_display(x, y, w, h) {
 			this.properties.albumart.toggle();
 			this.refresh(true);
 			break;
+		case 1231:
+			this.properties.albumart_blur.toggle();
+			albumart.metadb_changed();
+			break;
 		}
 	}
 
@@ -211,5 +216,6 @@ function _text_display(x, y, w, h) {
 		valign : new _p('2K3.TEXT.VALIGN', 2),
 		per_second : new _p('2K3.TEXT.PER.SECOND', false),
 		albumart : new _p('2K3.TEXT.ALBUMART', false),
+		albumart_blur : new _p('2K3.TEXT.ALBUMART.BLUR', false),
 	}
 }

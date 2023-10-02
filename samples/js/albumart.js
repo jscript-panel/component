@@ -14,6 +14,12 @@ function _albumart(x, y, w, h) {
 		this.tooltip = this.path = '';
 		if (img) {
 			this.img = img;
+			if (panel.display_objects.length) {
+				var properties = panel.display_objects[0].properties;
+				if (properties.albumart.enabled && properties.albumart_blur.enabled) {
+					this.img.StackBlur(60);
+				}
+			}
 			this.tooltip = 'Original dimensions: ' + this.img.Width + 'x' + this.img.Height + 'px';
 			this.path = this.img.Path;
 			if (this.path.length) {

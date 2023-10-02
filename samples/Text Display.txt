@@ -72,7 +72,9 @@ function on_playback_pause() {
 }
 
 function on_playback_stop(reason) {
-	text.refresh();
+	if (reason != 2) {
+		panel.item_focus_change();
+	}
 }
 
 function on_playback_time() {
@@ -80,11 +82,11 @@ function on_playback_time() {
 }
 
 function on_playlist_items_added() {
-	panel.item_focus_change();
+	text.refresh();
 }
 
 function on_playlist_items_removed() {
-	panel.item_focus_change();
+	text.refresh();
 }
 
 function on_playlist_items_reordered() {

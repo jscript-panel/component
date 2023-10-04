@@ -128,7 +128,7 @@ function StripCodes(text) {
 function GetColourStyles(text, default_colour) {
 	var styles = [{
 		Start : 0,
-		Length : StripCodes(text).length,
+		Length : UINT_MAX,
 		Colour : default_colour,
 	}];
 
@@ -164,11 +164,10 @@ function GetColourStyles(text, default_colour) {
 
 // $font parser for component version 3.1.9 and later
 // generates array for gr.WriteText / utils.CreateTextLayout2
-function GetFontStyles(text, font_obj)
-{
+function GetFontStyles(text, font_obj) {
 	var styles = [{
 		Start : 0,
-		Length : StripCodes(text).length,
+		Length : UINT_MAX,
 		Name : font_obj.Name,
 		Size : font_obj.Size,
 		Weight : font_obj.Weight,
@@ -525,6 +524,8 @@ var VK_DOWN = 0x28;
 var VK_INSERT = 0x2D;
 var VK_DELETE = 0x2E;
 var VK_SPACEBAR = 0x20;
+
+var UINT_MAX = Math.pow(2, 32) - 1;
 
 var AlbumArtId = {
 	front : 0,

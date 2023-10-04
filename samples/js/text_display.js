@@ -183,6 +183,9 @@ function _text_display(x, y, w, h) {
 			break;
 		case 1230:
 			this.properties.albumart.toggle();
+			if (this.properties.albumart.enabled) {
+				albumart.metadb_changed();
+			}
 			this.refresh(true);
 			break;
 		case 1231:

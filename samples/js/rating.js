@@ -2,7 +2,7 @@ function _rating(x, y, h, colour) {
 	this.paint = function (gr) {
 		if (panel.metadb) {
 			for (var i = 0; i < this.get_max(); i++) {
-				gr.WriteText(i + 1 > (this.hover ? this.hrating : this.rating) ? chars.rating_off : chars.rating_on, JSON.stringify({Name:'FontAwesome',Size:this.h-2}), this.colour, this.x + (i * this.h), this.y, this.h, this.h, 2, 2);
+				gr.WriteText(i + 1 > (this.hover ? this.hrating : this.rating) ? chars.rating_off : chars.rating_on, this.font, this.colour, this.x + (i * this.h), this.y, this.h, this.h, 2, 2);
 			}
 		}
 	}
@@ -142,6 +142,7 @@ function _rating(x, y, h, colour) {
 	this.h = _scale(h);
 	this.w = this.h * this.get_max();
 	this.colour = colour;
+	this.font = JSON.stringify({Name:'FontAwesome',Size:this.h-2});
 	this.hover = false;
 	this.rating = 0;
 	this.hrating = 0;

@@ -48,22 +48,19 @@ function _text_display(x, y, w, h) {
 			if (!panel.tfo[this.properties.text_tf.value]) {
 				panel.tfo[this.properties.text_tf.value] = fb.TitleFormat(this.properties.text_tf.value);
 			}
+			var tfo = panel.tfo[this.properties.text_tf.value];
 
 			if (panel.selection.value == 0 && fb.IsPlaying) {
 				var loc = plman.GetPlayingItemLocation();
 				if (loc.IsValid) {
-					tmp = panel.tfo[this.properties.text_tf.value].EvalPlaylistItem(loc.PlaylistIndex, loc.PlaylistItemIndex);
+					tmp = tfo.EvalPlaylistItem(loc.PlaylistIndex, loc.PlaylistItemIndex);
 				} else {
-					tmp = panel.tf(this.properties.text_tf.value);
+					tmp = tfo.Eval();
 				}
 			} else {
 				var PlaylistIndex = plman.ActivePlaylist;
 				var PlaylistItemIndex = plman.GetPlaylistFocusItemIndex(PlaylistIndex);
-				if (PlaylistItemIndex > -1) {
-					tmp = panel.tfo[this.properties.text_tf.value].EvalPlaylistItem(PlaylistIndex, PlaylistItemIndex);
-				} else {
-					tmp = panel.tf(this.properties.text_tf.value);
-				}
+				tmp = tfo.EvalPlaylistItem(PlaylistIndex, PlaylistItemIndex);
 			}
 
 			if (force || tmp != this.text) {

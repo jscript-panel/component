@@ -118,7 +118,12 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 						break;
 					}
 
-					this.mood = StripCode(tf_arr[j], chars.etx) || 0;
+					if (properties.use_foo_lastfm_playcount_sync && foo_lastfm_playcount_sync) {
+						this.mood = get_tfo("$if2(%lfm_loved%,0)").EvalActivePlaylistItem(this.track_index);
+					} else {
+						this.mood = StripCode(tf_arr[j], chars.etx) || 0;
+					}
+
 					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_awesome_20, g_colour_mood, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
 					break;
 				case "Rating":

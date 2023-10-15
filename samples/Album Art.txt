@@ -29,7 +29,8 @@ function on_key_down(k) {
 	albumart.key_down(k);
 }
 
-function on_metadb_changed() {
+function on_metadb_changed(handles, fromhook) {
+	if (fromhook) return;
 	albumart.metadb_changed();
 }
 

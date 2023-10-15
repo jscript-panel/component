@@ -505,7 +505,7 @@ function on_key_up(vkey) {
 	}
 }
 
-function on_metadb_changed() {
+function on_metadb_changed(handles, fromhook) {
 	p.list.setItems(false);
 	full_repaint();
 }

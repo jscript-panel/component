@@ -33,7 +33,8 @@ function on_key_down(k) {
 	thumbs.key_down(k);
 }
 
-function on_metadb_changed() {
+function on_metadb_changed(handles, fromhook) {
+	if (fromhook) return;
 	thumbs.metadb_changed();
 }
 

@@ -34,7 +34,7 @@ function on_key_down(k) {
 	list.key_down(k);
 }
 
-function on_metadb_changed() {
+function on_metadb_changed(handles, fromhook) {
 	list.metadb_changed();
 }
 

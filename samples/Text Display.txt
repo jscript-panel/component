@@ -32,8 +32,10 @@ function on_item_focus_change() {
 	panel.item_focus_change();
 }
 
-function on_metadb_changed() {
-	albumart.metadb_changed();
+function on_metadb_changed(handles, fromhook) {
+	if (!fromhook) {
+		albumart.metadb_changed();
+	}
 	text.metadb_changed();
 }
 

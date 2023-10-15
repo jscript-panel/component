@@ -38,7 +38,8 @@ function on_key_down(k) {
 	text.key_down(k);
 }
 
-function on_metadb_changed() {
+function on_metadb_changed(handles, fromhook) {
+	if (fromhook) return;
 	text.metadb_changed();
 }
 

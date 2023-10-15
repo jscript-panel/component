@@ -3,7 +3,7 @@ function pos2vol(pos) {
 }
 
 function vol2pos(v){
-	return Math.pow(2, fb.Volume / 10);
+	return Math.pow(2, v / 10);
 }
 
 function Point2Pixel(pt, dpi) {

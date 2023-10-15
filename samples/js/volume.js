@@ -27,7 +27,7 @@ function _volume(x, y, w, h) {
 		if (this.containsXY(x, y)) {
 			x -= this.x;
 			var pos = x < 0 ? 0 : x > this.w ? 1 : x / this.w;
-			this.drag_vol = Math.max(-100, 10 * Math.log(pos) / Math.LN2);
+			this.drag_vol = pos2vol(pos);
 			_tt(this.drag_vol.toFixed(2) + ' dB');
 			if (this.drag) {
 				fb.Volume = this.drag_vol;
@@ -64,7 +64,7 @@ function _volume(x, y, w, h) {
 	}
 
 	this.pos = function () {
-		return this.w * Math.pow(2, fb.Volume / 10);
+		return this.w * vol2pos(fb.Volume);
 	}
 
 	this.x = x;

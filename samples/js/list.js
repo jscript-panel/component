@@ -725,7 +725,7 @@ function _list(mode, x, y, w, h) {
 				case 'MUSICBRAINZ WORK ID':
 					return 'https://musicbrainz.org/work/' + value;
 				default:
-					return "";
+					return '';
 				}
 			}
 
@@ -736,7 +736,7 @@ function _list(mode, x, y, w, h) {
 					var num = f.MetaValueCount(i);
 					for (var j = 0; j < num; j++) {
 						var value = f.MetaValue(i, j).replace(/\s{2,}/g, ' ');
-						var url = "";
+						var url = '';
 						if (_isUUID(value)) {
 							url = this.get_musicbrainz_url(name, value);
 						}
@@ -814,11 +814,11 @@ function _list(mode, x, y, w, h) {
 
 			this.add_other_info = function () {
 				var tmp = JSON.parse(fb.CreateHandleList(panel.metadb).GetOtherInfo());
-				["Location", "General"].forEach((function (item) {
+				['Location', 'General'].forEach((function (item) {
 					this.add_section(tmp[item], item);
 				}).bind(this));
 				for (var i in tmp) {
-					if (i != "General" && i != "Location") {
+					if (i != 'General' && i != 'Location') {
 						this.add_section(tmp[i], i);
 					}
 				}

@@ -25,7 +25,6 @@ function _thumbs() {
 			if (this.nc && this.thumbs.length) {
 				this.nc = false;
 				if (this.img) this.img.Dispose();
-				this.img = null;
 				this.img = utils.CreateImage(Math.min(this.columns, this.thumbs.length) * this.properties.px.value, this.img_rows * this.properties.px.value);
 				var temp_gr = this.img.GetGraphics();
 				var ci = 0;
@@ -54,7 +53,6 @@ function _thumbs() {
 			if (this.nc && this.thumbs.length) {
 				this.nc = false;
 				if (this.img) this.img.Dispose();
-				this.img = null;
 				this.img = utils.CreateImage(this.properties.px.value, this.properties.px.value * this.thumbs.length);
 				var temp_gr = this.img.GetGraphics();
 				_.forEach(this.thumbs, function (item, i) {
@@ -78,7 +76,6 @@ function _thumbs() {
 			if (this.nc && this.thumbs.length) {
 				this.nc = false;
 				if (this.img) this.img.Dispose();
-				this.img = null;
 				this.img = utils.CreateImage(this.properties.px.value * this.thumbs.length, this.properties.px.value);
 				var temp_gr = this.img.GetGraphics();
 				_.forEach(this.thumbs, function (item, i) {

@@ -283,7 +283,7 @@ function _font(name, size, bold) {
 	var font = {
 		Name : name,
 		Size : scale(size),
-		Weight : bold == 1 ? 700 : 400,
+		Weight : bold ? 700 : 400,
 	};
 	return JSON.stringify(font);
 }
@@ -300,10 +300,10 @@ function get_font() {
 	var name = default_font.Name;
 	g_fsize = default_font.Size + Math.min(ppt.extra_font_size, 10);
 
-	g_font = _font(name, 12, 0);
-	g_font_bold = _font(name, 14, 1);
-	g_font_box = _font(name, 10, 1);
-	g_font_group1 = _font(name, 20, 1);
+	g_font = _font(name, 12);
+	g_font_bold = _font(name, 14, true);
+	g_font_box = _font(name, 10, true);
+	g_font_group1 = _font(name, 20, true);
 	g_font_group2 = _font(name, 16);
 	g_font_awesome = _font("FontAwesome", 18);
 

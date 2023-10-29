@@ -24,6 +24,7 @@ function on_drag_drop(action, x, y, mask) {
 			action.Effect = 1;
 		}
 	}
+	g_drag_drop_target_id = -1;
 	brw.repaint();
 }
 

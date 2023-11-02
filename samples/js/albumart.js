@@ -10,14 +10,16 @@ function _albumart(x, y, w, h) {
 		}
 
 		if (this.img) this.img.Dispose();
-		this.img = null;
+		if (this.blur_img) this.img.Dispose();
+		this.img = this.blur_img = null;
 		this.tooltip = this.path = '';
 		if (img) {
 			this.img = img;
 			if (panel.display_objects.length) {
 				var properties = panel.display_objects[0].properties;
 				if (properties.albumart.enabled && properties.albumart_blur.enabled) {
-					this.img.StackBlur(60);
+					this.blur_img = this.img.Clone();
+					this.blur_img.StackBlur(120);
 				}
 			}
 			this.tooltip = 'Original dimensions: ' + this.img.Width + 'x' + this.img.Height + 'px';
@@ -176,6 +178,7 @@ function _albumart(x, y, w, h) {
 	this.my = 0;
 	this.tooltip = '';
 	this.img = null;
+	this.blur_img = null;
 	this.path = null;
 	this.hover = false;
 	this.ids = ['Front', 'Back', 'Disc', 'Icon', 'Artist'];

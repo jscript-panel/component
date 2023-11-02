@@ -3,24 +3,60 @@ window.SetProperty('2K3.ARTREADER.ID', 0);
 function _text_display(x, y, w, h) {
 	this.size = function () {
 		this.text_height = 0;
-		this.ha = this.h - _scale(24);
-		this.up_btn.x = this.x + Math.round((this.w - _scale(12)) / 2);
+		var margin = _scale(12);
+
+		switch (this.properties.layout.value) {
+		case 0:
+			this.x = margin;
+			this.y = 0;
+			this.w = panel.w - (margin * 2);
+			this.h = panel.h;
+			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+			break;
+		case 1:
+			this.x = margin;
+			this.w = panel.w - (margin * 2);
+			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+			this.y = panel.h - this.text_height - (margin * 2);
+			this.h = this.text_height + (margin * 2);
+			albumart.x = margin;
+			albumart.y = margin;
+			albumart.w = panel.w - (margin * 2);
+			albumart.h = panel.h - this.h - margin;
+			break;
+		case 2:
+			albumart.x = margin;
+			albumart.y = margin;
+			albumart.w = (panel.w / 2) - margin;
+			albumart.h = panel.h - (margin * 2);
+			this.x = (margin * 2) + albumart.w;
+			this.y = 0;
+			this.w = albumart.w - margin;
+			this.h = panel.h;
+			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+			break;
+		}
+
+		this.ha = this.h - (margin * 2);
+		if (this.text_height < this.ha) this.offset = 0;
+		else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
+
+		this.up_btn.x = this.x + Math.round((this.w - margin) / 2);
 		this.down_btn.x = this.up_btn.x;
 		this.up_btn.y = this.y;
-		this.down_btn.y = this.y + this.h - _scale(12);
-		this.scroll_step = _scale(panel.fonts.size.value) * 4;
+		this.down_btn.y = this.y + this.h - margin;
 
-		if (this.text_layout) {
-			this.text_height = this.text_layout.CalcTextHeight(this.w);
-			if (this.text_height < this.ha) this.offset = 0;
-			else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
-		}
+		this.scroll_step = _scale(panel.fonts.size.value) * 4;
 	}
 
 	this.paint = function (gr) {
 		if (this.properties.albumart.enabled) {
-			_drawImage(gr, albumart.img, 0, 0, panel.w, panel.h, image.crop);
-			_drawOverlay(gr, 0, 0, panel.w, panel.h, 200);
+			_drawImage(gr, this.properties.albumart_blur.enabled ? albumart.blur_img : albumart.img, 0, 0, panel.w, panel.h, image.crop);
+			_drawOverlay(gr, 0, 0, panel.w, panel.h, 120);
+		}
+
+		if (this.properties.layout.value > 0) {
+			_drawImage(gr, albumart.img, albumart.x, albumart.y, albumart.w, albumart.h, image.centre);
 		}
 
 		if (!this.text_layout) return;
@@ -71,7 +107,11 @@ function _text_display(x, y, w, h) {
 					var font_styles = GetFontStyles(this.text, font_obj);
 					var colour_styles = GetColourStyles(this.text, this.default_colour);
 					this.colour_string = JSON.stringify(colour_styles);
-					this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), this.properties.halign.value, this.properties.valign.value);
+					if (this.properties.layout.value == 1) {
+						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), 2, 2);
+					} else {
+						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), this.properties.halign.value, this.properties.valign.value);
+					}
 				}
 			}
 		} else {
@@ -133,20 +173,28 @@ function _text_display(x, y, w, h) {
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(MF_STRING, 1202, 'Custom colours and fonts explained');
 		panel.m.AppendMenuSeparator();
-		panel.s10.AppendMenuItem(MF_STRING, 1210, 'Left');
-		panel.s10.AppendMenuItem(MF_STRING, 1211, 'Right');
-		panel.s10.AppendMenuItem(MF_STRING, 1212, 'Centre');
-		panel.s10.CheckMenuRadioItem(1210, 1212, this.properties.halign.value + 1210);
-		panel.s10.AppendTo(panel.m, MF_STRING, 'Horizontal alignment');
-		panel.s11.AppendMenuItem(MF_STRING, 1220, 'Top');
-		panel.s11.AppendMenuItem(MF_STRING, 1221, 'Bottom');
-		panel.s11.AppendMenuItem(MF_STRING, 1222, 'Centre');
-		panel.s11.CheckMenuRadioItem(1220, 1222, this.properties.valign.value + 1220);
-		panel.s11.AppendTo(panel.m, MF_STRING, 'Vertical alignment');
+		panel.m.AppendMenuItem(MF_GRAYED, 1203, 'Layout');
+		panel.m.AppendMenuItem(MF_STRING, 1204, 'Text only');
+		panel.m.AppendMenuItem(MF_STRING, 1205, 'Album Art top, Text bottom');
+		panel.m.AppendMenuItem(MF_STRING, 1206, 'Album Art left, Text right');
+		panel.m.CheckMenuRadioItem(1204, 1206, this.properties.layout.value + 1204);
 		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1230, 'Album art background');
-		panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1231, 'Enable blur effect');
+		panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
+		panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
 		panel.m.AppendMenuSeparator();
+		if (this.properties.layout.value != 1) {
+			panel.s10.AppendMenuItem(MF_STRING, 1210, 'Left');
+			panel.s10.AppendMenuItem(MF_STRING, 1211, 'Right');
+			panel.s10.AppendMenuItem(MF_STRING, 1212, 'Centre');
+			panel.s10.CheckMenuRadioItem(1210, 1212, this.properties.halign.value + 1210);
+			panel.s10.AppendTo(panel.m, MF_STRING, 'Text alignment (horizontal)');
+			panel.s11.AppendMenuItem(MF_STRING, 1220, 'Top');
+			panel.s11.AppendMenuItem(MF_STRING, 1221, 'Bottom');
+			panel.s11.AppendMenuItem(MF_STRING, 1222, 'Centre');
+			panel.s11.CheckMenuRadioItem(1220, 1222, this.properties.valign.value + 1220);
+			panel.s11.AppendTo(panel.m, MF_STRING, 'Text alignment (vertical)');
+			panel.m.AppendMenuSeparator();
+		}
 	}
 
 	this.rbtn_up_done = function (idx) {
@@ -166,6 +214,23 @@ function _text_display(x, y, w, h) {
 		case 1202:
 			utils.Run('https://jscript-panel.github.io/gallery/text-display/#title-formatting');
 			break;
+		case 1204:
+		case 1205:
+		case 1206:
+			this.properties.layout.value = idx - 1204;
+			this.refresh(true);
+			break;
+		case 1207:
+			this.properties.albumart.toggle();
+			if (this.properties.albumart.enabled) {
+				albumart.metadb_changed();
+			}
+			this.refresh(true);
+			break;
+		case 1208:
+			this.properties.albumart_blur.toggle();
+			albumart.metadb_changed();
+			break;
 		case 1210:
 		case 1211:
 		case 1212:
@@ -177,17 +242,6 @@ function _text_display(x, y, w, h) {
 		case 1222:
 			this.properties.valign.value = idx - 1220;
 			this.refresh(true);
-			break;
-		case 1230:
-			this.properties.albumart.toggle();
-			if (this.properties.albumart.enabled) {
-				albumart.metadb_changed();
-			}
-			this.refresh(true);
-			break;
-		case 1231:
-			this.properties.albumart_blur.toggle();
-			albumart.metadb_changed();
 			break;
 		}
 	}
@@ -211,11 +265,12 @@ function _text_display(x, y, w, h) {
 	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset > this.ha - this.text_height; }, this), _.bind(function () { this.wheel(-1); }, this));
 
 	this.properties = {
-		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '$font(Segoe UI,24)\r\n[🎙️ %artist% ][🎵 %title% ]$crlf()\r\n[💿 %album% ][📅 %date%]$crlf()\r\n[💬 %codec% %__bitrate% kbps ][📊 %__bitspersample% bits ][∿ %samplerate% Hz ][🔊 %channels%]'),
+		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '$font(Segoe UI,24,700)\r\n[%title%$crlf()]\r\n$font(Segoe UI,18)\r\n[%artist%$crlf()]\r\n$font(Segoe UI,14)\r\n[%album% \'(\'%date%\')\'$crlf()]\r\n$font(Segoe UI,10)\r\n[%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype%]]'),
 		halign : new _p('2K3.TEXT.HALIGN', 2),
 		valign : new _p('2K3.TEXT.VALIGN', 2),
 		per_second : new _p('2K3.TEXT.PER.SECOND', false),
-		albumart : new _p('2K3.TEXT.ALBUMART', false),
-		albumart_blur : new _p('2K3.TEXT.ALBUMART.BLUR', false),
+		albumart : new _p('2K3.TEXT.ALBUMART', true),
+		albumart_blur : new _p('2K3.TEXT.ALBUMART.BLUR', true),
+		layout : new _p('2K3.TEXT.LAYOUT', 0), // 0 text only, 1 album art top text bottom 2 album art left text right
 	}
 }

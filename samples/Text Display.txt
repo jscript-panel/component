@@ -62,7 +62,7 @@ function on_paint(gr) {
 
 function on_playback_dynamic_info_track(type) {
 	if (type == 0) text.metadb_changed();
-	else if (type == 1 && text.properties.albumart.enabled) albumart.metadb_changed();
+	else if (type == 1 && (text.properties.albumart.enabled  || text.properties.layout.value > 0)) albumart.metadb_changed();
 }
 
 function on_playback_new_track() {
@@ -101,7 +101,5 @@ function on_playlist_switch() {
 
 function on_size() {
 	panel.size();
-	text.w = panel.w - (LM * 2);
-	text.h = panel.h;
 	text.size();
 }

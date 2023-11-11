@@ -41,6 +41,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 		var is_item_selected = plman.IsPlaylistItemSelected(g_active_playlist, this.track_index);
 		var txt_color = is_item_selected ? g_colour_selected_text : g_colour_text;
 		var fader_txt = setAlpha(txt_color, 180);
+		var rating_colour = g_dynamic ? txt_color : g_colour_rating;
 
 		if (is_item_selected) {
 			if (g_themed) {
@@ -142,8 +143,8 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 					}
 
 					this.rating = StripCode(tf_arr[j], chars.etx) || 0;
-					gr.WriteText(chars.rating_off.repeat(5), g_font_awesome_20, txt_color & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
-					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_awesome_20, txt_color, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteText(chars.rating_off.repeat(5), g_font_awesome_20, rating_colour & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_awesome_20, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
 					break;
 				default:
 					if (tf_arr[j] != "null") DrawColouredText(gr, tf_arr[j], g_font_12, txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align, 2, 1, 1);

@@ -1303,11 +1303,13 @@ function get_font() {
 }
 
 function get_colours() {
+	g_dynamic = false;
 	g_colour_mood = window.GetProperty("JSPLAYLIST.COLOUR.MOOD", RGB(196,30,35));
 
 	if (properties.enableDynamicColours) {
 		var arr = GetNowPlayingColours();
 		if (arr.length) {
+			g_dynamic = true;
 			g_colour_background = arr[0];
 			g_colour_text = arr[1];
 			g_colour_selection = arr[2];
@@ -1417,7 +1419,9 @@ var g_colour_background = 0;
 var g_colour_selection = 0;
 var g_colour_highlight = 0;
 var g_colour_mood = 0;
+var g_colour_rating = RGB(255, 128, 0);
 var g_font_size = 0;
+var g_dynamic = false;
 
 var g_themed = false;
 var g_theme = window.CreateThemeManager("LISTVIEW");

@@ -27,15 +27,8 @@ function on_font_changed() {
 
 function on_get_album_art_done(metadb, art_id, image) {
 	if (!image) return;
-	var max_size = 300;
 	for (var i = 0; i < brw.groups.length; i++) {
 		if (brw.groups[i].metadb && brw.groups[i].metadb.Compare(metadb)) {
-			if (image.Width > max_size || image.Height > max_size) {
-				var s = Math.min(max_size / image.Width, max_size / image.Height);
-				var w = Math.floor(image.Width * s);
-				var h = Math.floor(image.Height * s);
-				image.Resize(w, h);
-			}
 			var cached_filename = generate_filename(brw.groups[i].cachekey, art_id);
 			image.SaveAs(cached_filename);
 			images.cache[cached_filename] = image;
@@ -124,7 +117,8 @@ function generate_filename(cachekey, art_id) {
 	return CACHE_FOLDER + prefix + cachekey + ".jpg";
 }
 0
-function get_art(metadb, filename, art_id) {
+function get_art(metadb, cachekey, art_id) {
+	var filename = generate_filename(cachekey, art_id);
 	var img = images.cache[filename];
 	if (img) return img;
 
@@ -135,7 +129,7 @@ function get_art(metadb, filename, art_id) {
 	}
 
 	window.SetTimeout(function () {
-		metadb.GetAlbumArtAsync(window.ID, art_id, false);
+		metadb.GetAlbumArtThumbAsync(window.ID, art_id);
 	}, 10);
 	return img;
 }

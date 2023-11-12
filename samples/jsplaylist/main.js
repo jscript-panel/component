@@ -164,10 +164,11 @@ function on_font_changed() {
 }
 
 function on_get_album_art_done(metadb, art_id, image) {
+	if (!image) return;
 	for (var i = 0; i < p.list.groups.length; i++) {
 		var group = p.list.groups[i];
 		if (group.metadb && group.metadb.Compare(metadb)) {
-			g_image_cache.set(metadb, image, group.group_key);
+			g_image_cache.set(group.group_key, image);
 			break;
 		}
 	}
@@ -222,6 +223,7 @@ function on_key_down(vkey) {
 						item.cover_img = null;
 					});
 					g_image_cache.reset();
+					g_stub_image = fb.GetAlbumArtStub(cGroup.art_id);
 					full_repaint();
 					break;
 				case VK_TAB:
@@ -1127,24 +1129,13 @@ function image_cache() {
 		if (!this.requested[group_key]) {
 			this.requested[group_key] = true;
 			window.SetTimeout(function () {
-				metadb.GetAlbumArtAsync(window.ID, cGroup.art_id);
+				metadb.GetAlbumArtThumbAsync(window.ID, cGroup.art_id);
 			}, 20);
 		}
 		return null;
 	}
 
-	this.set = function (metadb, image, group_key) {
-		var max = 250;
-		if (image) {
-			if (image.Width > max || image.Height > max) {
-				var s = Math.min(max / image.Width, max / image.Height);
-				var w = Math.floor(image.Width * s);
-				var h = Math.floor(image.Height * s);
-				image.Resize(w, h);
-			}
-		} else {
-			image = images.nocover;
-		}
+	this.set = function (group_key, image) {
 		this.cachelist[group_key] = image;
 		full_repaint();
 	}
@@ -1205,6 +1196,7 @@ function init() {
 	get_colours();
 	plman.SetActivePlaylistContext();
 	images.wallpaper = get_wallpaper();
+	g_stub_image = fb.GetAlbumArtStub(cGroup.art_id);
 
 	p.list = new oList("p.list");
 	p.topBar = new oTopBar();
@@ -1402,6 +1394,7 @@ var g_seconds = 0;
 var g_mouse_wheel_timeout = false;
 var g_active_playlist = plman.ActivePlaylist;
 var g_image_cache = new image_cache();
+var g_stub_image = null;
 var g_selHolder = fb.AcquireSelectionHolder();
 g_selHolder.SetPlaylistSelectionTracking();
 

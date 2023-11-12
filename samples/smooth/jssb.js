@@ -316,8 +316,7 @@ function oBrowser() {
 			if (ppt.panelMode != 0 && !group.cover_image && !group.image_requested && group.metadb) {
 				group.image_requested = true;
 				var id = ppt.tagMode == 0 ? AlbumArtId.front : AlbumArtId.artist;
-				var filename = generate_filename(group.cachekey, id);
-				group.cover_image = get_art(group.metadb, filename, id);
+				group.cover_image = get_art(group.metadb, group.cachekey, id);
 			}
 
 			switch (ppt.panelMode) {

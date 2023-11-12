@@ -677,15 +677,15 @@ function oBrowser() {
 					gr.DrawRectangle(ax, ay, aw, ah * ppt.groupHeaderRowsNumber, 1, setAlpha(g_colour_text, 25));
 
 					var id = this.rows[i].albumId;
+					var group = this.groups[id];
 					var image_height = 0;
 					if (ppt.groupHeaderRowsNumber >= 2) {
 						image_height = ah * ppt.groupHeaderRowsNumber;
-						if (!this.groups[id].cover_image && !this.groups[id].image_requested) {
-							this.groups[id].image_requested = true;
-							var filename = generate_filename(this.groups[id].cachekey, AlbumArtId.front);
-							this.groups[id].cover_image = get_art(this.rows[i].metadb, filename, AlbumArtId.front);
+						if (!group.cover_image && !group.image_requested) {
+							group.image_requested = true;
+							group.cover_image = get_art(this.rows[i].metadb, group.cachekey, AlbumArtId.front);
 						}
-						drawImage(gr, this.groups[id].cover_image || (this.rows[i].metadb.Length ? images.noart : images.stream), ax + 1, ay + 1, image_height - 3, image_height - 3, ppt.autoFill, g_colour_text & 0x25ffffff);
+						drawImage(gr, group.cover_image || (this.rows[i].metadb.Length ? images.noart : images.stream), ax + 1, ay + 1, image_height - 3, image_height - 3, ppt.autoFill, g_colour_text & 0x25ffffff);
 					}
 
 					var group_text_colour = g_colour_highlight;
@@ -693,15 +693,15 @@ function oBrowser() {
 
 					var text_width = aw - image_height - 30;
 					if (ppt.groupHeaderRowsNumber == 1) {
-						gr.WriteText(this.groups[id].bottom_left + " - " + this.groups[id].top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - this.groups[id].top_right.calc_width(g_font_group1), ah, 0, 2, 1, 1);
-						gr.WriteText(this.groups[id].top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
+						gr.WriteText(group.bottom_left + " - " + group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1), ah, 0, 2, 1, 1);
+						gr.WriteText(group.top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
 					} else {
-						gr.WriteText(this.groups[id].top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - this.groups[id].top_right.calc_width(g_font_group1), ah, 0, 2, 1, 1);
-						gr.WriteText(this.groups[id].top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
+						gr.WriteText(group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1), ah, 0, 2, 1, 1);
+						gr.WriteText(group.top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
 
 						var bottom_y = ay + 5 + g_font_group2_height;
-						gr.WriteText(this.groups[id].bottom_left, g_font_group2, group_text_colour_fader, ax + image_height + 5, bottom_y, text_width - this.groups[id].bottom_right.calc_width(g_font_group2), ah, 0, 2, 1, 1);
-						gr.WriteText(this.groups[id].bottom_right, g_font_group2, group_text_colour_fader, 0, bottom_y, aw - 5, ah, 1, 2, 1, 1);
+						gr.WriteText(group.bottom_left, g_font_group2, group_text_colour_fader, ax + image_height + 5, bottom_y, text_width - group.bottom_right.calc_width(g_font_group2), ah, 0, 2, 1, 1);
+						gr.WriteText(group.bottom_right, g_font_group2, group_text_colour_fader, 0, bottom_y, aw - 5, ah, 1, 2, 1, 1);
 					}
 					break;
 				case 0:

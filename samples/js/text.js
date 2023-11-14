@@ -215,6 +215,7 @@ function _text(mode, x, y, w, h) {
 			this.metadb_changed();
 			break;
 		case 1300:
+			this.clear_layout();
 			this.reset();
 			this.metadb_changed();
 			break;
@@ -228,12 +229,14 @@ function _text(mode, x, y, w, h) {
 			break;
 		case 1303:
 			this.properties.fixed.toggle();
+			this.clear_layout();
 			this.reset();
 			this.metadb_changed();
 			break;
 		case 1310:
 		case 1311:
 			this.properties.utf8.enabled = idx == 1310;
+			this.clear_layout();
 			this.reset();
 			this.metadb_changed();
 			break;
@@ -336,7 +339,7 @@ function _text(mode, x, y, w, h) {
 			this.properties.lang = new _p('2K3.TEXT.BIO.LANG', 0);
 			break;
 		case 'text_reader2':
-			this.properties.title_tf = new _p('2K3.TEXT.TITLE.TF', '%artist% - %title%');
+			this.properties.title_tf = new _p('2K3.TEXT.TITLE.TF', '%album artist% - $if2(%album%,%title%)');
 			this.properties.filename_tf = new _p('2K3.TEXT.FILENAME.TF', '$directory_path(%path%)');
 			this.properties.fixed = new _p('2K3.TEXT.FONTS.FIXED', true);
 			this.properties.utf8 = new _p('2K3.TEXT.UTF8', true);

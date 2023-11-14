@@ -3,92 +3,58 @@ function _thumbs() {
 		this.nc = f || this.nc;
 		this.close_btn.x = panel.w - this.close_btn.w;
 		this.offset = 0;
-		switch (true) {
-		case panel.w < this.properties.px.value || panel.h < this.properties.px.value || this.properties.mode.value == 5: // off
+
+		if (panel.w < this.properties.px.value || panel.h < this.properties.px.value || this.properties.mode.value == 5) {
 			this.nc = true;
 			if (this.img) this.img.Dispose();
 			this.img = null;
+			this.x = 0;
+			this.y = 0;
 			this.w = 0;
 			this.h = 0;
-			break;
-		case this.properties.mode.value == 0: // grid
-			this.x = 0;
-			this.y = 0;
-			this.w = panel.w;
-			this.h = panel.h;
-			if (!this.nc && this.columns != Math.floor(this.w / this.properties.px.value)) {
-				this.nc = true;
-			}
-			this.rows = Math.ceil(this.h / this.properties.px.value);
-			this.columns = Math.floor(this.w / this.properties.px.value);
-			this.img_rows = Math.ceil(this.thumbs.length / this.columns);
-			if (this.nc && this.thumbs.length) {
-				this.nc = false;
-				if (this.img) this.img.Dispose();
-				this.img = utils.CreateImage(Math.min(this.columns, this.thumbs.length) * this.properties.px.value, this.img_rows * this.properties.px.value);
-				var temp_gr = this.img.GetGraphics();
-				var ci = 0;
-				for (var row = 0; row < this.img_rows; row++) {
-					for (var col = 0; col < this.columns; col++) {
-						if (!this.thumbs[ci]) continue;
-						if (this.properties.circular.enabled) {
-							temp_gr.DrawImageWithMask(this.thumbs[ci], this.circular_mask, col * this.properties.px.value, row * this.properties.px.value, this.properties.px.value, this.properties.px.value);
-						} else {
-							_drawImage(temp_gr, this.thumbs[ci], col * this.properties.px.value, row * this.properties.px.value, this.properties.px.value, this.properties.px.value);
-						}
-						ci++;
-					}
+		} else {
+			switch (this.properties.mode.value) {
+			case 0: // grid
+				this.x = 0;
+				this.y = 0;
+				this.w = panel.w;
+				this.h = panel.h;
+				if (!this.nc && this.columns != Math.floor(this.w / this.properties.px.value)) {
+					this.nc = true;
 				}
-				this.img.ReleaseGraphics();
-				temp_gr = null;
+				this.rows = Math.ceil(this.h / this.properties.px.value);
+				this.columns = Math.floor(this.w / this.properties.px.value);
+				this.img_rows = Math.ceil(this.thumbs.length / this.columns);
+				if (this.nc && this.thumbs.length) {
+					this.nc = false;
+					this.create_grid();
+				}
+				break;
+			case 1: // left
+			case 2: // right
+				this.x = this.properties.mode.value == 1 ? 0 : panel.w - this.properties.px.value;
+				this.y = 0;
+				this.w = this.properties.px.value;
+				this.h = panel.h;
+				this.rows = Math.ceil(this.h / this.properties.px.value);
+				if (this.nc && this.thumbs.length) {
+					this.nc = false;
+					this.create_strip(true);
+				}
+				break;
+			case 3: // top
+			case 4: // bottom
+				this.x = 0;
+				this.y = this.properties.mode.value == 3 ? 0 : panel.h - this.properties.px.value;
+				this.w = panel.w;
+				this.h = this.properties.px.value;
+				this.columns = Math.ceil(this.w / this.properties.px.value);
+				if (this.nc && this.thumbs.length) {
+					this.nc = false;
+					this.create_strip(false);
+				}
+				break;
 			}
-			break;
-		case this.properties.mode.value == 1: // left
-		case this.properties.mode.value == 2: // right
-			this.x = this.properties.mode.value == 1 ? 0 : panel.w - this.properties.px.value;
-			this.y = 0;
-			this.w = this.properties.px.value;
-			this.h = panel.h;
-			this.rows = Math.ceil(this.h / this.properties.px.value);
-			if (this.nc && this.thumbs.length) {
-				this.nc = false;
-				if (this.img) this.img.Dispose();
-				this.img = utils.CreateImage(this.properties.px.value, this.properties.px.value * this.thumbs.length);
-				var temp_gr = this.img.GetGraphics();
-				_.forEach(this.thumbs, function (item, i) {
-					if (this.properties.circular.enabled) {
-						temp_gr.DrawImageWithMask(item, this.circular_mask, 0, i * this.properties.px.value, this.properties.px.value, this.properties.px.value)
-					} else {
-						_drawImage(temp_gr, item, 0, i * this.properties.px.value, this.properties.px.value, this.properties.px.value);
-					}
-				}, this);
-				this.img.ReleaseGraphics();
-				temp_gr = null;
-			}
-			break;
-		case this.properties.mode.value == 3: // top
-		case this.properties.mode.value == 4: // bottom
-			this.x = 0;
-			this.y = this.properties.mode.value == 3 ? 0 : panel.h - this.properties.px.value;
-			this.w = panel.w;
-			this.h = this.properties.px.value;
-			this.columns = Math.ceil(this.w / this.properties.px.value);
-			if (this.nc && this.thumbs.length) {
-				this.nc = false;
-				if (this.img) this.img.Dispose();
-				this.img = utils.CreateImage(this.properties.px.value * this.thumbs.length, this.properties.px.value);
-				var temp_gr = this.img.GetGraphics();
-				_.forEach(this.thumbs, function (item, i) {
-					if (this.properties.circular.enabled) {
-						temp_gr.DrawImageWithMask(item, this.circular_mask, i * this.properties.px.value, 0, this.properties.px.value, this.properties.px.value);
-					} else {
-						_drawImage(temp_gr, item, i * this.properties.px.value, 0, this.properties.px.value, this.properties.px.value);
-					}
-				}, this);
-				this.img.ReleaseGraphics();
-				temp_gr = null;
-			}
-			break;
 		}
 	}
 
@@ -511,6 +477,56 @@ function _thumbs() {
 			this.wheel(-1);
 			break;
 		}
+	}
+
+	this.create_grid = function () {
+		if (this.img) this.img.Dispose();
+		var size = this.properties.px.value;
+
+		this.img = utils.CreateImage(Math.min(this.columns, this.thumbs.length) * size, this.img_rows * size);
+		var temp_gr = this.img.GetGraphics();
+		var current = 0;
+		for (var row = 0; row < this.img_rows; row++) {
+			for (var col = 0; col < this.columns; col++) {
+				if (!this.thumbs[current]) continue;
+				if (this.properties.circular.enabled) {
+					temp_gr.DrawImageWithMask(this.thumbs[current], this.circular_mask, col * size, row * size, size, size);
+				} else {
+					_drawImage(temp_gr, this.thumbs[current], col * size, row * size, size, size);
+				}
+				current++;
+			}
+		}
+
+		this.img.ReleaseGraphics();
+		temp_gr = null;
+	}
+
+	this.create_strip = function (vertical) {
+		if (this.img) this.img.Dispose();
+		var size = this.properties.px.value;
+		var x = y = 0;
+
+		if (vertical) {
+			this.img = utils.CreateImage(size, size * this.thumbs.length);
+		} else {
+			this.img = utils.CreateImage(size * this.thumbs.length, size);
+		}
+
+		var temp_gr = this.img.GetGraphics();
+		_.forEach(this.thumbs, function (item, i) {
+			if (vertical) y = i * size;
+			else x = i * size;
+
+			if (this.properties.circular.enabled) {
+				temp_gr.DrawImageWithMask(item, this.circular_mask, x, y, size, size)
+			} else {
+				_drawImage(temp_gr, item, x, y, size, size);
+			}
+		}, this);
+
+		this.img.ReleaseGraphics();
+		temp_gr = null;
 	}
 
 	this.create_thumb = function (img) {

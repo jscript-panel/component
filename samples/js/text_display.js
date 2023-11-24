@@ -37,14 +37,8 @@ function _text_display(x, y, w, h) {
 			break;
 		}
 
-		this.ha = this.h - (margin * 2);
-		if (this.text_height < this.ha) this.offset = 0;
-		else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
-
-		this.up_btn.x = this.x + Math.round((this.w - margin) / 2);
-		this.down_btn.x = this.up_btn.x;
-		this.up_btn.y = this.y;
-		this.down_btn.y = this.y + this.h - margin;
+		if (this.text_height < this.h) this.offset = 0;
+		else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
 
 		this.scroll_step = _scale(panel.fonts.size.value) * 4;
 	}
@@ -60,9 +54,7 @@ function _text_display(x, y, w, h) {
 		}
 
 		if (!this.text_layout) return;
-		gr.WriteTextLayout(this.text_layout, this.colour_string, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
-		this.up_btn.paint(gr, this.default_colour);
-		this.down_btn.paint(gr, this.default_colour);
+		gr.WriteTextLayout(this.text_layout, this.colour_string, this.x, this.y, this.w, this.h, this.offset);
 	}
 
 	this.playback_time = function () {
@@ -135,10 +127,10 @@ function _text_display(x, y, w, h) {
 
 	this.wheel = function (s) {
 		if (this.containsXY(this.mx, this.my)) {
-			if (this.text_height > this.ha) {
+			if (this.text_height > this.h) {
 				this.offset += s * this.scroll_step;
 				if (this.offset > 0) this.offset = 0;
-				else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
+				else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
 				window.RepaintRect(this.x, this.y, this.w, this.h);
 			}
 			return true;
@@ -150,21 +142,11 @@ function _text_display(x, y, w, h) {
 		this.mx = x;
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
-		if (this.containsXY(x, y)) {
-			this.up_btn.move(x, y);
-			this.down_btn.move(x, y);
-			return true;
-		}
-		return false;
+		return this.containsXY(x, y);
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			this.up_btn.lbtn_up(x, y);
-			this.down_btn.lbtn_up(x, y);
-			return true;
-		}
-		return false;
+		return this.containsXY(x, y);
 	}
 
 	this.rbtn_up = function (x, y) {
@@ -251,7 +233,6 @@ function _text_display(x, y, w, h) {
 	this.y = y;
 	this.w = w;
 	this.h = h;
-	this.ha = h - _scale(24); // height adjusted for up/down buttons
 	this.default_colour = 0;
 	this.colour_string = '';
 	this.text_layout = null;
@@ -261,8 +242,6 @@ function _text_display(x, y, w, h) {
 	this.my = 0;
 	this.offset = 0;
 	this.text = '';
-	this.up_btn = new _sb(chars.up, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset < 0; }, this), _.bind(function () { this.wheel(1); }, this));
-	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset > this.ha - this.text_height; }, this), _.bind(function () { this.wheel(-1); }, this));
 
 	this.properties = {
 		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '$font(Segoe UI,24,700)\r\n[%title%$crlf()]\r\n$font(Segoe UI,18)\r\n[%artist%$crlf()]\r\n$font(Segoe UI,14)\r\n[%album% \'(\'%date%\')\'$crlf()]\r\n$font(Segoe UI,10)\r\n[%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype%]]'),

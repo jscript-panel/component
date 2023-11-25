@@ -693,7 +693,7 @@ function oBrowser() {
 		case 23:
 			switch (ppt.tagMode) {
 			case 0:
-				var tmp  = utils.InputBox('Enter sort pattern for "Album"', window.Name, ppt.sort_album_tf);
+				var tmp = utils.InputBox('Enter sort pattern for "Album"', window.Name, ppt.sort_album_tf);
 				if (tmp != ppt.sort_album_tf) {
 					ppt.sort_album_tf = tmp;
 					window.SetProperty("SMOOTH.SORT.ALBUM", ppt.sort_album_tf);
@@ -701,7 +701,7 @@ function oBrowser() {
 				}
 				break;
 			case 1:
-				var tmp  = utils.InputBox('Enter sort pattern for "Artist"', window.Name, ppt.sort_artist_tf);
+				var tmp = utils.InputBox('Enter sort pattern for "Artist"', window.Name, ppt.sort_artist_tf);
 				if (tmp != ppt.sort_artist_tf) {
 					ppt.sort_artist_tf = tmp;
 					window.SetProperty("SMOOTH.SORT.ARTIST", ppt.sort_artist_tf);
@@ -709,7 +709,7 @@ function oBrowser() {
 				}
 				break;
 			case 2:
-				var tmp  = utils.InputBox('Enter sort pattern for "Album Artist"', window.Name, ppt.sort_album_artist_tf);
+				var tmp = utils.InputBox('Enter sort pattern for "Album Artist"', window.Name, ppt.sort_album_artist_tf);
 				if (tmp != ppt.sort_album_artist_tf) {
 					ppt.sort_album_artist_tf = tmp;
 					window.SetProperty("SMOOTH.SORT.ALBUM.ARTIST", ppt.sort_album_artist_tf);

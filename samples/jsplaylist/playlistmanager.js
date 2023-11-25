@@ -58,7 +58,7 @@ function oPlaylistManager() {
 		this.bt_sortZa_normal = utils.CreateImage(Az_w, Az_h);
 		var gb = this.bt_sortZa_normal.GetGraphics();
 		gb.WriteText(chars.down, g_font_awesome_12, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
-		gb.WriteText("Za  ", g_font_12, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
+		gb.WriteText("Za", g_font_12, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
 		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
 		this.bt_sortZa_normal.ReleaseGraphics();
 
@@ -66,7 +66,7 @@ function oPlaylistManager() {
 		this.bt_sortZa_hover = utils.CreateImage(Az_w, Az_h);
 		var gb = this.bt_sortZa_hover.GetGraphics();
 		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text, left_padding, 1, Az_w, Az_h, 0, 2);
-		gb.WriteText("Za  ", g_font_12, g_colour_text, 0, 0, Az_w - right_padding, Az_h, 1, 2);
+		gb.WriteText("Za", g_font_12, g_colour_text, 0, 0, Az_w - right_padding, Az_h, 1, 2);
 		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
 		this.bt_sortZa_hover.ReleaseGraphics();
 

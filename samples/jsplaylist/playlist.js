@@ -195,7 +195,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 				if (!this.obj.cover_img) {
 					this.obj.cover_img = g_image_cache.get(this.metadb, this.obj.group_key);
 				}
-				DrawCover(gr, this.obj.cover_img  || g_stub_image, cv_x, cv_y, cv_s, cv_s);
+				DrawCover(gr, this.obj.cover_img || g_stub_image, cv_x, cv_y, cv_s, cv_s);
 			} else {
 				cover_size = g_z4;
 			}

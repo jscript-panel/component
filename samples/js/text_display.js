@@ -30,9 +30,9 @@ function _text_display(x, y, w, h) {
 			albumart.w = (panel.w / 2) - margin;
 			albumart.h = panel.h - (margin * 2);
 			this.x = (margin * 2) + albumart.w;
-			this.y = 0;
+			this.y = margin;
 			this.w = albumart.w - margin;
-			this.h = panel.h;
+			this.h = panel.h - (margin * 2);
 			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
 			break;
 		}

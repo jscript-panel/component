@@ -620,7 +620,7 @@ function _thumbs() {
 			return;
 		}
 		var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist) + '/+images';
-		var task_id = utils.HTTPRequestAsync(window.ID, 0, url);
+		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
 		this.base[task_id] = this.folder + utils.ReplaceIllegalChars(this.artist) + '_';
 	}
 
@@ -705,6 +705,10 @@ function _thumbs() {
 		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
 		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 0) // 0 external viewer 1 fb2k viewer 2 explorer
 	};
+	this.headers = JSON.stringify({
+		'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
+		'Referer' : 'https://www.last.fm',
+	});
 	this.close_btn = new _sb(chars.close, 0, 0, _scale(12), _scale(12), _.bind(function () { return this.properties.mode.value == 0 && this.overlay; }, this), _.bind(function () { this.enable_overlay(false); }, this));
 	window.SetInterval(this.interval_func, 1000);
 }

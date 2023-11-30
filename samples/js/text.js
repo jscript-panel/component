@@ -31,6 +31,27 @@ function _text(mode, x, y, w, h) {
 			var text = '';
 
 			switch (this.mode) {
+			case 'allmusic':
+				var temp_artist = panel.tf('%album artist%');
+				var temp_album = panel.tf('%album%');
+				if (this.artist == temp_artist && this.album == temp_album) {
+					return;
+				}
+				this.artist = temp_artist;
+				this.album = temp_album;
+				this.filename = _artistFolder(this.artist) + 'allmusic.' + utils.ReplaceIllegalChars(this.album) + '.txt';
+				this.review_url = '';
+				if (utils.IsFile(this.filename)) {
+					text = utils.ReadUTF8(this.filename).trim();
+					if (text.length == 0) {
+						// empty files left by previous version can be removed
+						utils.RemovePath(this.filename);
+						this.get();
+					}
+				} else {
+					this.get();
+				}
+				break;
 			case 'lastfm_bio':
 				var temp_artist = panel.tf(DEFAULT_ARTIST);
 				if (this.artist == temp_artist) {
@@ -146,6 +167,11 @@ function _text(mode, x, y, w, h) {
 
 	this.rbtn_up = function (x, y) {
 		switch (this.mode) {
+		case 'allmusic':
+			this.cb = utils.GetClipboardText();
+			panel.m.AppendMenuItem(EnableMenuIf(panel.metadb && this.cb.length > 0 && _tagged(this.artist) && _tagged(this.album)), 1000, 'Paste text from clipboard');
+			panel.m.AppendMenuSeparator();
+			break;
 		case 'console':
 			panel.m.AppendMenuItem(MF_STRING, 1010, 'Clear');
 			panel.m.AppendMenuSeparator();
@@ -187,6 +213,11 @@ function _text(mode, x, y, w, h) {
 
 	this.rbtn_up_done = function (idx) {
 		switch (idx) {
+		case 1000:
+			_save(this.filename, this.cb);
+			this.reset();
+			this.metadb_changed();
+			break;
 		case 1010:
 			console.ClearBacklog();
 			break;
@@ -261,6 +292,8 @@ function _text(mode, x, y, w, h) {
 
 	this.header_text = function () {
 		switch (this.mode) {
+		case 'allmusic':
+			return panel.tf('%album artist%[ - %album%]');
 		case 'console':
 			return 'Console';
 		case 'lastfm_bio':
@@ -277,6 +310,124 @@ function _text(mode, x, y, w, h) {
 
 	this.init = function () {
 		switch (this.mode) {
+		case 'allmusic':
+			this.get = function () {
+				var url;
+				if (this.review_url.length) {
+					url = this.review_url;
+				} else {
+					if (!_tagged(this.artist) || !_tagged(this.album)) {
+						return;
+					}
+					if (this.artist.toLowerCase() == 'various artists') {
+						url = this.search_base + this.album;
+					} else {
+						url = this.search_base + this.artist + ' ' + this.album;
+					}
+					if (this.history[url]) return;
+					this.history[url] = true;
+				}
+
+				var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
+				this.filenames[task_id] = this.filename;
+			}
+
+			this.http_request_done = function (id, success, response_text) {
+				var filename = this.filenames[id];
+				if (!filename) return;
+				if (!success) return console.log(N, response_text);
+
+				if (this.review_url.length) {
+					this.review_url = '';
+					var content = this.parse_review(response_text);
+					if (content.length) {
+						console.log(N, 'A review was found and saved.');
+						_save(filename, content);
+						this.reset();
+						this.metadb_changed();
+					} else {
+						console.log(N, 'No review was found on the page for this album.');
+					}
+				} else {
+					this.parse_search_results(response_text);
+				}
+			}
+
+			this.parse_review = function (response_text) {
+				if (response_text.length == 0) return '';
+				var p = _.first(_getElementsByTagName(response_text, 'p'));
+				if (typeof p == 'object') {
+					return p.innerText;
+				}
+				return '';
+			}
+
+			this.parse_search_results = function (response_text) {
+				try {
+					this.review_url = '';
+					_(_getElementsByTagName(response_text, 'div'))
+						.filter({className : 'info'})
+						.forEach(function (info_div) {
+							var artist, album, url;
+							var divs = info_div.getElementsByTagName('div');
+
+							for (var i = 0; i < divs.length; i++) {
+								var div = divs[i];
+								var className = div.className;
+								var a = _.first(div.getElementsByTagName('a'));
+
+								if (typeof a == 'object') {
+									if (className == 'artist') {
+										artist = a.innerText;
+									} else if (className == 'title') {
+										album = a.innerText;
+										url = a.href + '/reviewAjax';
+									}
+								} else if (className == 'artist') {
+									artist = 'Various Artists';
+								}
+							}
+
+							if (this.is_match(artist, album)) {
+								this.review_url = url;
+								return false;
+							}
+						}, this)
+						.value();
+					if (this.review_url.length) {
+						console.log(N, 'A page was found for ' + _q(this.album) + '. Now checking for review...');
+						this.get();
+					} else {
+						console.log(N, 'A match could not be found for ' + _q(this.album));
+					}
+				} catch (e) {
+					console.log(N, 'Could not parse Allmusic server response.');
+				}
+			}
+
+			this.is_match = function (artist, album) {
+				if (panel.metadb) {
+					return this.tidy(artist) == this.tidy(this.artist) && this.tidy(album) == this.tidy(this.album);
+				}
+				return false;
+			}
+
+			this.tidy = function (value) {
+				var tfo = fb.TitleFormat('$replace($lower($ascii(' + _fbEscape(value) + ')), & ,, and ,)');
+				var str = tfo.EvalWithMetadb(panel.metadb);
+				tfo.Dispose();
+				return str;
+			}
+
+			utils.CreateFolder(folders.artists);
+			this.review_url = '';
+			this.search_base = 'https://www.allmusic.com/search/albums/';
+			this.history = {};
+			this.headers = JSON.stringify({
+				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
+				'Referer' : 'https://allmusic.com',
+			});
+			break;
 		case 'console':
 			this.console_refresh = function () {
 				this.clear_layout();

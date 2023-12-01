@@ -1297,6 +1297,7 @@ function get_font() {
 function get_colours() {
 	g_dynamic = false;
 	g_colour_mood = window.GetProperty("JSPLAYLIST.COLOUR.MOOD", RGB(196,30,35));
+	g_colour_rating = window.GetProperty("JSPLAYLIST.COLOUR.RATING", RGB(255, 128, 0));
 
 	if (properties.enableDynamicColours) {
 		var arr = GetNowPlayingColours();
@@ -1317,7 +1318,7 @@ function get_colours() {
 		g_colour_selection = window.GetProperty("JSPLAYLIST.COLOUR BACKGROUND SELECTED", RGB(130,150,255));
 		g_colour_text = window.GetProperty("JSPLAYLIST.COLOUR TEXT NORMAL", RGB(180, 180, 180));
 		g_colour_selected_text = DetermineTextColour(g_colour_selection);
-		g_colour_highlight = g_colour_text;
+		g_colour_highlight = window.GetProperty("JSPLAYLIST.COLOUR TEXT HIGHLIGHT", g_colour_text);
 		g_themed = false;
 	} else {
 		if (window.IsDefaultUI) {
@@ -1412,7 +1413,7 @@ var g_colour_background = 0;
 var g_colour_selection = 0;
 var g_colour_highlight = 0;
 var g_colour_mood = 0;
-var g_colour_rating = RGB(255, 128, 0);
+var g_colour_rating = 0;
 var g_font_size = 0;
 var g_dynamic = false;
 

@@ -42,6 +42,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 		var txt_color = is_item_selected ? g_colour_selected_text : g_colour_text;
 		var fader_txt = setAlpha(txt_color, 180);
 		var rating_colour = g_dynamic ? txt_color : g_colour_rating;
+		var mood_colour = g_dynamic ? txt_color : g_colour_mood;
 
 		if (is_item_selected) {
 			if (g_themed) {
@@ -125,7 +126,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 						this.mood = StripCode(tf_arr[j], chars.etx) || 0;
 					}
 
-					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_awesome_20, g_colour_mood, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
+					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_awesome_20, mood_colour, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
 					break;
 				case "Rating":
 					cw = p.headerBar.columns[j].w - g_z5;
@@ -147,12 +148,18 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_awesome_20, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
 					break;
 				default:
-					if (tf_arr[j] != "null") DrawColouredText(gr, tf_arr[j], g_font_12, txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align, 2, 1, 1);
-					if (tf2_arr[j] != "null") DrawColouredText(gr, tf2_arr[j], g_font_12, fader_txt, cx, tf2_y, cw, tf2_h, p.headerBar.columns[j].align, 2, 1, 1);
+					this.drswText(gr, tf_arr[j], txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);
+					if (cList.enableExtraLine) this.drswText(gr, tf2_arr[j], fader_txt, cx, tf2_y, cw, tf2_h, p.headerBar.columns[j].align);
 					break;
 				}
 			}
 		}
+	}
+
+	this.drswText = function (gr, text, colour, x, y, w, h, align) {
+		if (!text || text == "null") return;
+		if (g_dynamic) text = StripCode(text, chars.etx);
+		DrawColouredText(gr, text, g_font_12, colour, x, y, w, h, align, 2, 1, 1);
 	}
 
 	this.draw = function (gr, x, y, w, h) {
@@ -1070,10 +1077,12 @@ function oList(object_name) {
 		sub.AppendMenuItem(CheckMenuIf(properties.enableCustomColours), 3, "Enable Custom");
 		sub.AppendMenuSeparator();
 		sub.AppendMenuItem(colour_flag, 4, "Text");
-		sub.AppendMenuItem(colour_flag, 5, "Background");
-		sub.AppendMenuItem(colour_flag, 6, "Selected background");
+		sub.AppendMenuItem(colour_flag, 5, "Highlight");
+		sub.AppendMenuItem(colour_flag, 6, "Background");
+		sub.AppendMenuItem(colour_flag, 7, "Selected background");
 		sub.AppendMenuSeparator();
-		sub.AppendMenuItem(MF_STRING, 7, "Mood");
+		sub.AppendMenuItem(MF_STRING, 8, "Mood");
+		sub.AppendMenuItem(MF_STRING, 9, "Rating");
 		sub.AppendTo(menu, MF_STRING, "Colours");
 
 		var items = plman.GetPlaylistSelectedItems(g_active_playlist);
@@ -1081,18 +1090,18 @@ function oList(object_name) {
 			menu.AppendMenuSeparator();
 
 			if (items.Count == 1) {
-				menu.AppendMenuItem(MF_STRING, 9, "Play");
-				menu.SetDefault(9);
+				menu.AppendMenuItem(MF_STRING, 20, "Play");
+				menu.SetDefault(20);
 				menu.AppendMenuSeparator();
 			}
 
-			menu.AppendMenuItem(can_remove_flag, 10, "Crop");
-			menu.AppendMenuItem(can_remove_flag, 11, "Remove");
-			menu.AppendMenuItem(MF_STRING, 12, "Invert selection");
+			menu.AppendMenuItem(can_remove_flag, 21, "Crop");
+			menu.AppendMenuItem(can_remove_flag, 22, "Remove");
+			menu.AppendMenuItem(MF_STRING, 23, "Invert selection");
 			menu.AppendMenuSeparator();
-			menu.AppendMenuItem(can_remove_flag, 13, "Cut");
-			menu.AppendMenuItem(MF_STRING, 14, "Copy");
-			menu.AppendMenuItem(can_paste_flag, 15, "Paste");
+			menu.AppendMenuItem(can_remove_flag, 24, "Cut");
+			menu.AppendMenuItem(MF_STRING, 25, "Copy");
+			menu.AppendMenuItem(can_paste_flag, 26, "Paste");
 			menu.AppendMenuSeparator();
 			context.InitContextPlaylist();
 			context.BuildMenu(menu, 1000);
@@ -1128,43 +1137,53 @@ function oList(object_name) {
 			on_colours_changed();
 			break;
 		case 5:
+			g_colour_highlight = utils.ColourPicker(g_colour_highlight);
+			window.SetProperty("JSPLAYLIST.COLOUR TEXT HIGHLIGHT", g_colour_highlight);
+			on_colours_changed();
+			break;
+		case 6:
 			g_colour_background = utils.ColourPicker(g_colour_background);
 			window.SetProperty("JSPLAYLIST.COLOUR BACKGROUND NORMAL", g_colour_background);
 			on_colours_changed();
 			break;
-		case 6:
+		case 7:
 			g_colour_selection = utils.ColourPicker(g_colour_selection);
 			window.SetProperty("JSPLAYLIST.COLOUR BACKGROUND SELECTED", g_colour_selection);
 			on_colours_changed();
 			break;
-		case 7:
+		case 8:
 			g_colour_mood = utils.ColourPicker(g_colour_mood);
 			window.SetProperty("JSPLAYLIST.COLOUR.MOOD", g_colour_mood);
 			window.Repaint();
 			break;
 		case 9:
+			g_colour_rating = utils.ColourPicker(g_colour_rating);
+			window.SetProperty("JSPLAYLIST.COLOUR.RATING", g_colour_rating);
+			window.Repaint();
+			break;
+		case 20:
 			plman.ExecutePlaylistDefaultAction(g_active_playlist, p.list.focusedTrackId);
 			break;
-		case 10:
+		case 21:
 			plman.UndoBackup(g_active_playlist);
 			plman.RemovePlaylistSelection(g_active_playlist, true);
 			break;
-		case 11:
+		case 22:
 			plman.UndoBackup(g_active_playlist);
 			plman.RemovePlaylistSelection(g_active_playlist);
 			break;
-		case 12:
+		case 23:
 			plman.InvertSelection(g_active_playlist);
 			break;
-		case 13:
+		case 24:
 			items.CopyToClipboard();
 			plman.UndoBackup(g_active_playlist);
 			plman.RemovePlaylistSelection(g_active_playlist);
 			break;
-		case 14:
+		case 25:
 			items.CopyToClipboard();
 			break;
-		case 15:
+		case 26:
 			var count = plman.GetPlaylistItemCount(g_active_playlist);
 			var base = plman.GetPlaylistFocusItemIndex(g_active_playlist);
 			if (base < count) {

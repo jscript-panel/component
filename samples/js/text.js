@@ -406,17 +406,11 @@ function _text(mode, x, y, w, h) {
 			}
 
 			this.is_match = function (artist, album) {
-				if (panel.metadb) {
-					return this.tidy(artist) == this.tidy(this.artist) && this.tidy(album) == this.tidy(this.album);
-				}
-				return false;
+				return this.tidy(artist) == this.tidy(this.artist) && this.tidy(album) == this.tidy(this.album);
 			}
 
-			this.tidy = function (value) {
-				var tfo = fb.TitleFormat('$replace($lower($ascii(' + _fbEscape(value) + ')), & ,, and ,)');
-				var str = tfo.EvalWithMetadb(panel.metadb);
-				tfo.Dispose();
-				return str;
+			this.tidy = function (str) {
+				return utils.ConvertToAscii(str).toLowerCase().replace(/ and /g, '').replace(/ & /g, '');
 			}
 
 			utils.CreateFolder(folders.artists);

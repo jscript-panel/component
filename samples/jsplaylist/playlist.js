@@ -148,15 +148,15 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_awesome_20, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
 					break;
 				default:
-					this.drswText(gr, tf_arr[j], txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);
-					if (cList.enableExtraLine) this.drswText(gr, tf2_arr[j], fader_txt, cx, tf2_y, cw, tf2_h, p.headerBar.columns[j].align);
+					this.drawText(gr, tf_arr[j], txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);
+					if (cList.enableExtraLine) this.drawText(gr, tf2_arr[j], fader_txt, cx, tf2_y, cw, tf2_h, p.headerBar.columns[j].align);
 					break;
 				}
 			}
 		}
 	}
 
-	this.drswText = function (gr, text, colour, x, y, w, h, align) {
+	this.drawText = function (gr, text, colour, x, y, w, h, align) {
 		if (!text || text == "null") return;
 		if (g_dynamic) text = StripCode(text, chars.etx);
 		DrawColouredText(gr, text, g_font_12, colour, x, y, w, h, align, 2, 1, 1);

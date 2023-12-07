@@ -1,0 +1,180 @@
+// ==PREPROCESSOR==
+// @name "Last.fm Bio"
+// @author "marc2003"
+// @import "%fb2k_component_path%helpers.txt"
+// @import "%fb2k_component_path%samples\js\lodash.min.js"
+// @import "%fb2k_component_path%samples\js\common.js"
+// @import "%fb2k_component_path%samples\js\panel.js"
+// @import "%fb2k_component_path%samples\js\lastfm.js"
+// @import "%fb2k_component_path%samples\js\thumbs.js"
+// @import "%fb2k_component_path%samples\js\text.js"
+// ==/PREPROCESSOR==
+
+var margin = _scale(12);
+
+var panel = new _panel();
+var lastfm = new _lastfm();
+var text = new _text('lastfm_bio', 0, 0, 0, 0);
+var thumbs = new _thumbs();
+
+text.paint = function (gr) {
+	var colour = thumbs.blur_img ? RGB(255, 255, 255) : panel.colours.text;
+	var colourh = thumbs.blur_img ? RGB(255, 255, 255) : panel.colours.highlight;
+
+	gr.WriteText(this.header_text(), panel.fonts.title, colourh, this.x, margin, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+
+	if (this.text_layout) {
+		gr.WriteTextLayout(this.text_layout, colour, this.x, this.y + margin, this.w, this.ha, this.offset);
+		this.up_btn.paint(gr, colour);
+		this.down_btn.paint(gr, colour);
+	}
+}
+
+thumbs.image_containsxXY = function (x, y) {
+	return this.images.length && this.containsXY(x, y);
+}
+
+thumbs.move = function (x, y) {
+	this.mx = x;
+	this.my = y;
+	return this.containsXY(x, y);
+}
+
+thumbs.paint = function (gr) {
+	if (this.images.length) {
+		_drawImage(gr, this.blur_img, 0, 0, panel.w, panel.h, image.crop_top);
+		_drawOverlay(gr, 0, 0, panel.w, panel.h, 120);
+		this.image_xywh = _drawImage(gr, thumbs.images[thumbs.image], this.x, this.y, this.w, this.h, image.crop_top);
+	} else {
+		this.image_xywh = [];
+	}
+}
+
+thumbs.size = function () {}
+
+thumbs.wheel = function (s) {
+	if (this.containsXY(this.mx, this.my)) {
+		if (this.images.length > 1) {
+			this.image -= s;
+			if (this.image < 0) {
+				this.image = this.images.length - 1;
+			}
+			if (this.image >= this.images.length) {
+				this.image = 0;
+			}
+			window.Repaint();
+		}
+		return true;
+	}
+	return false;
+}
+
+panel.item_focus_change();
+
+function on_colours_changed() {
+	panel.colours_changed();
+	window.Repaint();
+}
+
+function on_download_file_done(path, success, error_text) {
+	text.download_file_done(path, success, error_text);
+}
+
+function on_font_changed() {
+	panel.font_changed();
+	window.Repaint();
+}
+
+function on_http_request_done(task_id, success, response_text) {
+	thumbs.http_request_done(task_id, success, response_text);
+}
+
+function on_item_focus_change() {
+	if (panel.selection.value == 0 && fb.IsPlaying) return;
+	panel.item_focus_change();
+}
+
+function on_key_down(k) {
+	text.key_down(k);
+	thumbs.key_down(k);
+}
+
+function on_metadb_changed(handles, fromhook) {
+	if (fromhook) return;
+	text.metadb_changed();
+	thumbs.metadb_changed();
+}
+
+function on_mouse_lbtn_up(x, y) {
+	text.lbtn_up(x, y);
+	thumbs.lbtn_up(x, y);
+}
+
+function on_mouse_move(x, y) {
+	text.move(x, y);
+	thumbs.move(x, y);
+}
+
+function on_mouse_lbtn_dblclk(x, y) {
+	thumbs.lbtn_dblclk(x, y);
+}
+
+function on_mouse_rbtn_up(x, y) {
+	if (text.containsXY(x, y)) {
+		return panel.rbtn_up(x, y, text);
+	}
+	return panel.rbtn_up(x, y, thumbs);
+}
+
+function on_mouse_wheel(s) {
+	if (thumbs.wheel(s)) return;
+	text.wheel(s);
+}
+
+function on_paint(gr) {
+	panel.paint(gr);
+	thumbs.paint(gr);
+	text.paint(gr);
+}
+
+function on_playback_dynamic_info_track(type) {
+	if (type == 0) {
+		text.metadb_changed();
+		thumbs.metadb_changed();
+	}
+}
+
+function on_playback_new_track() {
+	panel.item_focus_change();
+	thumbs.playback_new_track();
+}
+
+function on_playback_stop(reason) {
+	if (reason != 2) {
+		panel.item_focus_change();
+	}
+}
+
+function on_playback_time() {
+	thumbs.playback_time();
+}
+
+function on_playlist_switch() {
+	on_item_focus_change();
+}
+
+function on_size() {
+	panel.size();
+	var half = panel.w / 2;
+
+	thumbs.x = margin;
+	thumbs.y = margin;
+	thumbs.w = half - (margin * 2);
+	thumbs.h = panel.h - (margin * 2);
+
+	text.x = half;
+	text.y = _scale(24);
+	text.w = half - margin;
+	text.h = panel.h - text.y;
+	text.size();
+}

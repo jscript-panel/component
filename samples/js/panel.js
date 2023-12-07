@@ -1,10 +1,6 @@
 function _panel(options) {
-	this.item_focus_change = function () {
-		if (!this.metadb_func) return;
-
-		this.metadb = this.selection.value == 0 && fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
-		if (!this.metadb) _tt('');
-		on_metadb_changed();
+	this.calc_text_width = function (text) {
+		return utils.CalcTextWidth(text, this.fonts.name, _scale(this.fonts.size.value));
 	}
 
 	this.colours_changed = function () {
@@ -19,6 +15,11 @@ function _panel(options) {
 		}
 	}
 
+	this.draw_header = function (gr, text) {
+		gr.WriteText(text, this.fonts.title, this.colours.highlight, LM, 0, this.w - (LM * 2), TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+		gr.DrawLine(LM, TM + 0.5, this.w - LM, TM + 0.5, 1, this.colours.highlight);
+	}
+
 	this.font_changed = function () {
 		this.fonts.name = JSON.parse(window.IsDefaultUI ? window.GetFontDUI(0) : window.GetFontCUI(0)).Name;
 		this.fonts.normal = JSON.stringify({Name:this.fonts.name,Size:_scale(this.fonts.size.value)});
@@ -29,18 +30,12 @@ function _panel(options) {
 		_.invoke(this.display_objects, 'refresh', true);
 	}
 
-	this.draw_header = function (gr, text) {
-		gr.WriteText(text, this.fonts.title, this.colours.highlight, LM, 0, this.w - (LM * 2), TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
-		gr.DrawLine(LM, TM + 0.5, this.w - LM, TM + 0.5, 1, this.colours.highlight);
-	}
+	this.item_focus_change = function () {
+		if (!this.metadb_func) return;
 
-	this.calc_text_width = function (text) {
-		return utils.CalcTextWidth(text, this.fonts.name, _scale(this.fonts.size.value));
-	}
-
-	this.size = function () {
-		this.w = window.Width;
-		this.h = window.Height;
+		this.metadb = this.selection.value == 0 && fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
+		if (!this.metadb) _tt('');
+		on_metadb_changed();
 	}
 
 	this.paint = function (gr) {
@@ -136,6 +131,11 @@ function _panel(options) {
 			break;
 		}
 		return true;
+	}
+
+	this.size = function () {
+		this.w = window.Width;
+		this.h = window.Height;
 	}
 
 	this.tf = function (t) {

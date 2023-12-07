@@ -1,21 +1,23 @@
 function _volume(x, y, w, h) {
-	this.volume_change = function () {
-		window.RepaintRect(this.x, this.y, this.w, this.h);
-	}
-
 	this.containsXY = function (x, y) {
 		var m = this.drag ? 200 : 0;
 		return x > this.x - m && x < this.x + this.w + (m * 2) && y > this.y - m && y < this.y + this.h + (m * 2);
 	}
 
-	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (s == 1) {
-				fb.VolumeUp();
-			} else {
-				fb.VolumeDown();
+	this.lbtn_down = function (x, y) {
+		if (this.containsXY(x, y)) {
+			this.drag = true;
+			return true;
+		}
+		return false;
+	}
+
+	this.lbtn_up = function (x, y) {
+		if (this.containsXY(x, y)) {
+			if (this.drag) {
+				this.drag = false;
+				fb.Volume = this.drag_vol;
 			}
-			_tt('');
 			return true;
 		}
 		return false;
@@ -44,27 +46,25 @@ function _volume(x, y, w, h) {
 		return false;
 	}
 
-	this.lbtn_down = function (x, y) {
-		if (this.containsXY(x, y)) {
-			this.drag = true;
-			return true;
-		}
-		return false;
-	}
-
-	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (this.drag) {
-				this.drag = false;
-				fb.Volume = this.drag_vol;
-			}
-			return true;
-		}
-		return false;
-	}
-
 	this.pos = function () {
 		return this.w * vol2pos(fb.Volume);
+	}
+
+	this.volume_change = function () {
+		window.RepaintRect(this.x, this.y, this.w, this.h);
+	}
+
+	this.wheel = function (s) {
+		if (this.containsXY(this.mx, this.my)) {
+			if (s == 1) {
+				fb.VolumeUp();
+			} else {
+				fb.VolumeDown();
+			}
+			_tt('');
+			return true;
+		}
+		return false;
 	}
 
 	this.x = x;

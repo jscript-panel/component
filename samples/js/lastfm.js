@@ -1,4 +1,8 @@
 function _lastfm() {
+	this.get_username = function () {
+		return _.get(_jsonParseFile(this.json_file), 'username', '');
+	}
+
 	this.notify_data = function (name, data) {
 		if (name == '2K3.NOTIFY.LASTFM') {
 			this.username = this.get_username();
@@ -18,10 +22,6 @@ function _lastfm() {
 			window.NotifyOthers('2K3.NOTIFY.LASTFM', 'update');
 			this.notify_data('2K3.NOTIFY.LASTFM', 'update');
 		}
-	}
-
-	this.get_username = function () {
-		return _.get(_jsonParseFile(this.json_file), 'username', '');
 	}
 
 	this.write_username = function () {

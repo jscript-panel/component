@@ -1,6 +1,45 @@
 function _albumart(x, y, w, h) {
-	this.paint = function (gr) {
-		_drawImage(gr, this.img, this.x, this.y, this.w, this.h, this.properties.aspect.value);
+	this.containsXY = function (x, y) {
+		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+	}
+
+	this.key_down = function (k) {
+		switch (k) {
+		case VK_LEFT:
+		case VK_UP:
+			this.wheel(1);
+			return true;
+		case VK_RIGHT:
+		case VK_DOWN:
+			this.wheel(-1);
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	this.lbtn_dblclk = function (x, y) {
+		if (this.containsXY(x, y)) {
+			if (panel.metadb) {
+				switch (this.properties.double_click_mode.value) {
+				case 0:
+					if (panel.metadb.Path == this.path) {
+						_explorer(this.path);
+					} else if (utils.IsFile(this.path) || this.path.indexOf('http') == 0) {
+						utils.Run(this.path);
+					}
+					break;
+				case 1:
+					panel.metadb.ShowAlbumArtViewer(this.properties.id.value);
+					break;
+				case 2:
+					if (utils.IsFile(this.path)) _explorer(this.path);
+					break;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	this.metadb_changed = function () {
@@ -31,27 +70,6 @@ function _albumart(x, y, w, h) {
 		window.Repaint();
 	}
 
-	this.containsXY = function (x, y) {
-		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
-	}
-
-	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			var id = this.properties.id.value - s;
-			if (id < 0) {
-				id = 4;
-			}
-			if (id > 4) {
-				id = 0;
-			}
-			this.properties.id.value = id;
-			_tt('');
-			this.metadb_changed();
-			return true;
-		}
-		return false;
-	}
-
 	this.move = function (x, y) {
 		this.mx = x;
 		this.my = y;
@@ -71,28 +89,8 @@ function _albumart(x, y, w, h) {
 		return false;
 	}
 
-	this.lbtn_dblclk = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (panel.metadb) {
-				switch (this.properties.double_click_mode.value) {
-				case 0:
-					if (panel.metadb.Path == this.path) {
-						_explorer(this.path);
-					} else if (utils.IsFile(this.path) || this.path.indexOf('http') == 0) {
-						utils.Run(this.path);
-					}
-					break;
-				case 1:
-					panel.metadb.ShowAlbumArtViewer(this.properties.id.value);
-					break;
-				case 2:
-					if (utils.IsFile(this.path)) _explorer(this.path);
-					break;
-				}
-			}
-			return true;
-		}
-		return false;
+	this.paint = function (gr) {
+		_drawImage(gr, this.img, this.x, this.y, this.w, this.h, this.properties.aspect.value);
 	}
 
 	this.rbtn_up = function (x, y) {
@@ -155,19 +153,21 @@ function _albumart(x, y, w, h) {
 		}
 	}
 
-	this.key_down = function (k) {
-		switch (k) {
-		case VK_LEFT:
-		case VK_UP:
-			this.wheel(1);
+	this.wheel = function (s) {
+		if (this.containsXY(this.mx, this.my)) {
+			var id = this.properties.id.value - s;
+			if (id < 0) {
+				id = 4;
+			}
+			if (id > 4) {
+				id = 0;
+			}
+			this.properties.id.value = id;
+			_tt('');
+			this.metadb_changed();
 			return true;
-		case VK_RIGHT:
-		case VK_DOWN:
-			this.wheel(-1);
-			return true;
-		default:
-			return false;
 		}
+		return false;
 	}
 
 	this.x = x;

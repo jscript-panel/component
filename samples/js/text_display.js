@@ -1,46 +1,37 @@
 window.SetProperty('2K3.ARTREADER.ID', 0);
 
 function _text_display(x, y, w, h) {
-	this.size = function () {
-		this.text_height = 0;
-		var margin = _scale(12);
-
-		switch (this.properties.layout.value) {
-		case 0:
-			this.x = margin;
-			this.y = 0;
-			this.w = panel.w - (margin * 2);
-			this.h = panel.h;
-			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
-			break;
-		case 1:
-			this.x = margin;
-			this.w = panel.w - (margin * 2);
-			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
-			this.y = panel.h - this.text_height - (margin * 2);
-			this.h = this.text_height + (margin * 2);
-			albumart.x = margin;
-			albumart.y = margin;
-			albumart.w = panel.w - (margin * 2);
-			albumart.h = panel.h - this.h - margin;
-			break;
-		case 2:
-			albumart.x = margin;
-			albumart.y = margin;
-			albumart.w = (panel.w / 2) - margin;
-			albumart.h = panel.h - (margin * 2);
-			this.x = (margin * 2) + albumart.w;
-			this.y = margin;
-			this.w = albumart.w - margin;
-			this.h = panel.h - (margin * 2);
-			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
-			break;
+	this.clear_layout = function () {
+		if (this.text_layout) {
+			this.text_layout.Dispose();
+			this.text_layout = null;
 		}
+		this.text = '';
+	}
 
-		if (this.text_height < this.h) this.offset = 0;
-		else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
+	this.containsXY = function (x, y) {
+		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+	}
 
-		this.scroll_step = _scale(panel.fonts.size.value) * 4;
+	this.lbtn_up = function (x, y) {
+		return this.containsXY(x, y);
+	}
+
+	this.metadb_changed = function () {
+		this.refresh();
+	}
+
+	this.move = function (x, y) {
+		this.mx = x;
+		this.my = y;
+		window.SetCursor(IDC_ARROW);
+		return this.containsXY(x, y);
+	}
+
+	this.playback_time = function () {
+		if (this.properties.per_second.enabled) {
+			this.refresh();
+		}
 	}
 
 	this.paint = function (gr) {
@@ -55,98 +46,6 @@ function _text_display(x, y, w, h) {
 
 		if (!this.text_layout) return;
 		gr.WriteTextLayout(this.text_layout, this.colour_string, this.x, this.y, this.w, this.h, this.offset);
-	}
-
-	this.playback_time = function () {
-		if (this.properties.per_second.enabled) {
-			this.refresh();
-		}
-	}
-
-	this.metadb_changed = function () {
-		this.refresh();
-	}
-
-	this.refresh = function (force) {
-		this.default_colour = this.properties.albumart.enabled ? RGB(240, 240, 240) : panel.colours.text;
-
-		if (panel.metadb) {
-			var tmp = '';
-
-			if (!panel.tfo[this.properties.text_tf.value]) {
-				panel.tfo[this.properties.text_tf.value] = fb.TitleFormat(this.properties.text_tf.value);
-			}
-			var tfo = panel.tfo[this.properties.text_tf.value];
-
-			if (panel.selection.value == 0 && fb.IsPlaying) {
-				var loc = plman.GetPlayingItemLocation();
-				if (loc.IsValid) {
-					tmp = tfo.EvalPlaylistItem(loc.PlaylistIndex, loc.PlaylistItemIndex);
-				} else {
-					tmp = tfo.Eval();
-				}
-			} else {
-				var PlaylistIndex = plman.ActivePlaylist;
-				var PlaylistItemIndex = plman.GetPlaylistFocusItemIndex(PlaylistIndex);
-				tmp = tfo.EvalPlaylistItem(PlaylistIndex, PlaylistItemIndex);
-			}
-
-			if (force || tmp != this.text) {
-				this.clear_layout()
-				this.text = tmp;
-				if (this.text.length) {
-					var font_obj = JSON.parse(panel.fonts.normal);
-					var font_styles = GetFontStyles(this.text, font_obj);
-					var colour_styles = GetColourStyles(this.text, this.default_colour);
-					this.colour_string = JSON.stringify(colour_styles);
-					if (this.properties.layout.value == 1) {
-						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), 2, 2);
-					} else {
-						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), this.properties.halign.value, this.properties.valign.value);
-					}
-				}
-			}
-		} else {
-			this.clear_layout();
-		}
-		this.size();
-		window.Repaint();
-	}
-
-	this.clear_layout = function () {
-		if (this.text_layout) {
-			this.text_layout.Dispose();
-			this.text_layout = null;
-		}
-		this.text = '';
-	}
-
-	this.containsXY = function (x, y) {
-		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
-	}
-
-	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.text_height > this.h) {
-				this.offset += s * this.scroll_step;
-				if (this.offset > 0) this.offset = 0;
-				else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
-				window.RepaintRect(this.x, this.y, this.w, this.h);
-			}
-			return true;
-		}
-		return false;
-	}
-
-	this.move = function (x, y) {
-		this.mx = x;
-		this.my = y;
-		window.SetCursor(IDC_ARROW);
-		return this.containsXY(x, y);
-	}
-
-	this.lbtn_up = function (x, y) {
-		return this.containsXY(x, y);
 	}
 
 	this.rbtn_up = function (x, y) {
@@ -226,6 +125,107 @@ function _text_display(x, y, w, h) {
 			this.refresh(true);
 			break;
 		}
+	}
+
+	this.refresh = function (force) {
+		this.default_colour = this.properties.albumart.enabled ? RGB(240, 240, 240) : panel.colours.text;
+
+		if (panel.metadb) {
+			var tmp = '';
+
+			if (!panel.tfo[this.properties.text_tf.value]) {
+				panel.tfo[this.properties.text_tf.value] = fb.TitleFormat(this.properties.text_tf.value);
+			}
+			var tfo = panel.tfo[this.properties.text_tf.value];
+
+			if (panel.selection.value == 0 && fb.IsPlaying) {
+				var loc = plman.GetPlayingItemLocation();
+				if (loc.IsValid) {
+					tmp = tfo.EvalPlaylistItem(loc.PlaylistIndex, loc.PlaylistItemIndex);
+				} else {
+					tmp = tfo.Eval();
+				}
+			} else {
+				var PlaylistIndex = plman.ActivePlaylist;
+				var PlaylistItemIndex = plman.GetPlaylistFocusItemIndex(PlaylistIndex);
+				tmp = tfo.EvalPlaylistItem(PlaylistIndex, PlaylistItemIndex);
+			}
+
+			if (force || tmp != this.text) {
+				this.clear_layout()
+				this.text = tmp;
+				if (this.text.length) {
+					var font_obj = JSON.parse(panel.fonts.normal);
+					var font_styles = GetFontStyles(this.text, font_obj);
+					var colour_styles = GetColourStyles(this.text, this.default_colour);
+					this.colour_string = JSON.stringify(colour_styles);
+					if (this.properties.layout.value == 1) {
+						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), 2, 2);
+					} else {
+						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), this.properties.halign.value, this.properties.valign.value);
+					}
+				}
+			}
+		} else {
+			this.clear_layout();
+		}
+		this.size();
+		window.Repaint();
+	}
+
+	this.size = function () {
+		this.text_height = 0;
+		var margin = _scale(12);
+
+		switch (this.properties.layout.value) {
+		case 0:
+			this.x = margin;
+			this.y = 0;
+			this.w = panel.w - (margin * 2);
+			this.h = panel.h;
+			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+			break;
+		case 1:
+			this.x = margin;
+			this.w = panel.w - (margin * 2);
+			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+			this.y = panel.h - this.text_height - (margin * 2);
+			this.h = this.text_height + (margin * 2);
+			albumart.x = margin;
+			albumart.y = margin;
+			albumart.w = panel.w - (margin * 2);
+			albumart.h = panel.h - this.h - margin;
+			break;
+		case 2:
+			albumart.x = margin;
+			albumart.y = margin;
+			albumart.w = (panel.w / 2) - margin;
+			albumart.h = panel.h - (margin * 2);
+			this.x = (margin * 2) + albumart.w;
+			this.y = margin;
+			this.w = albumart.w - margin;
+			this.h = panel.h - (margin * 2);
+			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+			break;
+		}
+
+		if (this.text_height < this.h) this.offset = 0;
+		else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
+
+		this.scroll_step = _scale(panel.fonts.size.value) * 4;
+	}
+
+	this.wheel = function (s) {
+		if (this.containsXY(this.mx, this.my)) {
+			if (this.text_height > this.h) {
+				this.offset += s * this.scroll_step;
+				if (this.offset > 0) this.offset = 0;
+				else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
+				window.RepaintRect(this.x, this.y, this.w, this.h);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	panel.display_objects.push(this);

@@ -1,9 +1,65 @@
 function _seekbar(x, y, w, h, spectrogram_mode) {
+	this.containsXY = function (x, y) {
+		var m = this.drag ? 200 : 0;
+		return x > this.x - m && x < this.x + this.w + (m * 2) && y > this.y - m && y < this.y + this.h + (m * 2);
+	}
+
+	this.interval_func = _.bind(function () {
+		if (fb.IsPlaying && !fb.IsPaused && fb.PlaybackLength > 0) {
+			this.repaint_rect();
+		}
+	}, this);
+
 	this.item_focus_change = function () {
 		if (!this.spectrogram_mode || fb.IsPlaying) return;
 		this.clear_image();
 		this.image = this.get_image(fb.GetFocusItem());
 		window.Repaint();
+	}
+
+	this.lbtn_down = function (x, y) {
+		if (this.containsXY(x, y)) {
+			if (fb.IsPlaying && fb.PlaybackLength > 0) {
+				this.drag = true;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	this.lbtn_up = function (x, y) {
+		if (this.containsXY(x, y)) {
+			if (this.drag) {
+				this.drag = false;
+				fb.PlaybackTime = fb.PlaybackLength * this.drag_seek;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	this.move = function (x, y) {
+		this.mx = x;
+		this.my = y;
+		if (this.containsXY(x, y)) {
+			if (fb.IsPlaying && fb.PlaybackLength > 0) {
+				x -= this.x;
+				this.drag_seek = x < 0 ? 0 : x > this.w ? 1 : x / this.w;
+				_tt(utils.FormatDuration(fb.PlaybackLength * this.drag_seek));
+				if (this.drag) {
+					this.playback_seek();
+				}
+			}
+			this.hover = true;
+			return true;
+		}
+
+		if (this.hover) {
+			_tt('');
+		}
+		this.hover = false;
+		this.drag = false;
+		return false;
 	}
 
 	this.paint = function (gr) {
@@ -66,11 +122,6 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		}
 	}
 
-	this.containsXY = function (x, y) {
-		var m = this.drag ? 200 : 0;
-		return x > this.x - m && x < this.x + this.w + (m * 2) && y > this.y - m && y < this.y + this.h + (m * 2);
-	}
-
 	this.wheel = function (s) {
 		if (this.containsXY(this.mx, this.my)) {
 			switch (true) {
@@ -93,49 +144,12 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		return false;
 	}
 
-	this.move = function (x, y) {
-		this.mx = x;
-		this.my = y;
-		if (this.containsXY(x, y)) {
-			if (fb.IsPlaying && fb.PlaybackLength > 0) {
-				x -= this.x;
-				this.drag_seek = x < 0 ? 0 : x > this.w ? 1 : x / this.w;
-				_tt(utils.FormatDuration(fb.PlaybackLength * this.drag_seek));
-				if (this.drag) {
-					this.playback_seek();
-				}
-			}
-			this.hover = true;
-			return true;
-		}
-
-		if (this.hover) {
-			_tt('');
-		}
-		this.hover = false;
-		this.drag = false;
-		return false;
+	this.pos = function () {
+		return Math.ceil(this.w * (this.drag ? this.drag_seek : fb.PlaybackTime / fb.PlaybackLength));
 	}
 
-	this.lbtn_down = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (fb.IsPlaying && fb.PlaybackLength > 0) {
-				this.drag = true;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (this.drag) {
-				this.drag = false;
-				fb.PlaybackTime = fb.PlaybackLength * this.drag_seek;
-			}
-			return true;
-		}
-		return false;
+	this.repaint_rect = function () {
+		window.RepaintRect(this.x - _scale(75), this.y - _scale(10), this.w + _scale(150), this.h + _scale(20));
 	}
 
 	this.rbtn_up = function (x, y) {
@@ -193,20 +207,6 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		}
 	}
 
-	this.pos = function () {
-		return Math.ceil(this.w * (this.drag ? this.drag_seek : fb.PlaybackTime / fb.PlaybackLength));
-	}
-
-	this.repaint_rect = function () {
-		window.RepaintRect(this.x - _scale(75), this.y - _scale(10), this.w + _scale(150), this.h + _scale(20));
-	}
-
-	this.interval_func = _.bind(function () {
-		if (fb.IsPlaying && !fb.IsPaused && fb.PlaybackLength > 0) {
-			this.repaint_rect();
-		}
-	}, this);
-
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -217,28 +217,11 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 	this.hover = false;
 	this.drag = false;
 	this.drag_seek = 0;
-	if (this.spectrogram_mode) {
-		this.run_cmd_async_done = function (task_id) {
-			if (this.task_id == task_id) {
-				this.working = false;
-				this.image = this.get_image(fb.GetNowPlaying());
-				window.Repaint();
-			}
-		}
 
+	if (this.spectrogram_mode) {
 		this.clear_image = function () {
 			if (this.image) this.image.Dispose();
 			this.image = null;
-		}
-
-		this.get_image = function (metadb) {
-			if (!metadb) return null;
-			this.filename = spectrogram_cache + this.tfo.crc.EvalWithMetadb(metadb) + utils.ReplaceIllegalChars(this.properties.params.value, true);
-			if (this.is_cue(metadb)) {
-				this.filename += '_' + metadb.SubSong;
-			}
-			this.filename += '.webp';
-			return utils.LoadImage(this.filename)
 		}
 
 		this.generate_image = function (metadb) {
@@ -272,14 +255,45 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			this.task_id = utils.RunCmdAsync(window.ID, ffmpeg_exe, cmd);
 		}
 
-		this.pad = function (num) {
-			if (num >= 10) return num;
-			return '0' + num;
+		this.get_image = function (metadb) {
+			if (!metadb) return null;
+			this.filename = spectrogram_cache + this.tfo.crc.EvalWithMetadb(metadb) + utils.ReplaceIllegalChars(this.properties.params.value, true);
+			if (this.is_cue(metadb)) {
+				this.filename += '_' + metadb.SubSong;
+			}
+			this.filename += '.webp';
+			return utils.LoadImage(this.filename)
 		}
 
 		this.is_cue = function (metadb) {
 			return this.tfo.cue.EvalWithMetadb(metadb) == 'cue';
 		}
+
+		this.pad = function (num) {
+			if (num >= 10) return num;
+			return '0' + num;
+		}
+
+		this.run_cmd_async_done = function (task_id) {
+			if (this.task_id == task_id) {
+				this.working = false;
+				this.image = this.get_image(fb.GetNowPlaying());
+				window.Repaint();
+			}
+		}
+
+		utils.CreateFolder(spectrogram_cache);
+		this.image = null;
+		this.filename = '';
+		this.working = false;
+		this.timeout = false;
+		this.task_id = 0;
+
+		this.properties = {
+			params : new _p('2K3.SPECTROGRAM.FFMPEG.PARAMS', 's=1024x128'),
+			marker_colour : new _p('2K3.SPECTROGRAM.MARKER.COLOUR', RGB(240, 240, 240)),
+			library_only : new _p('2K3.SPECTROGRAM.LIBRARY.ONLY', true),
+		};
 
 		this.tfo = {
 			crc : fb.TitleFormat('$crc32($lower($substr(%path%,4,$len(%path%))))'),
@@ -288,19 +302,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			offset : fb.TitleFormat('[%__referenced_offset%]'),
 			tool : fb.TitleFormat('$lower(%__tool%)'),
 		};
-
-		this.properties = {
-			params : new _p('2K3.SPECTROGRAM.FFMPEG.PARAMS', 's=1024x128'),
-			marker_colour : new _p('2K3.SPECTROGRAM.MARKER.COLOUR', RGB(240, 240, 240)),
-			library_only : new _p('2K3.SPECTROGRAM.LIBRARY.ONLY', true),
-		};
-
-		utils.CreateFolder(spectrogram_cache);
-		this.image = null;
-		this.filename = '';
-		this.working = false;
-		this.timeout = false;
-		this.task_id = 0;
 	}
+
 	window.SetInterval(this.interval_func, 150);
 }

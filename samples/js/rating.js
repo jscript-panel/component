@@ -1,40 +1,38 @@
 function _rating(x, y, h, colour) {
-	this.paint = function (gr) {
-		if (panel.metadb) {
-			for (var i = 0; i < this.get_max(); i++) {
-				gr.WriteText(i + 1 > (this.hover ? this.hrating : this.rating) ? chars.rating_off : chars.rating_on, this.font, this.colour, this.x + (i * this.h), this.y, this.h, this.h, 2, 2);
-			}
-		}
-	}
-
-	this.metadb_changed = function () {
-		if (panel.metadb) {
-			this.hover = false;
-			this.rating = this.get_rating();
-			this.hrating = this.rating;
-			this.tiptext = this.properties.mode.value == 0 ? 'Choose a mode first.' : panel.tf('Rate "%title%" by "%artist%".');
-		}
-		window.Repaint();
-	}
-
 	this.containsXY = function (x, y) {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
 
-	this.move = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (panel.metadb) {
-				_tt(this.tiptext);
-				this.hover = true;
-				this.hrating = Math.ceil((x - this.x) / this.h);
-				window.RepaintRect(this.x, this.y, this.w, this.h);
-			}
-			return true;
-		}
-
-		this.leave();
-		return false;
+	this.get_max = function () {
+		return this.properties.mode.value < 2 ? 5 : this.properties.max.value;
 	}
+
+	this.get_rating = function () {
+		switch (this.properties.mode.value) {
+		case 1: // foo_playcount
+			return panel.tf('$if2(%rating%,0)');
+		case 2: // file tag
+			var ret = 0;
+			var f = panel.metadb.GetFileInfo();
+			if (f) {
+				var idx = f.MetaFind(this.properties.tag.value);
+				ret = idx > -1 ? f.MetaValue(idx, 0) : 0;
+				f.Dispose();
+			}
+			return ret;
+		default:
+			return 0;
+		}
+	}
+
+	this.init = _.bind(function () {
+		if (this.properties.mode.value == 1 && !this.foo_playcount) { // if mode is set to 1 (foo_playcount) but component is missing, reset to 0.
+			this.properties.mode.value = 0;
+		}
+		if (this.properties.mode.value == 0) {
+			utils.ShowPopupMessage('This script supports 2 different modes.\n\nYou can use foo_playcount which is limited to 5 stars or you can choose to write to your file tags. You can choose the tag name and a max value via the right click menu.', window.Name);
+		}
+	}, this);
 
 	this.leave = function () {
 		if (this.hover) {
@@ -52,6 +50,39 @@ function _rating(x, y, h, colour) {
 			return true;
 		}
 		return false;
+	}
+
+	this.metadb_changed = function () {
+		if (panel.metadb) {
+			this.hover = false;
+			this.rating = this.get_rating();
+			this.hrating = this.rating;
+			this.tiptext = this.properties.mode.value == 0 ? 'Choose a mode first.' : panel.tf('Rate "%title%" by "%artist%".');
+		}
+		window.Repaint();
+	}
+
+	this.move = function (x, y) {
+		if (this.containsXY(x, y)) {
+			if (panel.metadb) {
+				_tt(this.tiptext);
+				this.hover = true;
+				this.hrating = Math.ceil((x - this.x) / this.h);
+				window.RepaintRect(this.x, this.y, this.w, this.h);
+			}
+			return true;
+		}
+
+		this.leave();
+		return false;
+	}
+
+	this.paint = function (gr) {
+		if (panel.metadb) {
+			for (var i = 0; i < this.get_max(); i++) {
+				gr.WriteText(i + 1 > (this.hover ? this.hrating : this.rating) ? chars.rating_off : chars.rating_on, this.font, this.colour, this.x + (i * this.h), this.y, this.h, this.h, 2, 2);
+			}
+		}
 	}
 
 	this.rbtn_up = function (x, y) {
@@ -83,24 +114,6 @@ function _rating(x, y, h, colour) {
 		this.metadb_changed();
 	}
 
-	this.get_rating = function () {
-		switch (this.properties.mode.value) {
-		case 1: // foo_playcount
-			return panel.tf('$if2(%rating%,0)');
-		case 2: // file tag
-			var ret = 0;
-			var f = panel.metadb.GetFileInfo();
-			if (f) {
-				var idx = f.MetaFind(this.properties.tag.value);
-				ret = idx > -1 ? f.MetaValue(idx, 0) : 0;
-				f.Dispose();
-			}
-			return ret;
-		default:
-			return 0;
-		}
-	}
-
 	this.set_rating = function () {
 		var handles = fb.CreateHandleList(panel.metadb);
 		switch (this.properties.mode.value) {
@@ -118,25 +131,6 @@ function _rating(x, y, h, colour) {
 		handles.Dispose();
 	}
 
-	this.get_max = function () {
-		return this.properties.mode.value < 2 ? 5 : this.properties.max.value;
-	}
-
-	this.init = _.bind(function () {
-		if (this.properties.mode.value == 1 && !this.foo_playcount) { // if mode is set to 1 (foo_playcount) but component is missing, reset to 0.
-			this.properties.mode.value = 0;
-		}
-		if (this.properties.mode.value == 0) {
-			utils.ShowPopupMessage('This script supports 2 different modes.\n\nYou can use foo_playcount which is limited to 5 stars or you can choose to write to your file tags. You can choose the tag name and a max value via the right click menu.', window.Name);
-		}
-	}, this)
-
-	this.properties = {
-		max : new _p('2K3.RATING.MAX', 5),
-		mode : new _p('2K3.RATING.MODE', 0), // 0 not set 1 foo_playcount 2 file tag
-		tag: new _p('2K3.RATING.TAG', 'rating')
-	};
-
 	this.x = x;
 	this.y = y;
 	this.h = _scale(h);
@@ -148,5 +142,12 @@ function _rating(x, y, h, colour) {
 	this.hrating = 0;
 	this.modes = ['Not Set', 'foo_playcount', 'File Tag'];
 	this.foo_playcount = fb.CheckComponent('foo_playcount');
+
+	this.properties = {
+		max : new _p('2K3.RATING.MAX', 5),
+		mode : new _p('2K3.RATING.MODE', 0), // 0 not set 1 foo_playcount 2 file tag
+		tag: new _p('2K3.RATING.TAG', 'rating')
+	};
+
 	window.SetTimeout(this.init, 500);
 }

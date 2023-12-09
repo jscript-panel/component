@@ -18,14 +18,18 @@ refresh();
 function refresh() {
 	var colours = [];
 	var start = 0;
-	words.forEach(function(item, i) {
-		var len = item.length + 1;
+	words.forEach(function(word, i) {
+		// length of word plus following space
+		var len = word.length + 1;
+
 		colours.push({
 			// when using an array, Start and Length are mandatory
 			Start : start,
 			Length : len,
 			Colour : RGB(Math.random() * 200, Math.random() * 200, Math.random() * 200),
 		});
+
+		// increment start position for next word
 		start += len;
 	});
 	colour_string = JSON.stringify(colours);

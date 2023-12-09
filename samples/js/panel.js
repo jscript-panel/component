@@ -16,7 +16,7 @@ function _panel(options) {
 	}
 
 	this.draw_header = function (gr, text) {
-		gr.WriteText(text, this.fonts.title, this.colours.highlight, LM, 0, this.w - (LM * 2), TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+		DrawStyledText(gr, text, this.fonts.title, this.colours.highlight, LM, 0, this.w - (LM * 2), TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 		gr.DrawLine(LM, TM + 0.5, this.w - LM, TM + 0.5, 1, this.colours.highlight);
 	}
 

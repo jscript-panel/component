@@ -1,5 +1,5 @@
 // ==PREPROCESSOR==
-// @name "Last.fm Bio"
+// @name "Last.fm Bio + Images"
 // @author "marc2003"
 // @import "%fb2k_component_path%helpers.txt"
 // @import "%fb2k_component_path%samples\js\lodash.min.js"

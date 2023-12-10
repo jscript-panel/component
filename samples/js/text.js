@@ -150,7 +150,7 @@ function _text(mode, x, y, w, h) {
 		case 'console':
 			this.console_refresh = function () {
 				this.clear_layout();
-				this.style_string = '';
+				this.colour_string = '';
 				var lines = _(console.GetLines(this.properties.timestamp.enabled).toArray())
 					.filter(function (item) {
 						return item.indexOf('Using decoder shim') == -1;
@@ -162,8 +162,8 @@ function _text(mode, x, y, w, h) {
 					var text = lines.join(CRLF);
 
 					if (this.properties.timestamp.enabled && panel.colours.text != panel.colours.highlight) {
-						var styles = [];
-						styles.push({
+						var colours = [];
+						colours.push({
 							'Start' : 0,
 							'Length' : text.length,
 							'Colour' : panel.colours.text,
@@ -172,14 +172,14 @@ function _text(mode, x, y, w, h) {
 						var start = 0;
 						for (var i = 0; i < lines.length; i++) {
 							var line = lines[i];
-							styles.push({
+							colours.push({
 								'Start' : start,
 								'Length' : 23,
 								'Colour' : panel.colours.highlight,
 							});
 							start += line.length + CRLF.length;
 						}
-						this.style_string = JSON.stringify(styles);
+						this.colour_string = JSON.stringify(colours);
 					}
 
 					this.text_layout = utils.CreateTextLayout(text, panel.fonts.name, _scale(panel.fonts.size.value));
@@ -336,7 +336,7 @@ function _text(mode, x, y, w, h) {
 
 	this.paint = function (gr) {
 		if (!this.text_layout) return;
-		gr.WriteTextLayout(this.text_layout, this.style_string || panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
+		gr.WriteTextLayout(this.text_layout, this.colour_string || panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
 		this.up_btn.paint(gr, panel.colours.text);
 		this.down_btn.paint(gr, panel.colours.text);
 	}
@@ -511,7 +511,7 @@ function _text(mode, x, y, w, h) {
 	this.album = '';
 	this.filename = '';
 	this.filenames = {};
-	this.style_string = '';
+	this.colour_string = '';
 	this.up_btn = new _sb(chars.up, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset < 0; }, this), _.bind(function () { this.wheel(1); }, this));
 	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset > this.ha - this.text_height; }, this), _.bind(function () { this.wheel(-1); }, this));
 	this.properties = {};

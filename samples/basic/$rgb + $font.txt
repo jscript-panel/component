@@ -1,0 +1,37 @@
+// ==PREPROCESSOR==
+// @import "%fb2k_component_path%helpers.txt"
+// ==/PREPROCESSOR==
+
+// Because parsing $font / $rgb in title format strings is not
+// easy, a DrawStyledText method has been added to helpers.txt
+
+// See also: https://jscript-panel.github.io/docs/font-rgb/
+
+var tfo = fb.TitleFormat("$font(Segoe UI,24)$rgb(255,0,0)%artist%$font() $font(Segoe UI,32)$rgb(0,255,0)%title%");
+var str = "";
+
+refresh();
+
+function refresh() {
+	var item = fb.GetFocusItem();
+	if (item) {
+		str = tfo.EvalWithMetadb(item);
+	} else {
+		str = "";
+	}
+}
+
+function on_item_focus_change() {
+	refresh();
+	window.Repaint();
+}
+
+function on_playlist_switch() {
+	refresh();
+	window.Repaint();
+}
+
+function on_paint(gr) {
+	// default_font is an empty string, defaulting to Segoe UI, 16px
+	DrawStyledText(gr, str, "", 0, 0, 0, window.Width, window.Height, 2, 2, 2);
+}

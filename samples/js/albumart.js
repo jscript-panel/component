@@ -1,4 +1,22 @@
 function _albumart(x, y, w, h) {
+	this.blur_it = function () {
+		var blur_it = false;
+
+		if (panel.display_objects.length) {
+			var properties = panel.display_objects[0].properties;
+			if (properties.albumart.enabled && properties.albumart_blur.enabled) {
+				blur_it = true;
+			}
+		} else if (this.is_review_panel) {
+			blur_it = true;
+		}
+
+		if (blur_it) {
+			this.blur_img = this.img.Clone();
+			this.blur_img.StackBlur(120);
+		}
+	}
+
 	this.containsXY = function (x, y) {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
@@ -54,13 +72,7 @@ function _albumart(x, y, w, h) {
 		this.tooltip = this.path = '';
 		if (img) {
 			this.img = img;
-			if (panel.display_objects.length) {
-				var properties = panel.display_objects[0].properties;
-				if (properties.albumart.enabled && properties.albumart_blur.enabled) {
-					this.blur_img = this.img.Clone();
-					this.blur_img.StackBlur(120);
-				}
-			}
+			this.blur_it();
 			this.tooltip = 'Original dimensions: ' + this.img.Width + 'x' + this.img.Height + 'px';
 			this.path = this.img.Path;
 			if (this.path.length) {
@@ -94,6 +106,13 @@ function _albumart(x, y, w, h) {
 	}
 
 	this.rbtn_up = function (x, y) {
+		if (this.is_review_panel) {
+			panel.m.AppendMenuItem(MF_STRING, 1600, 'Album Art left, Text right');
+			panel.m.AppendMenuItem(MF_STRING, 1601, 'Album Art top, Text bottom');
+			panel.m.CheckMenuRadioItem(1600, 1601, this.properties.layout.value + 1600);
+			panel.m.AppendMenuSeparator();
+		}
+
 		panel.m.AppendMenuItem(MF_STRING, 1000, 'Refresh');
 		panel.m.AppendMenuSeparator();
 		_.forEach(this.ids, function (item, i) {
@@ -150,6 +169,12 @@ function _albumart(x, y, w, h) {
 		case 1052:
 			this.properties.double_click_mode.value = idx - 1050;
 			break;
+		case 1600:
+		case 1601:
+			this.properties.layout.value = idx - 1600;
+			on_size();
+			window.Repaint();
+			break;
 		}
 	}
 
@@ -170,6 +195,8 @@ function _albumart(x, y, w, h) {
 		return false;
 	}
 
+	this.is_review_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'allmusic';
+
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -185,6 +212,11 @@ function _albumart(x, y, w, h) {
 	this.properties = {
 		aspect : new _p('2K3.ARTREADER.ASPECT', image.crop),
 		id : new _p('2K3.ARTREADER.ID', 0),
-		double_click_mode : new _p('2K3.ARTREADER.DOUBLE.CLICK.MODE', 0) // 0 external viewer 1 fb2k viewer 2 explorer
+		double_click_mode : new _p('2K3.ARTREADER.DOUBLE.CLICK.MODE', 0), // 0 external viewer 1 fb2k viewer 2 explorer
 	};
+
+	if (this.is_review_panel) {
+		this.properties.layout = new _p('2K3.ARTREADER.LAYOUT', 0); // 0 horizontal, 1 vertical
+		this.properties.ratio = new _p('2K3.ARTREADER.RATIO', 0.5);
+	}
 }

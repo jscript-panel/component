@@ -362,7 +362,12 @@ function _thumbs() {
 	}
 
 	this.rbtn_up = function (x, y) {
-		if (!this.is_bio_panel) {
+		if (this.is_bio_panel) {
+			panel.m.AppendMenuItem(MF_STRING, 1600, 'Image left, Text right');
+			panel.m.AppendMenuItem(MF_STRING, 1601, 'Image top, Text bottom');
+			panel.m.CheckMenuRadioItem(1600, 1601, this.properties.layout.value + 1600);
+			panel.m.AppendMenuSeparator();
+		} else {
 			panel.m.AppendMenuItem(MF_STRING, 1000, 'Custom folder');
 			panel.m.AppendMenuItem(MF_STRING, 1001, 'Last.fm artist art');
 			panel.m.CheckMenuRadioItem(1000, 1001, this.properties.source.value + 1000);
@@ -531,6 +536,12 @@ function _thumbs() {
 				utils.Run(this.folder);
 			}
 			break;
+		case 1600:
+		case 1601:
+			this.properties.layout.value = idx - 1600;
+			on_size();
+			window.Repaint();
+			break;
 		}
 	}
 
@@ -551,6 +562,8 @@ function _thumbs() {
 	}
 
 	this.size = function (f) {
+		if (this.is_bio_panel) return;
+
 		this.nc = f || this.nc;
 		this.close_btn.x = panel.w - this.close_btn.w;
 		this.offset = 0;
@@ -732,8 +745,14 @@ function _thumbs() {
 		auto_download : new _p('2K3.THUMBS.AUTO.DOWNLOAD', true),
 		circular : new _p('2K3.THUMBS.CIRCULAR', false),
 		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
-		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 0) // 0 external viewer 1 fb2k viewer 2 explorer
+		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 0), // 0 external viewer 1 fb2k viewer 2 explorer
 	};
+
+	if (this.is_bio_panel) {
+		this.properties.layout = new _p('2K3.THUMBS.LAYOUT', 0); // 0 horizontal, 1 vertical
+		this.properties.ratio = new _p('2K3.THUMBS.RATIO', 0.5);
+	}
+
 	this.headers = JSON.stringify({
 		'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
 		'Referer' : 'https://www.last.fm',

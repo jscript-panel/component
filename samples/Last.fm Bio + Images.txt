@@ -21,7 +21,8 @@ text.paint = function (gr) {
 	var colour = thumbs.blur_img ? RGB(255, 255, 255) : panel.colours.text;
 	var colourh = thumbs.blur_img ? RGB(255, 255, 255) : panel.colours.highlight;
 
-	gr.WriteText(this.header_text(), panel.fonts.title, colourh, this.x, margin, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+	var y = thumbs.properties.layout.value == 0 ? margin : this.y - margin;
+	gr.WriteText(this.header_text(), panel.fonts.title, colourh, this.x, y, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (this.text_layout) {
 		gr.WriteTextLayout(this.text_layout, colour, this.x, this.y + margin, this.w, this.ha, this.offset);
@@ -49,8 +50,6 @@ thumbs.paint = function (gr) {
 		this.image_xywh = [];
 	}
 }
-
-thumbs.size = function () {}
 
 thumbs.wheel = function (s) {
 	if (this.containsXY(this.mx, this.my)) {
@@ -107,7 +106,6 @@ function on_metadb_changed(handles, fromhook) {
 
 function on_mouse_lbtn_up(x, y) {
 	text.lbtn_up(x, y);
-	thumbs.lbtn_up(x, y);
 }
 
 function on_mouse_move(x, y) {
@@ -127,8 +125,17 @@ function on_mouse_rbtn_up(x, y) {
 }
 
 function on_mouse_wheel(s) {
-	if (thumbs.wheel(s)) return;
-	text.wheel(s);
+	if (utils.IsKeyPressed(VK_CONTROL)) {
+		var value = _clamp(thumbs.properties.ratio.value - (s * 0.05), 0.2, 0.8);
+		if (value != thumbs.properties.ratio.value) {
+			thumbs.properties.ratio.value = value;
+			on_size();
+			window.Repaint();
+		}
+	} else {
+		thumbs.wheel(s);
+		text.wheel(s);
+	}
 }
 
 function on_paint(gr) {
@@ -140,7 +147,7 @@ function on_paint(gr) {
 function on_playback_dynamic_info_track(type) {
 	if (type == 0) {
 		text.metadb_changed();
-		thumbs.metadb_changed();
+		thumbs.playback_new_track();
 	}
 }
 
@@ -165,16 +172,30 @@ function on_playlist_switch() {
 
 function on_size() {
 	panel.size();
-	var half = panel.w / 2;
 
 	thumbs.x = margin;
 	thumbs.y = margin;
-	thumbs.w = half - (margin * 2);
-	thumbs.h = panel.h - (margin * 2);
 
-	text.x = half;
-	text.y = _scale(24);
-	text.w = half - margin;
-	text.h = panel.h - text.y;
+	switch (thumbs.properties.layout.value) {
+	case 0: // Image left, Text right
+		thumbs.w = panel.w * thumbs.properties.ratio.value;
+		thumbs.h = panel.h - (margin * 2);
+
+		text.x = thumbs.w + (margin * 2);
+		text.y = margin * 2
+		text.w = panel.w - thumbs.w - (margin * 3);
+		text.h = panel.h - text.y;
+		break;
+	case 1: // Image top, text bottom
+		thumbs.w = panel.w - (margin * 2);
+		thumbs.h = panel.h * thumbs.properties.ratio.value;
+
+		text.x = margin;
+		text.y = thumbs.h + (margin * 3);
+		text.w = panel.w - (margin * 2);
+		text.h = panel.h - thumbs.h - (margin * 3);
+		break;
+	}
+
 	text.size();
 }

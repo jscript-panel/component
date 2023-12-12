@@ -1,0 +1,160 @@
+// ==PREPROCESSOR==
+// @name "Allmusic Review + Album Art"
+// @author "marc2003"
+// @import "%fb2k_component_path%helpers.txt"
+// @import "%fb2k_component_path%samples\js\lodash.min.js"
+// @import "%fb2k_component_path%samples\js\common.js"
+// @import "%fb2k_component_path%samples\js\panel.js"
+// @import "%fb2k_component_path%samples\js\albumart.js"
+// @import "%fb2k_component_path%samples\js\text.js"
+// ==/PREPROCESSOR==
+
+var margin = _scale(12);
+
+var panel = new _panel();
+var text = new _text('allmusic', 0, 0, 0, 0);
+var albumart = new _albumart(0, 0, 0, 0);
+
+text.paint = function (gr) {
+	var colour, colourh;
+	if (albumart.blur_img) {
+		_drawImage(gr, albumart.blur_img, 0, 0, panel.w, panel.h, image.crop);
+		_drawOverlay(gr, 0, 0, panel.w, panel.h, 120);
+		colour = colourh = RGB(255, 255, 255);
+	} else {
+		colour = panel.colours.text;
+		colourh = panel.colours.highlight;
+	}
+
+	var y = albumart.properties.layout.value == 0 ? margin : this.y - margin;
+	gr.WriteText(this.header_text(), panel.fonts.title, colourh, this.x, y, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+
+	if (this.text_layout) {
+		gr.WriteTextLayout(this.text_layout, colour, this.x, this.y + margin, this.w, this.ha, this.offset);
+		this.up_btn.paint(gr, colour);
+		this.down_btn.paint(gr, colour);
+	}
+}
+
+panel.item_focus_change();
+
+function on_colours_changed() {
+	panel.colours_changed();
+	window.Repaint();
+}
+
+function on_font_changed() {
+	panel.font_changed();
+	window.Repaint();
+}
+
+function on_http_request_done(task_id, success, response_text) {
+	text.http_request_done(task_id, success, response_text);
+}
+
+function on_item_focus_change() {
+	if (panel.selection.value == 0 && fb.IsPlaying) return;
+	panel.item_focus_change();
+}
+
+function on_key_down(k) {
+	text.key_down(k);
+	albumart.key_down(k);
+}
+
+function on_metadb_changed(handles, fromhook) {
+	if (fromhook) return;
+	text.metadb_changed();
+	albumart.metadb_changed();
+}
+
+function on_mouse_lbtn_up(x, y) {
+	text.lbtn_up(x, y);
+}
+
+function on_mouse_move(x, y) {
+	text.move(x, y);
+	albumart.move(x, y);
+}
+
+function on_mouse_lbtn_dblclk(x, y) {
+	albumart.lbtn_dblclk(x, y);
+}
+
+function on_mouse_rbtn_up(x, y) {
+	if (text.containsXY(x, y)) {
+		return panel.rbtn_up(x, y, text);
+	}
+	return panel.rbtn_up(x, y, albumart);
+}
+
+function on_mouse_wheel(s) {
+	if (utils.IsKeyPressed(VK_CONTROL)) {
+		var value = _clamp(albumart.properties.ratio.value - (s * 0.05), 0.2, 0.8);
+		if (value != albumart.properties.ratio.value) {
+			albumart.properties.ratio.value = value;
+			on_size();
+			window.Repaint();
+		}
+	} else {
+		albumart.wheel(s);
+		text.wheel(s);
+	}
+}
+
+function on_paint(gr) {
+	panel.paint(gr);
+	text.paint(gr);
+	albumart.paint(gr);
+}
+
+function on_playback_dynamic_info_track(type) {
+	if (type == 0) {
+		text.metadb_changed();
+		albumart.metadb_changed();
+	}
+}
+
+function on_playback_new_track() {
+	panel.item_focus_change();
+}
+
+function on_playback_stop(reason) {
+	if (reason != 2) {
+		panel.item_focus_change();
+	}
+}
+
+function on_playlist_switch() {
+	on_item_focus_change();
+}
+
+function on_size() {
+	panel.size();
+
+	albumart.x = margin;
+	albumart.y = margin;
+
+	switch (albumart.properties.layout.value) {
+	case 0: // Image left, Text right
+		albumart.w = panel.w * albumart.properties.ratio.value;
+		albumart.h = panel.h - (margin * 2);
+
+		text.x = albumart.w + (margin * 2);
+		text.y = margin * 2
+		text.w = panel.w - albumart.w - (margin * 3);
+		text.h = panel.h - text.y;
+		break;
+	case 1: // Image top, Text bottom
+		albumart.w = panel.w - (margin * 2);
+		albumart.h = panel.h * albumart.properties.ratio.value;
+
+		text.x = margin;
+		text.y = albumart.h + (margin * 3);
+		text.w = panel.w - (margin * 2);
+		text.h = panel.h - albumart.h - (margin * 3);
+		break;
+	}
+
+	text.size();
+}

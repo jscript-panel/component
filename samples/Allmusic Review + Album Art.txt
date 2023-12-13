@@ -19,7 +19,7 @@ text.paint = function (gr) {
 	var colour, colourh;
 	if (albumart.blur_img) {
 		_drawImage(gr, albumart.blur_img, 0, 0, panel.w, panel.h, image.crop);
-		_drawOverlay(gr, 0, 0, panel.w, panel.h, 120);
+		_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
 		colour = colourh = RGB(255, 255, 255);
 	} else {
 		colour = panel.colours.text;

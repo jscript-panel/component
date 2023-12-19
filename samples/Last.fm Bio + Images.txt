@@ -22,7 +22,7 @@ text.paint = function (gr) {
 	var colourh = thumbs.blur_img ? RGB(255, 255, 255) : panel.colours.highlight;
 
 	var y = thumbs.properties.layout.value == 0 ? margin : this.y - margin;
-	gr.WriteText(this.header_text(), panel.fonts.title, colourh, this.x, y, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+	DrawStyledText(gr, this.header_text(), panel.fonts.title, colourh, this.x, y, this.w, TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (this.text_layout) {
 		gr.WriteTextLayout(this.text_layout, colour, this.x, this.y + margin, this.w, this.ha, this.offset);
@@ -86,6 +86,7 @@ function on_font_changed() {
 
 function on_http_request_done(task_id, success, response_text) {
 	thumbs.http_request_done(task_id, success, response_text);
+	text.http_request_done(task_id, success, response_text);
 }
 
 function on_item_focus_change() {

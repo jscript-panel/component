@@ -26,6 +26,9 @@ function _text(mode, x, y, w, h) {
 		case 'console':
 			return 'Console';
 		case 'lastfm_bio':
+			if (this.twitter_font && this.flag.length) {
+				return panel.tf('$font(Twitter Color Emoji,' + _scale(panel.fonts.size.value) + ')' + this.flag + '$font() ') + this.artist;
+			}
 			return this.artist;
 		case 'text_reader2':
 			return panel.tf(this.properties.title_tf.value);
@@ -79,7 +82,7 @@ function _text(mode, x, y, w, h) {
 			}
 
 			this.parse_review = function (response_text) {
-				if (response_text.length == 0) return '';
+				if (response_text.empty()) return '';
 				var p = _.first(_getElementsByTagName(response_text, 'p'));
 				if (typeof p == 'object') {
 					return p.innerText;
@@ -99,7 +102,7 @@ function _text(mode, x, y, w, h) {
 							for (var i = 0; i < divs.length; i++) {
 								var div = divs[i];
 								var className = div.className;
-								var a = _.first(div.getElementsByTagName('a'));
+								var a = _firstElement(div, 'a');
 
 								if (typeof a == 'object') {
 									if (className == 'artist') {
@@ -158,14 +161,13 @@ function _text(mode, x, y, w, h) {
 					.takeRight(100)
 					.value();
 				if (lines.length > 0) {
-					var CRLF = '\r\n';
-					var text = lines.join(CRLF);
+					var str = lines.join(this.CRLF);
 
 					if (this.properties.timestamp.enabled && panel.colours.text != panel.colours.highlight) {
 						var colours = [];
 						colours.push({
 							'Start' : 0,
-							'Length' : text.length,
+							'Length' : str.length,
 							'Colour' : panel.colours.text,
 						});
 
@@ -177,12 +179,12 @@ function _text(mode, x, y, w, h) {
 								'Length' : 23,
 								'Colour' : panel.colours.highlight,
 							});
-							start += line.length + CRLF.length;
+							start += line.length + this.CRLF.length;
 						}
 						this.colour_string = JSON.stringify(colours);
 					}
 
-					this.text_layout = utils.CreateTextLayout(text, panel.fonts.name, _scale(panel.fonts.size.value));
+					this.text_layout = utils.CreateTextLayout(str, panel.fonts.name, _scale(panel.fonts.size.value));
 				}
 				this.update();
 			}
@@ -190,6 +192,12 @@ function _text(mode, x, y, w, h) {
 			this.properties.timestamp = new _p('2K3.TEXT.CONSOLE.TIMESTAMP', false);
 			break;
 		case 'lastfm_bio':
+			this.download_file_done = function (path, success, error_text) {
+				if (!success) return console.log(N, error_text);
+				this.reset();
+				this.metadb_changed();
+			}
+
 			this.get = function () {
 				if (!_tagged(this.artist)) {
 					return;
@@ -198,15 +206,144 @@ function _text(mode, x, y, w, h) {
 				utils.DownloadFileAsync(window.ID, url, this.filename);
 			}
 
-			this.download_file_done = function (path, success, error_text) {
-				if (!success) return console.log(N, error_text);
+			this.get_extra = function () {
+				if (!_tagged(this.artist)) {
+					return;
+				}
+				var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist);
+				var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
+				this.filenames[task_id] = this.filename_extra;
+			}
+
+			this.http_request_done = function (id, success, response_text) {
+				var filename = this.filenames[id];
+				if (!filename) return;
+				if (!success) return console.log(N, response_text);
+
+				doc.open();
+
+				var obj = {};
+				var div = doc.createElement('div');
+				div.innerHTML = response_text;
+
+				var lis = _(div.getElementsByTagName('li'))
+					.filter({ className : 'tag' })
+					.value();
+
+				var tags = [];
+				for (var i = 0; i < lis.length; i++) {
+					var li = lis[i];
+					var a = _firstElement(li, 'a');
+					if (typeof a == 'object') {
+						tags.push(a.innerText);
+					}
+				}
+				if (tags.length) obj.Tags = tags.join(', ');
+
+				var dts = div.getElementsByTagName('dt');
+				var dds = div.getElementsByTagName('dd');
+
+				for (var i = 0; i < dts.length; i++) {
+					var name = dts[i].innerText;
+					var value = dds[i].innerText;
+					obj[name] = value;
+				}
+
+				lis = _(div.getElementsByTagName('li'))
+					.filter({ className : 'header-metadata-tnew-item' })
+					.value();
+
+				if (lis.length >= 2) {
+					for (var i = 0; i < 2; i++) {
+						var li = lis[i];
+						var h4 = _firstElement(li, 'h4');
+						var abbr = _firstElement(li, 'abbr');
+
+						if (typeof h4 == 'object' && typeof abbr == 'object') {
+							obj[h4.innerText] = abbr.title;
+						}
+					}
+				}
+
+				doc.close();
+
+				_save(filename, JSON.stringify(obj));
 				this.reset();
-				panel.item_focus_change();
+				this.metadb_changed();
+			}
+
+			this.parse = function () {
+				this.filename = _artistFolder(this.artist) + 'lastfm.artist.getInfo.' + this.langs[this.properties.lang.value] + '.json';
+				var str = '';
+
+				if (utils.IsFile(this.filename)) {
+					str = _stripTags(_.get(_jsonParseFile(this.filename), 'artist.bio.content', '')).replace('Read more on Last.fm. User-contributed text is available under the Creative Commons By-SA License; additional terms may apply.', '').trim();
+					if (_fileExpired(this.filename, ONE_DAY)) {
+						this.get();
+					}
+				} else {
+					this.get();
+				}
+
+				return str;
+			}
+
+			this.parse_extra = function () {
+				this.filename_extra = _artistFolder(this.artist) + 'lastfm.artist.extra.json';
+				var str = '';
+
+				if (utils.IsFile(this.filename_extra)) {
+					var obj = _jsonParseFile(this.filename_extra);
+					_.forEach(obj, function (value, name) {
+						// test versions stored Flag, we ignore it now
+						if (name != 'Flag') { 
+							str += name + ': ' + value + this.CRLF;
+
+							if (this.flag.empty && (name == 'Born In' || name == 'Founded In')) {
+								this.parse_location(value.toLowerCase());
+							}
+						}
+					}, this);
+
+					if (_fileExpired(this.filename_extra, ONE_DAY)) {
+						this.get_extra();
+					}
+				} else {
+					this.get_extra();
+				}
+
+				return str;
+			}
+
+			this.parse_location = function (location) {
+				var locations = _stringToArray(location, ',');
+				var flag = utils.GetCountryFlag(locations[locations.length - 1]);
+				if (flag.length) {
+					this.flag = flag;
+				} else {
+					var arr = _stringToArray(this.properties.flag_map.value, this.CRLF);
+					_.forEach(arr, function (item) {
+						var tmp = _stringToArray(item, '|');
+						if (tmp.length == 2 && location.indexOf(tmp[0].toLowerCase()) > -1) {
+							this.flag = utils.GetCountryFlag(tmp[1]);
+							return false;
+						}
+					}, this);
+				}
 			}
 
 			utils.CreateFolder(folders.artists);
 			this.langs = ['en', 'de', 'es', 'fr', 'it', 'ja', 'pl', 'pt', 'ru', 'sv', 'tr', 'zh'];
+			this.twitter_font = utils.CheckFont('Twitter Color Emoji');
+			this.flag = '';
 			this.properties.lang = new _p('2K3.TEXT.BIO.LANG', 0);
+			this.properties.extra = new _p('2K3.TEXT.BIO.EXTRA', true);
+			this.properties.flag_tf = new _p('2K3.TEXT.BIO.FLAG.TF', '$country_flag(%country%)');
+			this.properties.flag_map = new _p('2K3.TEXT.BIO.FLAG.MAP', 'korea, republic of|kr');
+			this.headers = JSON.stringify({
+				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
+				'Referer' : 'https://www.last.fm',
+			});
 			break;
 		case 'text_reader2':
 			this.properties.title_tf = new _p('2K3.TEXT.TITLE.TF', '%album artist% - $if2(%album%,%title%)');
@@ -244,7 +381,7 @@ function _text(mode, x, y, w, h) {
 		if (this.mode == 'console') return;
 
 		if (panel.metadb) {
-			var text = '';
+			var str = '';
 
 			switch (this.mode) {
 			case 'allmusic':
@@ -258,8 +395,8 @@ function _text(mode, x, y, w, h) {
 				this.filename = _artistFolder(this.artist) + 'allmusic.' + utils.ReplaceIllegalChars(this.album) + '.txt';
 				this.review_url = '';
 				if (utils.IsFile(this.filename)) {
-					text = utils.ReadUTF8(this.filename).trim();
-					if (text.length == 0) {
+					str = utils.ReadUTF8(this.filename).trim();
+					if (str.empty()) {
 						// empty files left by previous version can be removed
 						utils.RemovePath(this.filename);
 						this.get();
@@ -270,18 +407,20 @@ function _text(mode, x, y, w, h) {
 				break;
 			case 'lastfm_bio':
 				var temp_artist = panel.tf(DEFAULT_ARTIST);
-				if (this.artist == temp_artist) {
+				var temp_flag = panel.tf(this.properties.flag_tf.value)
+				if (this.artist == temp_artist && this.flag == temp_flag) {
 					return;
 				}
 				this.artist = temp_artist;
-				this.filename = _artistFolder(this.artist) + 'lastfm.artist.getInfo.' + this.langs[this.properties.lang.value] + '.json';
-				if (utils.IsFile(this.filename)) {
-					text = _stripTags(_.get(_jsonParseFile(this.filename), 'artist.bio.content', '')).replace('Read more on Last.fm. User-contributed text is available under the Creative Commons By-SA License; additional terms may apply.', '').trim();
-					if (_fileExpired(this.filename, ONE_DAY)) {
-						this.get();
-					}
+				this.flag = temp_flag;
+
+				if (this.properties.extra.enabled) {
+					var arr = [];
+					arr.push(this.parse_extra());
+					arr.push(this.parse());
+					str = arr.filter(function (item) { return item.length > 0; }).join(this.CRLF);
 				} else {
-					this.get();
+					str = this.parse();
 				}
 				break;
 			case 'text_reader2':
@@ -298,18 +437,18 @@ function _text(mode, x, y, w, h) {
 				}
 
 				if (this.properties.utf8.enabled) {
-					text = utils.ReadUTF8(this.filename);
+					str = utils.ReadUTF8(this.filename);
 				} else {
 					var codepage = utils.DetectCharset(this.filename);
-					text = utils.ReadTextFile(this.filename, codepage);
+					str = utils.ReadTextFile(this.filename, codepage);
 				}
-				text = text.replace(/\t/g, '    ');
+				str = str.replace(/\t/g, '    ');
 				break;
 			}
 
-			if (text != this.text) {
+			if (str != this.text) {
 				this.clear_layout()
-				this.text = text;
+				this.text = str;
 				if (this.text.length) {
 					this.text_layout = utils.CreateTextLayout(this.text, this.mode == 'text_reader2' && this.properties.fixed.enabled ? 'Consolas' : panel.fonts.name, _scale(panel.fonts.size.value));
 				}
@@ -363,6 +502,12 @@ function _text(mode, x, y, w, h) {
 			panel.s10.CheckMenuRadioItem(1110, 1121, this.properties.lang.value + 1110);
 			panel.s10.AppendTo(panel.m, MF_STRING, 'Last.fm language');
 			panel.m.AppendMenuSeparator();
+			panel.s11.AppendMenuItem(MF_STRING, 1130, 'Title Format');
+			panel.s11.AppendMenuItem(EnableMenuIf(this.properties.extra.enabled), 1131, 'Last.fm replacements');
+			panel.s11.AppendTo(panel.m, MF_STRING, 'Country flags');
+			panel.m.AppendMenuSeparator();
+			panel.m.AppendMenuItem(CheckMenuIf(this.properties.extra.enabled), 1140, 'Show extra info');
+			panel.m.AppendMenuSeparator();
 			break;
 		case 'text_reader2':
 			panel.m.AppendMenuItem(MF_STRING, 1300, 'Refresh');
@@ -404,6 +549,7 @@ function _text(mode, x, y, w, h) {
 			break;
 		case 1100:
 			this.get();
+			this.get_extra();
 			break;
 		case 1110:
 		case 1111:
@@ -418,6 +564,23 @@ function _text(mode, x, y, w, h) {
 		case 1120:
 		case 1121:
 			this.properties.lang.value = idx - 1110;
+			this.reset();
+			this.metadb_changed();
+			break;
+		case 1130:
+			this.properties.flag_tf.value = utils.InputBox('Country names/codes found in file tags always take precedence over online content. You can specify the title format pattern to use here.', window.Name, this.properties.flag_tf.value);
+			// this.reset() intentionally not used here
+			this.metadb_changed();
+			break;
+		case 1131:
+			try {
+				this.properties.flag_map.value = utils.TextBox('Sometimes the values returned from Last.fm are not recognised so mappings can be added here. Case is not important. Look at the example for how countries should be seperated from the country code with the pipe character.', window.Name, this.properties.flag_map.value);
+				this.reset();
+				this.metadb_changed();
+			} catch (e) {}
+			break;
+		case 1140:
+			this.properties.extra.toggle();
 			this.reset();
 			this.metadb_changed();
 			break;
@@ -512,6 +675,7 @@ function _text(mode, x, y, w, h) {
 	this.filename = '';
 	this.filenames = {};
 	this.colour_string = '';
+	this.CRLF = '\r\n';
 	this.up_btn = new _sb(chars.up, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset < 0; }, this), _.bind(function () { this.wheel(1); }, this));
 	this.down_btn = new _sb(chars.down, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset > this.ha - this.text_height; }, this), _.bind(function () { this.wheel(-1); }, this));
 	this.properties = {};

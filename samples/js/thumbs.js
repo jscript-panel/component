@@ -96,7 +96,7 @@ function _thumbs() {
 		if (!_tagged(this.artist)) {
 			return;
 		}
-		var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist) + '/+images';
+		var url = 'https://www.last.fm/music/+noredirect/' + encodeURIComponent(this.artist) + '/+images';
 		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
 		this.base[task_id] = this.folder + utils.ReplaceIllegalChars(this.artist) + '_';
 	}
@@ -138,7 +138,8 @@ function _thumbs() {
 		_(_getElementsByTagName(response_text, 'li'))
 			.filter({ className : 'image-list-item-wrapper' })
 			.map(function (item) {
-				var url = item.getElementsByTagName('img')[0].src.replace('avatar170s/', '');
+				var img = _firstElement(item, 'img');
+				var url = img.src.replace('avatar170s/', '');
 				return {
 					url : url,
 					filename : this.base[id] + url.substring(url.lastIndexOf('/') + 1) + '.jpg',
@@ -156,7 +157,7 @@ function _thumbs() {
 
 	this.image_containsxXY = function (x, y) {
 		switch (true) {
-		case !this.images.length:
+		case this.images.empty():
 		case this.properties.mode.value == 0 && !this.overlay: // grid
 		case this.properties.mode.value != 0 && this.containsXY(x, y): // not grid
 			return false;
@@ -287,7 +288,7 @@ function _thumbs() {
 		var offset_px = this.offset * this.properties.px.value;
 
 		switch (true) {
-		case !this.images.length:
+		case this.images.empty():
 			this.image_xywh = [];
 			break;
 		case this.properties.mode.value == 5: // off
@@ -355,7 +356,7 @@ function _thumbs() {
 
 	this.playback_time = function () {
 		this.counter++;
-		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.length == 0 && !this.history[this.artist]) {
+		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.empty() && !this.history[this.artist]) {
 			this.history[this.artist] = true;
 			this.download();
 		}
@@ -388,7 +389,7 @@ function _thumbs() {
 			panel.m.AppendMenuSeparator();
 		}
 
-		if (panel.text_objects.length + panel.list_objects.length == 0) {
+		if (panel.text_objects.empty() && panel.list_objects.empty()) {
 			_.forEach(this.modes, function (item, i) {
 				panel.s11.AppendMenuItem(MF_STRING, i + 1050, _.capitalize(item));
 			});
@@ -477,7 +478,7 @@ function _thumbs() {
 		case 1054:
 		case 1055:
 			this.properties.mode.value = idx - 1050;
-			if (this.properties.mode.value != 5 && this.thumbs.length == 0) {
+			if (this.properties.mode.value != 5 && this.thumbs.empty()) {
 				this.create_thumbs();
 			}
 			this.size(true);

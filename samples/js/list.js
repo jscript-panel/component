@@ -235,7 +235,7 @@ function _list(mode, x, y, w, h) {
 						if (_isUUID(value)) {
 							url = this.get_musicbrainz_url(name, value);
 						}
-						if (url.length == 0) {
+						if (url.empty()) {
 							url = name.toLowerCase() + (num == 1 ? ' IS ' : ' HAS ') + value;
 						}
 						this.data.push({

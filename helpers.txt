@@ -197,7 +197,6 @@ function GetFontStyles(text, font_obj) {
 	text = StripCode(text, chars.etx); // Discard $rgb code if present
 
 	var arr = text.split(chars.bel);
-	var dpi = window.DPI;
 	var start = text.indexOf(chars.bel) > 0 ? arr[0].length : 0;
 	arr.shift();
 	for (var i = 0; i < arr.length; i += 2) {
@@ -211,7 +210,7 @@ function GetFontStyles(text, font_obj) {
 		if (parts.length) {
 			// Extract values from $font function
 			style.Name = utils.CheckFont(parts[0]) ? parts[0] : font_obj.Name;
-			style.Size = Math.round(Number(parts[1] * dpi / 72));
+			style.Size = Math.round(Number(parts[1] * DPI / 72));
 			style.Weight = Number(parts[2]);
 			style.Style = Number(parts[3]);
 			style.Underline = Number(parts[4]) == 1;
@@ -255,7 +254,7 @@ function GetMenuFlags(enabled, checked) {
 function CreateFontString(name, size, bold) {
 	return JSON.stringify({
 		Name : name,
-		Size : Math.round(size * window.DPI / 72),
+		Size : Math.round(size * DPI / 72),
 		Weight : bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_NORMAL
 	});
 }
@@ -545,6 +544,7 @@ var VK_DELETE = 0x2E;
 var VK_SPACEBAR = 0x20;
 
 var UINT_MAX = Math.pow(2, 32) - 1;
+var DPI = window.DPI;
 
 var AlbumArtId = {
 	front : 0,

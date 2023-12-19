@@ -4,6 +4,14 @@ this.sort(function(a,b){for(var x=0,aa,bb;(aa=a[x])&&(bb=b[x]);x++){aa=aa.toLowe
 return a.length-b.length;});for(var z=0;z<this.length;z++)
 this[z]=this[z].join('');}
 
+Array.prototype.empty = function () {
+	return this.length == 0;
+}
+
+String.prototype.empty = function () {
+	return this.length == 0;
+}
+
 function _artistFolder(artist) {
 	var folder = folders.artists + _sanitiseFolder(artist);
 	utils.CreateFolder(folder);
@@ -174,6 +182,14 @@ function _fileExpired(file, period) {
 	return Math.floor(Date.now() / 1000) - utils.GetLastModified(file) > period;
 }
 
+function _firstElement(obj, tag_name) {
+	try {
+		return _.first(obj.getElementsByTagName(tag_name));
+	} catch (e) {}
+
+	return undefined;
+}
+
 function _formatNumber(number, separator) {
 	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 }
@@ -193,7 +209,7 @@ function _getExt(path) {
 
 function _getFiles(folder, exts) {
 	var files = [];
-	var folders = folder.split('|').map(function (item) { return item.trim() });
+	var folders = _stringToArray(folder, '|');
 	for (var i = 0; i < folders.length; i++) {
 		Array.prototype.push.apply(files, utils.ListFiles(folders[i]).toArray());
 	}
@@ -388,6 +404,11 @@ function _scale(size) {
 	return Math.round(size * DPI / 72);
 }
 
+function _stringToArray(str, sep) {
+	if (typeof str != 'string' || typeof sep != 'string') return [];
+	return str.split(sep).map(function (item) { return item.trim(); }).filter(function (item) { return !item.empty(); });
+}
+
 function _stripTags(value) {
 	doc.open();
 	var div = doc.createElement('div');
@@ -413,7 +434,6 @@ var doc = new ActiveXObject('htmlfile');
 var ONE_DAY = 86400;
 var DEFAULT_ARTIST = '$meta(artist,0)';
 var N = window.Name + ':';
-var DPI = window.DPI;
 var LM = _scale(5);
 var TM = _scale(20);
 

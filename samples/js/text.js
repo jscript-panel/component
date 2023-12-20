@@ -26,8 +26,8 @@ function _text(mode, x, y, w, h) {
 		case 'console':
 			return 'Console';
 		case 'lastfm_bio':
-			if (this.twitter_font && this.flag.length) {
-				return panel.tf('$font(Twitter Color Emoji,' + _scale(panel.fonts.size.value) + ')' + this.flag + '$font() ') + this.artist;
+			if (this.flag_font && this.flag.length) {
+				return panel.tf('$font(Twemoji Mozilla,' + _scale(panel.fonts.size.value) + ')' + this.flag + '$font() ') + this.artist;
 			}
 			return this.artist;
 		case 'text_reader2':
@@ -334,7 +334,7 @@ function _text(mode, x, y, w, h) {
 
 			utils.CreateFolder(folders.artists);
 			this.langs = ['en', 'de', 'es', 'fr', 'it', 'ja', 'pl', 'pt', 'ru', 'sv', 'tr', 'zh'];
-			this.twitter_font = utils.CheckFont('Twitter Color Emoji');
+			this.flag_font = utils.CheckFont('Twemoji Mozilla');
 			this.flag = '';
 			this.properties.lang = new _p('2K3.TEXT.BIO.LANG', 0);
 			this.properties.extra = new _p('2K3.TEXT.BIO.EXTRA', true);

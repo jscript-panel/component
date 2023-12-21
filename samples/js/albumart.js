@@ -115,7 +115,7 @@ function _albumart(x, y, w, h) {
 
 		panel.m.AppendMenuItem(MF_STRING, 1000, 'Refresh');
 		panel.m.AppendMenuSeparator();
-		_.forEach(this.ids, function (item, i) {
+		this.ids.forEach(function (item, i) {
 			panel.m.AppendMenuItem(MF_STRING, i + 1010, item);
 		});
 		panel.m.CheckMenuRadioItem(1010, 1014, this.properties.id.value + 1010);

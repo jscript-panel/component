@@ -496,7 +496,7 @@ function _text(mode, x, y, w, h) {
 		case 'lastfm_bio':
 			panel.m.AppendMenuItem(EnableMenuIf(panel.metadb), 1100, 'Force update');
 			panel.m.AppendMenuSeparator();
-			_.forEach(this.langs, function (item, i) {
+			this.langs.forEach(function (item, i) {
 				panel.s10.AppendMenuItem(MF_STRING, i + 1110, item);
 			});
 			panel.s10.CheckMenuRadioItem(1110, 1121, this.properties.lang.value + 1110);

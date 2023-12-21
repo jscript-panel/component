@@ -520,12 +520,12 @@ function _list(mode, x, y, w, h) {
 				panel.m.AppendMenuSeparator();
 
 				if (this.properties.user_mode.value == 0) {
-					_.forEach(this.chart_methods, function (item, i) {
+					this.chart_methods.forEach(function (item, i) {
 						panel.m.AppendMenuItem(MF_STRING, i + 1120, _.capitalize(item.display));
 					});
 					panel.m.CheckMenuRadioItem(1120, 1122, this.properties.charts_method.value + 1120);
 					panel.m.AppendMenuSeparator();
-					_.forEach(this.chart_periods, function (item, i) {
+					this.chart_periods.forEach(function (item, i) {
 						panel.m.AppendMenuItem(MF_STRING, i + 1130, _.capitalize(item.display));
 					});
 					panel.m.CheckMenuRadioItem(1130, 1135, this.properties.charts_period.value + 1130);

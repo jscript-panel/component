@@ -381,7 +381,7 @@ function _thumbs() {
 		} else { // last.fm
 			panel.m.AppendMenuItem(EnableMenuIf(panel.metadb), 1003, 'Download now');
 			panel.m.AppendMenuItem(CheckMenuIf(this.properties.auto_download.enabled), 1004, 'Automatic downloads');
-			_.forEach(this.limits, function (item) {
+			this.limits.forEach(function (item) {
 				panel.s10.AppendMenuItem(MF_STRING, item + 1010, item);
 			});
 			panel.s10.CheckMenuRadioItem(_.first(this.limits) + 1010, _.last(this.limits) + 1010, this.properties.limit.value + 1010);
@@ -390,13 +390,13 @@ function _thumbs() {
 		}
 
 		if (panel.text_objects.empty() && panel.list_objects.empty()) {
-			_.forEach(this.modes, function (item, i) {
+			this.modes.forEach(function (item, i) {
 				panel.s11.AppendMenuItem(MF_STRING, i + 1050, _.capitalize(item));
 			});
 			panel.s11.CheckMenuRadioItem(1050, 1055, this.properties.mode.value + 1050);
 			panel.s11.AppendMenuSeparator();
 			var flag = EnableMenuIf(this.properties.mode.value != 5);
-			_.forEach(this.pxs, function (item) {
+			this.pxs.forEach(function (item) {
 				panel.s11.AppendMenuItem(flag, item + 1000, item + 'px');
 			});
 			panel.s11.CheckMenuRadioItem(_.first(this.pxs) + 1000, _.last(this.pxs) + 1000, this.properties.px.value + 1000);

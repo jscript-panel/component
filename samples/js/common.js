@@ -413,7 +413,7 @@ function _stripTags(value) {
 	doc.open();
 	var div = doc.createElement('div');
 	div.innerHTML = value.toString().replace(/<[Pp][^>]*>/g, '').replace(/<\/[Pp]>/g, '<br>').replace(/\n/g, '<br>');
-	var tmp = _.trim(div.innerText);
+	var tmp = div.innerText.trim();
 	doc.close();
 	return tmp;
 }

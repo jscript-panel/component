@@ -5,12 +5,14 @@
 // @import "%fb2k_component_path%samples\js\lodash.min.js"
 // @import "%fb2k_component_path%samples\js\common.js"
 // @import "%fb2k_component_path%samples\js\panel.js"
+// @import "%fb2k_component_path%samples\js\lastfm.js"
 // @import "%fb2k_component_path%samples\js\thumbs.js"
 // ==/PREPROCESSOR==
 
 // https://jscript-panel.github.io/gallery/thumbs/
 
 var panel = new _panel({ custom_background : true });
+var lastfm = new _lastfm();
 var thumbs = new _thumbs();
 
 panel.item_focus_change();

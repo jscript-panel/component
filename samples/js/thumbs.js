@@ -96,9 +96,9 @@ function _thumbs() {
 		if (!_tagged(this.artist)) {
 			return;
 		}
-		var url = 'https://www.last.fm/music/+noredirect/' + encodeURIComponent(this.artist) + '/+images';
-		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
-		this.base[task_id] = this.folder + utils.ReplaceIllegalChars(this.artist) + '_';
+		var url = lastfm.base_url + '&method=artist.getInfo&autocorrect=1&artist=' + encodeURIComponent(this.artist);
+		var task_id = utils.HTTPRequestAsync(window.ID, 0, url);
+		this.base[task_id] = this.artist;
 	}
 
 	this.enable_overlay = function (b) {
@@ -134,6 +134,15 @@ function _thumbs() {
 	this.http_request_done = function (id, success, response_text) {
 		if (!this.base[id]) return; // we didn't request this id??
 		if (!success) return console.log(N, response_text);
+
+		var obj = _jsonParse(response_text);
+		var url = _.get(obj, 'artist.url', '');
+		if (url.length > 0) {
+			url += '/+images';
+			var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers, '', '');
+			this.base[task_id] = this.folder + utils.ReplaceIllegalChars(this.artist) + '_';
+			return;
+		}
 
 		_(_getElementsByTagName(response_text, 'li'))
 			.filter({ className : 'image-list-item-wrapper' })
@@ -704,7 +713,6 @@ function _thumbs() {
 		}
 	}
 
-
 	this.is_bio_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'lastfm_bio';
 	if (this.is_bio_panel) {
 		window.SetProperty('2K3.THUMBS.MODE', 5);
@@ -758,6 +766,7 @@ function _thumbs() {
 		'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
 		'Referer' : 'https://www.last.fm',
 	});
+
 	this.close_btn = new _sb(chars.close, 0, 0, _scale(12), _scale(12), _.bind(function () { return this.properties.mode.value == 0 && this.overlay; }, this), _.bind(function () { this.enable_overlay(false); }, this));
 	this.create_mask();
 	utils.CreateFolder(folders.artists);

@@ -45,7 +45,7 @@ thumbs.paint = function (gr) {
 	if (this.images.length) {
 		_drawImage(gr, this.blur_img, 0, 0, panel.w, panel.h, image.crop_top);
 		_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
-		this.image_xywh = _drawImage(gr, thumbs.images[thumbs.image], this.x, this.y, this.w, this.h, image.crop_top);
+		this.image_xywh = _drawImage(gr, thumbs.images[thumbs.image], this.x, this.y, this.w, this.h, this.properties.aspect.value);
 	} else {
 		this.image_xywh = [];
 	}

@@ -415,7 +415,7 @@ function _thumbs() {
 		panel.m.AppendMenuSeparator();
 
 		if (this.image_containsxXY(x, y)) {
-			if (!this.is_bio_panel && this.properties.mode.value != 0) {
+			if (this.properties.mode.value != 0) {
 				panel.m.AppendMenuItem(MF_STRING, 1500, 'Crop (focus on centre)');
 				panel.m.AppendMenuItem(MF_STRING, 1501, 'Crop (focus on top)');
 				panel.m.AppendMenuItem(MF_STRING, 1502, 'Stretch');

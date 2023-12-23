@@ -297,7 +297,7 @@ function _text(mode, x, y, w, h) {
 					_.forEach(obj, function (value, name) {
 						// test versions stored Flag, we ignore it now
 						if (name != 'Flag') { 
-							str += name + ': ' + value + this.CRLF;
+							str += name.trim() + ': ' + value.trim() + this.CRLF;
 
 							if (this.flag.empty && (name == 'Born In' || name == 'Founded In')) {
 								this.parse_location(value.toLowerCase());

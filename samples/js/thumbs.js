@@ -98,7 +98,7 @@ function _thumbs() {
 		}
 		var url = lastfm.base_url + '&method=artist.getInfo&autocorrect=1&artist=' + encodeURIComponent(this.artist);
 		var task_id = utils.HTTPRequestAsync(window.ID, 0, url);
-		this.base[task_id] = this.artist;
+		this.artists[task_id] = this.artist;
 	}
 
 	this.enable_overlay = function (b) {
@@ -132,7 +132,8 @@ function _thumbs() {
 	}
 
 	this.http_request_done = function (id, success, response_text) {
-		if (!this.base[id]) return; // we didn't request this id??
+		var artist = this.artists[id];
+		if (!artist) return; // we didn't request this id
 		if (!success) return console.log(N, response_text);
 
 		var obj = _jsonParse(response_text);
@@ -140,9 +141,11 @@ function _thumbs() {
 		if (url.length > 0) {
 			url += '/+images';
 			var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers, '', '');
-			this.base[task_id] = this.folder + utils.ReplaceIllegalChars(this.artist) + '_';
+			this.artists[task_id] = artist;
 			return;
 		}
+
+		var filename_base = _artistFolder(artist) + utils.ReplaceIllegalChars(artist) + '_'
 
 		_(_getElementsByTagName(response_text, 'li'))
 			.filter({ className : 'image-list-item-wrapper' })
@@ -151,9 +154,9 @@ function _thumbs() {
 				var url = img.src.replace('avatar170s/', '');
 				return {
 					url : url,
-					filename : this.base[id] + url.substring(url.lastIndexOf('/') + 1) + '.jpg',
+					filename : filename_base + url.substring(url.lastIndexOf('/') + 1) + '.jpg',
 				};
-			}, this)
+			})
 			.filter(function (item) {
 				return !utils.IsFile(item.filename);
 			})
@@ -733,7 +736,7 @@ function _thumbs() {
 	this.default_file = '';
 	this.folder = '';
 	this.artist = '';
-	this.base = {};
+	this.artists = {};
 	this.img = null;
 	this.blur_img = null;
 	this.circular_mask = null;

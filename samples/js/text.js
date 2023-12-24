@@ -48,9 +48,9 @@ function _text(mode, x, y, w, h) {
 						return;
 					}
 					if (this.artist.toLowerCase() == 'various artists') {
-						url = this.search_base + this.album;
+						url = this.search_base + encodeURIComponent(this.album);
 					} else {
-						url = this.search_base + this.artist + ' ' + this.album;
+						url = this.search_base + encodeURIComponent(this.artist + ' ' + this.album);
 					}
 					if (this.history[url]) return;
 					this.history[url] = true;

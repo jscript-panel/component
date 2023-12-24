@@ -96,8 +96,8 @@ function _thumbs() {
 		if (!_tagged(this.artist)) {
 			return;
 		}
-		var url = lastfm.base_url + '&method=artist.getInfo&autocorrect=1&artist=' + encodeURIComponent(this.artist);
-		var task_id = utils.HTTPRequestAsync(window.ID, 0, url);
+		var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist) + '/+images';
+		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
 		this.artists[task_id] = this.artist;
 	}
 
@@ -135,15 +135,6 @@ function _thumbs() {
 		var artist = this.artists[id];
 		if (!artist) return; // we didn't request this id
 		if (!success) return console.log(N, response_text);
-
-		var obj = _jsonParse(response_text);
-		var url = _.get(obj, 'artist.url', '');
-		if (url.length > 0) {
-			url += '/+images';
-			var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers, '', '');
-			this.artists[task_id] = artist;
-			return;
-		}
 
 		var filename_base = _artistFolder(artist) + utils.ReplaceIllegalChars(artist) + '_'
 

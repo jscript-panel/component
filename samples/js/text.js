@@ -299,7 +299,7 @@ function _text(mode, x, y, w, h) {
 						if (name != 'Flag') { 
 							str += name.trim() + ': ' + value.trim() + this.CRLF;
 
-							if (this.flag.empty && (name == 'Born In' || name == 'Founded In')) {
+							if (this.flag.empty() && (name == 'Born In' || name == 'Founded In')) {
 								this.parse_location(value.toLowerCase());
 							}
 						}
@@ -336,9 +336,10 @@ function _text(mode, x, y, w, h) {
 			this.langs = ['en', 'de', 'es', 'fr', 'it', 'ja', 'pl', 'pt', 'ru', 'sv', 'tr', 'zh'];
 			this.flag_font = utils.CheckFont('Twemoji Mozilla');
 			this.flag = '';
+			this.country = '';
 			this.properties.lang = new _p('2K3.TEXT.BIO.LANG', 0);
 			this.properties.extra = new _p('2K3.TEXT.BIO.EXTRA', true);
-			this.properties.flag_tf = new _p('2K3.TEXT.BIO.FLAG.TF', '$country_flag(%country%)');
+			this.properties.country_tf = new _p('2K3.TEXT.BIO.FLAG.TF', '$country_flag(%country%)');
 			this.properties.flag_map = new _p('2K3.TEXT.BIO.FLAG.MAP', 'korea, republic of|kr');
 			this.headers = JSON.stringify({
 				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
@@ -407,12 +408,13 @@ function _text(mode, x, y, w, h) {
 				break;
 			case 'lastfm_bio':
 				var temp_artist = panel.tf(DEFAULT_ARTIST);
-				var temp_flag = panel.tf(this.properties.flag_tf.value)
-				if (this.artist == temp_artist && this.flag == temp_flag) {
+				var temp_country = panel.tf(this.properties.country_tf.value)
+				if (this.artist == temp_artist && this.country == temp_country) {
 					return;
 				}
 				this.artist = temp_artist;
-				this.flag = temp_flag;
+				this.country = temp_country;
+				this.flag = this.country;
 
 				if (this.properties.extra.enabled) {
 					var arr = [];

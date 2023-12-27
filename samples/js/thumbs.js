@@ -106,6 +106,10 @@ function _thumbs() {
 		window.Repaint();
 	}
 
+	this.get_count = function () {
+		return this.using_stub ? 0 : this.images.length;
+	}
+
 	this.get_defaults = function () {
 		var defaults = _jsonParseFile(this.json_file);
 		if (_.isArray(defaults)) return {};
@@ -179,11 +183,8 @@ function _thumbs() {
 			window.Repaint();
 		}
 
-		if (this.time % 3 == 0) {
-			var count = this.using_stub ? 0 : this.images.length;
-			if (_getFiles(this.folder, this.exts).length != count) {
-				this.update();
-			}
+		if (this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.get_count()) {
+			this.update();
 		}
 	}, this);
 
@@ -363,7 +364,7 @@ function _thumbs() {
 
 	this.playback_time = function () {
 		this.counter++;
-		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.empty() && !this.history[this.artist]) {
+		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.get_count() == 0 && !this.history[this.artist]) {
 			this.history[this.artist] = true;
 			this.download();
 		}

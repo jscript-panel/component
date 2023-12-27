@@ -14,25 +14,19 @@ var margin = _scale(12);
 var panel = new _panel();
 var text = new _text('allmusic', 0, 0, 0, 0);
 var albumart = new _albumart(0, 0, 0, 0);
+var white = RGB(255, 255, 255);
 
 text.paint = function (gr) {
-	var colour, colourh;
-	if (albumart.blur_img) {
-		_drawImage(gr, albumart.blur_img, 0, 0, panel.w, panel.h, image.crop);
-		_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
-		colour = colourh = RGB(255, 255, 255);
-	} else {
-		colour = panel.colours.text;
-		colourh = panel.colours.highlight;
-	}
+	_drawImage(gr, albumart.blur_img, 0, 0, panel.w, panel.h, image.crop);
+	_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
 
 	var y = albumart.properties.layout.value == 0 ? margin : this.y - margin;
-	gr.WriteText(this.header_text(), panel.fonts.title, colourh, this.x, y, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+	gr.WriteText(this.header_text(), panel.fonts.title, white, this.x, y, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (this.text_layout) {
-		gr.WriteTextLayout(this.text_layout, colour, this.x, this.y + margin, this.w, this.ha, this.offset);
-		this.up_btn.paint(gr, colour);
-		this.down_btn.paint(gr, colour);
+		gr.WriteTextLayout(this.text_layout, white, this.x, this.y + margin, this.w, this.ha, this.offset);
+		this.up_btn.paint(gr, white);
+		this.down_btn.paint(gr, white);
 	}
 }
 

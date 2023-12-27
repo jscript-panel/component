@@ -16,18 +16,16 @@ var panel = new _panel();
 var lastfm = new _lastfm();
 var text = new _text('lastfm_bio', 0, 0, 0, 0);
 var thumbs = new _thumbs();
+var white = RGB(255, 255, 255);
 
 text.paint = function (gr) {
-	var colour = thumbs.blur_img ? RGB(255, 255, 255) : panel.colours.text;
-	var colourh = thumbs.blur_img ? RGB(255, 255, 255) : panel.colours.highlight;
-
 	var y = thumbs.properties.layout.value == 0 ? margin : this.y - margin;
-	DrawStyledText(gr, this.header_text(), panel.fonts.title, colourh, this.x, y, this.w, TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+	DrawStyledText(gr, this.header_text(), panel.fonts.title, white, this.x, y, this.w, TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (this.text_layout) {
-		gr.WriteTextLayout(this.text_layout, colour, this.x, this.y + margin, this.w, this.ha, this.offset);
-		this.up_btn.paint(gr, colour);
-		this.down_btn.paint(gr, colour);
+		gr.WriteTextLayout(this.text_layout, white, this.x, this.y + margin, this.w, this.ha, this.offset);
+		this.up_btn.paint(gr, white);
+		this.down_btn.paint(gr, white);
 	}
 }
 
@@ -42,9 +40,10 @@ thumbs.move = function (x, y) {
 }
 
 thumbs.paint = function (gr) {
+	_drawImage(gr, this.blur_img, 0, 0, panel.w, panel.h, image.crop_top);
+	_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
+
 	if (this.images.length) {
-		_drawImage(gr, this.blur_img, 0, 0, panel.w, panel.h, image.crop_top);
-		_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
 		this.image_xywh = _drawImage(gr, thumbs.images[thumbs.image], this.x, this.y, this.w, this.h, this.properties.aspect.value);
 	} else {
 		this.image_xywh = [];

@@ -178,8 +178,12 @@ function _thumbs() {
 			}
 			window.Repaint();
 		}
-		if (this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.images.length) {
-			this.update();
+
+		if (this.time % 3 == 0) {
+			var count = this.using_stub ? 0 : this.images.length;
+			if (_getFiles(this.folder, this.exts).length != count) {
+				this.update();
+			}
 		}
 	}, this);
 
@@ -628,6 +632,7 @@ function _thumbs() {
 
 	this.update = function () {
 		this.reset();
+		this.using_stub = false;
 
 		this.get_files().forEach((function (item) {
 			var image = utils.LoadImage(item);
@@ -635,6 +640,14 @@ function _thumbs() {
 				this.images.push(image);
 			}
 		}).bind(this));
+
+		if (this.images.empty() && this.properties.source.value == 1) {
+			var stub_img = fb.GetAlbumArtStub(4);
+			if (stub_img) {
+				this.using_stub = true;
+				this.images.push(stub_img);
+			}
+		}
 
 		if (this.images.length) {
 			this.blur_img = this.images[0].Clone();
@@ -737,6 +750,7 @@ function _thumbs() {
 	this.index = 0;
 	this.time = 0;
 	this.counter = 0;
+	this.using_stub = false;
 	this.properties = {
 		mode : new _p('2K3.THUMBS.MODE', 4), // 0 grid 1 left 2 right 3 top 4 bottom 5 off
 		source : new _p('2K3.THUMBS.SOURCE', 0), // 0 custom folder 1 last.fm

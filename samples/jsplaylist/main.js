@@ -972,8 +972,7 @@ function DrawWallpaper(gr) {
 		var src_h = images.wallpaper.Height;
 		var src_x = Math.round((images.wallpaper.Width - src_w) / 2);
 	}
-	var opacity = 1 / 10 * (properties.wallpaperopacity - 3);
-	gr.DrawImage(images.wallpaper, 0, p.list.y, ww, p.list.h, src_x, src_y, src_w, src_h, opacity);
+	gr.DrawImage(images.wallpaper, 0, p.list.y, ww, p.list.h, src_x, src_y, src_w, src_h, 0.25);
 }
 
 function GetKeyboardMask() {
@@ -1452,7 +1451,6 @@ var properties = {
 	showgroupheaders : window.GetProperty("JSPLAYLIST.Show Group Headers", true),
 	showscrollbar : window.GetProperty("JSPLAYLIST.Show Scrollbar", true),
 	showwallpaper : window.GetProperty("JSPLAYLIST.Show Wallpaper", false),
-	wallpaperopacity : window.GetProperty("JSPLAYLIST.Wallpaper Opacity", 5), // 5-20% 6-30% 7-40% 8-50% 9-60%
 	wallpaperblurred : window.GetProperty("JSPLAYLIST.Wallpaper Blurred", false),
 	wallpaperblurvalue : window.GetProperty("JSPLAYLIST.Wallpaper StackBlur value", 60),
 	wallpapertype : window.GetProperty("JSPLAYLIST.Wallpaper Type", 0),

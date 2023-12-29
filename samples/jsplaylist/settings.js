@@ -152,18 +152,6 @@ function settings_radioboxes_action(id, status, pid) {
 			images.wallpaper = get_wallpaper();
 		}
 
-		if (id >= 5 && id <= 9) {
-			p.settings.pages[pid].elements[5].status = id == 5;
-			p.settings.pages[pid].elements[6].status = id == 6;
-			p.settings.pages[pid].elements[7].status = id == 7;
-			p.settings.pages[pid].elements[8].status = id == 8;
-			p.settings.pages[pid].elements[9].status = id == 9;
-
-			properties.wallpaperopacity = id;
-			window.SetProperty("JSPLAYLIST.Wallpaper Opacity", properties.wallpaperopacity);
-			images.wallpaper = get_wallpaper();
-		}
-
 		full_repaint();
 		break;
 	}
@@ -357,7 +345,7 @@ function settings_textboxes_action(pageId, elementId) {
 		break;
 	case 3: // Appearance
 		switch (elementId) {
-		case 10:
+		case 5:
 			var label = properties.wallpaperpath;
 			var new_label = p.settings.pages[pageId].elements[elementId].inputbox.text;
 			if (new_label.length && new_label != label) {
@@ -972,20 +960,9 @@ function oPage(id, objectName, label, nbrows) {
 			// Create checkbox blur effect
 			this.elements.push(new oCheckBox(4, 20, cSettings.topBarHeight + rh * 5.75, "Blurred", "properties.wallpaperblurred", this.id));
 
-			var spaceBetween_w = scale(65);
-			if (properties.wallpaperopacity < 5 || properties.wallpaperopacity > 9) {
-				properties.wallpaperopacity = 6;
-				window.SetProperty("JSPLAYLIST.Wallpaper Opacity", properties.wallpaperopacity);
-			}
-			this.elements.push(new oRadioButton(5, txtbox_x, cSettings.topBarHeight + rh * 7.5, "20%", (properties.wallpaperopacity == 5), this.id));
-			this.elements.push(new oRadioButton(6, txtbox_x + spaceBetween_w, cSettings.topBarHeight + rh * 7.5, "30%", (properties.wallpaperopacity == 6), this.id));
-			this.elements.push(new oRadioButton(7, txtbox_x + spaceBetween_w * 2, cSettings.topBarHeight + rh * 7.5, "40%", (properties.wallpaperopacity == 7), this.id));
-			this.elements.push(new oRadioButton(8, txtbox_x + spaceBetween_w * 3, cSettings.topBarHeight + rh * 7.5, "50%", (properties.wallpaperopacity == 8), this.id));
-			this.elements.push(new oRadioButton(9, txtbox_x + spaceBetween_w * 4, cSettings.topBarHeight + rh * 7.5, "60%", (properties.wallpaperopacity == 9), this.id));
-
 			// Create TextBox Wpp path of default image
 			var txtbox_value = properties.wallpaperpath;
-			this.elements.push(new oTextBox(10, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 8.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Default Wallpaper Path", txtbox_value, this.id));
+			this.elements.push(new oTextBox(5, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 6.75), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Default Wallpaper Path", txtbox_value, this.id));
 			break;
 		}
 	}
@@ -1077,7 +1054,6 @@ function oPage(id, objectName, label, nbrows) {
 			gr.WriteText("Wallpaper Status", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 1.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
 			gr.WriteText("Wallpaper Image", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 3.25 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
 			gr.WriteText("Wallpaper Effects", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
-			gr.WriteText("Wallpaper Opacity", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 6.75 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
 			break;
 		}
 

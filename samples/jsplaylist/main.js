@@ -972,7 +972,7 @@ function DrawWallpaper(gr) {
 		var src_h = images.wallpaper.Height;
 		var src_x = Math.round((images.wallpaper.Width - src_w) / 2);
 	}
-	gr.DrawImage(images.wallpaper, 0, p.list.y, ww, p.list.h, src_x, src_y, src_w, src_h, 0.25);
+	gr.DrawImage(images.wallpaper, 0, p.list.y, ww, p.list.h, src_x, src_y, src_w, src_h, 0.2);
 }
 
 function GetKeyboardMask() {

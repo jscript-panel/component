@@ -268,11 +268,6 @@ function on_key_up(vkey) {
 	brw.repaint();
 }
 
-function on_metadb_changed(handles, fromhook) {
-	if (!foo_playcount && fromhook) return;
-	brw.populate();
-}
-
 function on_mouse_lbtn_dblclk(x, y, mask) {
 	brw.on_mouse("lbtn_dblclk", x, y);
 }
@@ -383,6 +378,12 @@ function on_playlist_items_added(playlist_idx) {
 	}
 }
 
+function on_playlist_items_changed(playlist_idx) {
+	if (playlist_idx == g_active_playlist) {
+		brw.populate();
+	}
+}
+
 function on_playlist_items_removed(playlist_idx, new_count) {
 	if (playlist_idx == g_active_playlist) {
 		if (new_count == 0) {
@@ -396,6 +397,12 @@ function on_playlist_items_removed(playlist_idx, new_count) {
 function on_playlist_items_reordered(playlist_idx) {
 	if (playlist_idx == g_active_playlist) {
 		g_focus_id = getFocusId();
+		brw.populate();
+	}
+}
+
+function on_playlist_items_replaced(playlist_idx) {
+	if (playlist_idx == g_active_playlist) {
 		brw.populate();
 	}
 }

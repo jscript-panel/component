@@ -507,13 +507,6 @@ function on_key_up(vkey) {
 	}
 }
 
-function on_metadb_changed(handles, fromhook) {
-	update_playlist();
-	p.topBar.setDatas();
-	p.headerBar.resetSortIndicators();
-	full_repaint();
-}
-
 function on_mouse_lbtn_dblclk(x, y, mask) {
 	if (cSettings.visible) {
 		p.settings.on_mouse("lbtn_dblclk", x, y);
@@ -894,6 +887,15 @@ function on_playlist_items_added(playlist_idx) {
 	}
 }
 
+function on_playlist_items_changed(playlist_idx) {
+	if (playlist_idx == g_active_playlist) {
+		update_playlist();
+		p.topBar.setDatas();
+		p.headerBar.resetSortIndicators();
+		full_repaint();
+	}
+}
+
 function on_playlist_items_removed(playlist_idx, new_count) {
 	if (playlist_idx == g_active_playlist) {
 		update_playlist();
@@ -910,6 +912,15 @@ function on_playlist_items_reordered(playlist_idx) {
 		full_repaint();
 	} else {
 		p.headerBar.columnDragged = 0;
+	}
+}
+
+function on_playlist_items_replaced(playlist_idx) {
+	if (playlist_idx == g_active_playlist) {
+		update_playlist();
+		p.topBar.setDatas();
+		p.headerBar.resetSortIndicators();
+		full_repaint();
 	}
 }
 

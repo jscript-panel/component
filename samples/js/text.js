@@ -570,7 +570,7 @@ function _text(mode, x, y, w, h) {
 			this.metadb_changed();
 			break;
 		case 1130:
-			this.properties.flag_tf.value = utils.InputBox('Country names/codes found in file tags always take precedence over online content. You can specify the title format pattern to use here.', window.Name, this.properties.flag_tf.value);
+			this.properties.country_tf.value = utils.InputBox('Country names/codes found in file tags always take precedence over online content. You can specify the title format pattern to use here.', window.Name, this.properties.country_tf.value);
 			// this.reset() intentionally not used here
 			this.metadb_changed();
 			break;

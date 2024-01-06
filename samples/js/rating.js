@@ -131,6 +131,12 @@ function _rating(x, y, h, colour) {
 		handles.Dispose();
 	}
 
+	this.properties = {
+		max : new _p('2K3.RATING.MAX', 5),
+		mode : new _p('2K3.RATING.MODE', 0), // 0 not set 1 foo_playcount 2 file tag
+		tag: new _p('2K3.RATING.TAG', 'rating')
+	};
+
 	this.x = x;
 	this.y = y;
 	this.h = _scale(h);
@@ -142,12 +148,6 @@ function _rating(x, y, h, colour) {
 	this.hrating = 0;
 	this.modes = ['Not Set', 'foo_playcount', 'File Tag'];
 	this.foo_playcount = fb.CheckComponent('foo_playcount');
-
-	this.properties = {
-		max : new _p('2K3.RATING.MAX', 5),
-		mode : new _p('2K3.RATING.MODE', 0), // 0 not set 1 foo_playcount 2 file tag
-		tag: new _p('2K3.RATING.TAG', 'rating')
-	};
 
 	window.SetTimeout(this.init, 500);
 }

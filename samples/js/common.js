@@ -7,7 +7,7 @@ String.prototype.empty = function () {
 }
 
 function _artistFolder(artist) {
-	var folder = folders.artists + _sanitiseFolder(artist);
+	var folder = folders.artists + utils.ReplaceIllegalChars(artist, true, true);
 	utils.CreateFolder(folder);
 	return folder + '\\';
 }
@@ -343,10 +343,6 @@ function _p(name, default_) {
 
 function _q(value) {
 	return '"' + value + '"';
-}
-
-function _sanitiseFolder(folder) {
-	return utils.ReplaceIllegalChars(folder).replace(/\.+$/, '');
 }
 
 function _save(file, value) {

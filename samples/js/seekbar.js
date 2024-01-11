@@ -232,7 +232,8 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			var extra = '';
 			var time = '';
 
-			if (this.tfo.tool.EvalWithMetadb(metadb).indexOf('exhale') > -1) {
+			var tool = this.tfo.tool.EvalWithMetadb(metadb);
+			if (_.includes(tool, 'exhale')) {
 				extra += ' -c:a libfdk_aac';
 			}
 

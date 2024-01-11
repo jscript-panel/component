@@ -209,10 +209,15 @@ function _getExt(path) {
 
 function _getFiles(folder, exts) {
 	var files = [];
-	var folders = _stringToArray(folder, '|');
-	for (var i = 0; i < folders.length; i++) {
-		Array.prototype.push.apply(files, utils.ListFiles(folders[i]).toArray());
+
+	if (_.isArray(folder)) {
+		folder.forEach(function (item) {
+			Array.prototype.push.apply(files, utils.ListFiles(item).toArray());
+		});
+	} else {
+		files = utils.ListFiles(folder).toArray();
 	}
+
 	files.srt();
 	if (!exts) {
 		return files;

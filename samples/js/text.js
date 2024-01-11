@@ -156,7 +156,7 @@ function _text(mode, x, y, w, h) {
 				this.colour_string = '';
 				var lines = _(console.GetLines(this.properties.timestamp.enabled).toArray())
 					.filter(function (item) {
-						return item.indexOf('Using decoder shim') == -1;
+						return !_.includes(item, 'Using decoder shim');
 					})
 					.takeRight(100)
 					.value();
@@ -317,14 +317,14 @@ function _text(mode, x, y, w, h) {
 
 			this.parse_location = function (location) {
 				var locations = _stringToArray(location, ',');
-				var flag = utils.GetCountryFlag(locations[locations.length - 1]);
+				var flag = utils.GetCountryFlag(_.last(locations));
 				if (flag.length) {
 					this.flag = flag;
 				} else {
 					var arr = _stringToArray(this.properties.flag_map.value, this.CRLF);
 					_.forEach(arr, function (item) {
 						var tmp = _stringToArray(item, '|');
-						if (tmp.length == 2 && location.indexOf(tmp[0].toLowerCase()) > -1) {
+						if (tmp.length == 2 && _.includes(location, tmp[0].toLowerCase())) {
 							this.flag = utils.GetCountryFlag(tmp[1]);
 							return false;
 						}

@@ -14,11 +14,11 @@ var list = new _list('DWriteFonts', LM, TM, 0, 0);
 list.update = function () {
 	this.data = [];
 	var fonts = utils.ListFonts().toArray();
-	fonts.forEach((function (name) {
+	_.forEach(fonts, function (name) {
 		this.data.push({
 			name : name
 		});
-	}).bind(this));
+	}, this);
 
 	this.count = this.data.length;
 }

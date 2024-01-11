@@ -4,9 +4,7 @@ function _albumart(x, y, w, h) {
 
 		if (panel.display_objects.length) {
 			var properties = panel.display_objects[0].properties;
-			if (properties.albumart.enabled && properties.albumart_blur.enabled) {
-				blur_it = true;
-			}
+			blur_it = properties.albumart.enabled && properties.albumart_blur.enabled;
 		} else if (this.is_review_panel) {
 			blur_it = true;
 		}
@@ -43,7 +41,7 @@ function _albumart(x, y, w, h) {
 				case 0:
 					if (panel.metadb.Path == this.path) {
 						_explorer(this.path);
-					} else if (utils.IsFile(this.path) || this.path.indexOf('http') == 0) {
+					} else if (utils.IsFile(this.path) || _.startsWith(this.path, 'http')) {
 						utils.Run(this.path);
 					}
 					break;

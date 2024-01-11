@@ -309,9 +309,9 @@ function _list(mode, x, y, w, h) {
 
 			this.add_other_info = function () {
 				var tmp = JSON.parse(fb.CreateHandleList(panel.metadb).GetOtherInfo());
-				['Location', 'General'].forEach((function (item) {
+				_.forEach(['Location', 'General'], function (item) {
 					this.add_section(tmp[item], item);
-				}).bind(this));
+				}, this);
 				for (var i in tmp) {
 					if (i != 'General' && i != 'Location') {
 						this.add_section(tmp[i], i);

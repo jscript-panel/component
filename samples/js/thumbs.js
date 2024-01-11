@@ -87,9 +87,9 @@ function _thumbs() {
 		_dispose.apply(null, this.thumbs);
 		this.thumbs = [];
 
-		this.images.forEach((function (image) {
+		_.forEach(this.images, function (image) {
 			this.thumbs.push(this.create_thumb(image));
-		}).bind(this));
+		}, this);
 	}
 
 	this.download = function () {
@@ -117,7 +117,17 @@ function _thumbs() {
 	}
 
 	this.get_files = function () {
-		var files = _getFiles(this.folder, this.exts);
+		var files = [];
+
+		if (this.properties.source.value == 0 && _.includes(this.properties.tf.value, '\r\n')) {
+			var folders = _stringToArray(this.properties.tf.value, '\r\n').map(function (item) {
+				return panel.tf(item);
+			});
+			files = _getFiles(folders, this.exts);
+		} else {
+			files = _getFiles(this.folder, this.exts);
+		}
+
 		if (this.properties.source.value == 1 && files.length > 1) {
 			this.default_file = this.folder + this.defaults[this.artist];
 			var tmp = _.indexOf(files, this.default_file);
@@ -183,7 +193,7 @@ function _thumbs() {
 			window.Repaint();
 		}
 
-		if (this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.get_count()) {
+		if (this.properties.source.value == 1 && this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.get_count()) {
 			this.update();
 		}
 	}, this);
@@ -461,9 +471,11 @@ function _thumbs() {
 			this.metadb_changed();
 			break;
 		case 1002:
-			this.properties.tf.value = utils.InputBox('Enter title formatting or an absolute path to a folder.\n\nYou can specify multiple folders by using | as a separator.', window.Name, this.properties.tf.value);
-			this.folder = '';
-			this.metadb_changed();
+			try {
+				this.properties.tf.value = utils.TextBox('Enter title formatting or an absolute path to a folder. You can specify multiple folders by placing each one on their own line.', window.Name, this.properties.tf.value);
+				this.folder = '';
+				this.metadb_changed();
+			} catch (e) {}
 			break;
 		case 1003:
 			this.download();
@@ -635,12 +647,12 @@ function _thumbs() {
 		this.reset();
 		this.using_stub = false;
 
-		this.get_files().forEach((function (item) {
+		_.forEach(this.get_files(), function (item) {
 			var image = utils.LoadImage(item);
 			if (image) {
 				this.images.push(image);
 			}
-		}).bind(this));
+		}, this);
 
 		if (this.images.empty() && this.properties.source.value == 1) {
 			var stub_img = fb.GetAlbumArtStub(4);
@@ -765,6 +777,11 @@ function _thumbs() {
 		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
 		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 0), // 0 external viewer 1 fb2k viewer 2 explorer
 	};
+
+	if (_.includes(this.properties.tf.value, '|')) {
+		var arr = _stringToArray(this.properties.tf.value, '|');
+		this.properties.tf.value = arr.join('\r\n');
+	}
 
 	if (this.is_bio_panel) {
 		this.properties.layout = new _p('2K3.THUMBS.LAYOUT', 0); // 0 horizontal, 1 vertical

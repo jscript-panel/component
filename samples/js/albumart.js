@@ -5,8 +5,8 @@ function _albumart(x, y, w, h) {
 		if (panel.display_objects.length) {
 			var properties = panel.display_objects[0].properties;
 			blur_it = properties.albumart.enabled && properties.albumart_blur.enabled;
-		} else if (this.is_review_panel) {
-			blur_it = true;
+		} else {
+			blur_it = this.is_review_panel;
 		}
 
 		if (blur_it) {
@@ -65,7 +65,7 @@ function _albumart(x, y, w, h) {
 		}
 
 		if (this.img) this.img.Dispose();
-		if (this.blur_img) this.img.Dispose();
+		if (this.blur_img) this.blur_img.Dispose();
 		this.img = this.blur_img = null;
 		this.tooltip = this.path = '';
 		if (img) {

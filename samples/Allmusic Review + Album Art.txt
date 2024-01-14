@@ -13,7 +13,7 @@ var margin = _scale(12);
 
 var panel = new _panel();
 var text = new _text('allmusic', 0, 0, 0, 0);
-var albumart = new _albumart(0, 0, 0, 0);
+var albumart = new _albumart(margin, margin, 0, 0);
 var white = RGB(255, 255, 255);
 
 text.paint = function (gr) {
@@ -128,9 +128,6 @@ function on_playlist_switch() {
 
 function on_size() {
 	panel.size();
-
-	albumart.x = margin;
-	albumart.y = margin;
 
 	switch (albumart.properties.layout.value) {
 	case 0: // Image left, Text right

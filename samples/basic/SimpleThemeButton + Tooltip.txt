@@ -1,6 +1,7 @@
 // ==PREPROCESSOR==
 // @name "SimpleThemedButton + Tooltip"
 // @author "T.P Wang / marc2003"
+// @feature "theme_manager"
 // @import "%fb2k_component_path%helpers.txt"
 // ==/PREPROCESSOR==
 

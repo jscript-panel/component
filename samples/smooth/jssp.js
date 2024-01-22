@@ -813,7 +813,7 @@ function oBrowser() {
 			this.activeRow = -1;
 		}
 
-		var rating_hover = ppt.showRating && this.activeRow > -1 && x > this.rating_x && x < this.rating_x + g_rating_width;
+		var rating_hover = ppt.showRating && this.activeRow > -1 && this.rows[this.activeRow].type == 0 && x > this.rating_x && x < this.rating_x + g_rating_width;
 
 		switch (event) {
 		case "lbtn_down":

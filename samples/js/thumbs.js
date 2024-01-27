@@ -137,12 +137,17 @@ function _thumbs() {
 			}
 		}
 
+		var count_limit = Math.floor(8192 / this.properties.px.value)
 		var size_limit = this.properties.size_limit.value;
 		var total_file_size = 0;
-		return files.filter(function (item) {
+		var filtered = files.filter(function (item, i) {
 			total_file_size += utils.GetFileSize(item);
-			return total_file_size < size_limit;
+			return total_file_size < size_limit && i <= count_limit;
 		});
+		if (filtered.length < files.length) {
+			console.log(N, "Not all images have been loaded. This is due to excessive total size and/or count.");
+		}
+		return filtered;
 	}
 
 	this.http_request_done = function (id, success, response_text) {
@@ -407,6 +412,14 @@ function _thumbs() {
 			panel.m.AppendMenuSeparator();
 		}
 
+		var s = this.properties.max_size.value;
+		panel.s14.AppendMenuItem(MF_STRING, 1700, '512px');
+		panel.s14.AppendMenuItem(MF_STRING, 1701, '1024px');
+		panel.s14.AppendMenuItem(MF_STRING, 1702, 'Leave untouched');
+		panel.s14.CheckMenuRadioItem(1700, 1702, s == 512 ? 1700 : s == 1024 ? 1701 : 1702);
+		panel.s14.AppendTo(panel.m, MF_STRING, 'Main image maximum size');
+		panel.m.AppendMenuSeparator();
+
 		if (panel.text_objects.empty() && panel.list_objects.empty()) {
 			this.modes.forEach(function (item, i) {
 				panel.s11.AppendMenuItem(MF_STRING, i + 1050, _.capitalize(item));
@@ -563,6 +576,18 @@ function _thumbs() {
 			on_size();
 			window.Repaint();
 			break;
+		case 1700:
+			this.properties.max_size.value = 512;
+			this.update();
+			break;
+		case 1701:
+			this.properties.max_size.value = 1024;
+			this.update();
+			break;
+		case 1702:
+			this.properties.max_size.value = 0;
+			this.update();
+			break;
 		}
 	}
 
@@ -648,7 +673,7 @@ function _thumbs() {
 		this.using_stub = false;
 
 		_.forEach(this.get_files(), function (item) {
-			var image = utils.LoadImage(item);
+			var image = utils.LoadImage(item, this.properties.max_size.value);
 			if (image) {
 				this.images.push(image);
 			}
@@ -776,6 +801,7 @@ function _thumbs() {
 		circular : new _p('2K3.THUMBS.CIRCULAR', false),
 		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
 		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 0), // 0 external viewer 1 fb2k viewer 2 explorer
+		max_size : new _p('2K3.THUMBS.MAX.SIZE', 1024), // improve performance
 	};
 
 	if (_.includes(this.properties.tf.value, '|')) {

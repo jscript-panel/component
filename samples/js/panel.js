@@ -63,6 +63,7 @@ function _panel(options) {
 		this.s11 = window.CreatePopupMenu();
 		this.s12 = window.CreatePopupMenu();
 		this.s13 = window.CreatePopupMenu();
+		this.s14 = window.CreatePopupMenu();
 		// panel 1-999
 		// object 1000+
 		if (object) {

@@ -163,7 +163,7 @@ function oBrowser() {
 			this.thumbnailWidth = this.w;
 			switch (ppt.tagMode) {
 			case 0: // album
-				this.rowHeight = (ppt.panelMode == 0 ? Math.ceil(g_fsize * 4.5) : ppt.lineHeightMin);
+				this.rowHeight = (ppt.panelMode == 0 ? Math.ceil(g_fsize * 5.5) : ppt.lineHeightMin);
 				break;
 			case 1: // artist
 			case 2: // album artist
@@ -179,7 +179,7 @@ function oBrowser() {
 			this.thumbnailWidth = this.w / this.totalColumns;
 			this.rowsCount = Math.ceil(this.groups.length / this.totalColumns);
 			this.rowHeight = this.thumbnailWidth;
-			if (ppt.panelMode == 2) this.rowHeight += g_font_height * 3;
+			if (ppt.panelMode == 2) this.rowHeight += g_font_height * 4;
 			break;
 		}
 
@@ -294,7 +294,6 @@ function oBrowser() {
 	this.draw = function (gr) {
 		this.getlimits();
 
-		var total = this.groups.length;
 		var cx = 0;
 		var ax = 0;
 		var ay = 0;
@@ -318,6 +317,9 @@ function oBrowser() {
 				var id = ppt.tagMode == 0 ? AlbumArtId.front : AlbumArtId.artist;
 				group.cover_image = get_art(group.metadb, group.cachekey, id);
 			}
+
+			var fh = g_font_height + 6;
+			var str = group.date.length ? group.date + "\r\n" + group.artist : group.artist;
 
 			switch (ppt.panelMode) {
 			case 0:
@@ -348,14 +350,15 @@ function oBrowser() {
 				}
 
 				if (ppt.tagMode == 0) { // album
-					var fh = g_font_height + 4;
+					gr.WriteText(group.album, g_font_bold, normal_text, ax + text_left, ay + (fh * 0.2), text_width, fh, 0, 0, 1, 1);
+
 					if (ppt.panelMode == 0) { // no art
-						gr.WriteText(group.album, g_font_bold, normal_text, ax + text_left, ay + (ah / 2) - fh, text_width, fh, 0, 2, 1, 1);
-						gr.WriteText(group.artist, g_font, fader_txt, ax + text_left, ay + (ah / 2), text_width, fh, 0, 2, 1, 1);
+						gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 2, 0, 0, 1, 1);
 					} else {
-						gr.WriteText(group.album, g_font_bold, normal_text, ax + text_left, ay + fh, text_width, fh, 0, 2, 1, 1);
-						gr.WriteText(group.artist, g_font, fader_txt, ax + text_left, ay + (fh * 2), text_width, fh, 0, 2, 1, 1);
-						gr.WriteText(group.count + (group.count > 1 ? " tracks. " : " track. ") + group.duration + ".", g_font, fader_txt, ax + text_left, ay + (fh * 3) - 2, text_width, fh, 0, 2, 1, 1);
+						str += "\r\n" + group.count + " track";
+						if (group.count > 1) str += "s";
+						str += ". " + group.duration + ".";
+						gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);
 					}
 				} else { // artist/album artist, 1 line
 					gr.WriteText(group.artist, g_font, normal_text, ax + text_left, ay, text_width, ah, 0, 2, 1, 1);
@@ -384,10 +387,10 @@ function oBrowser() {
 				}
 
 				if (ppt.tagMode == 0) {
-					gr.WriteText(group.album, g_font_bold, normal_text, ax + text_left, ay + cover_size + (text_left * 2), cover_size, g_font_bold_height + 2, 2, 2, 1, 1);
-					gr.WriteText(group.artist, g_font, fader_txt, ax + text_left, ay + cover_size + (text_left * 2) + (g_font_bold_height * 1.4), cover_size, g_font_height + 2, 2, 2, 1, 1);
+					gr.WriteText(group.album, g_font_bold, normal_text, ax + text_left, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
+					gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
 				} else {
-					gr.WriteText(group.artist, g_font_bold, normal_text, ax + text_left, ay + cover_size + text_left, cover_size, g_font_bold_height * 3, 2, 2);
+					gr.WriteText(group.artist, g_font_bold, normal_text, ax + text_left, ay + cover_size + text_left, cover_size, fh * 3, 2, 2);
 				}
 
 				break;
@@ -422,13 +425,11 @@ function oBrowser() {
 		this.scrollbar.draw(gr);
 
 		if (ppt.showHeaderBar) {
-			gr.FillRectangle(0, 0, ww, this.y - 1, g_colour_background);
-			gr.FillRectangle(this.x, 0, this.w + cScrollBar.width, ppt.headerBarHeight - 1, g_colour_background & 0x20ffffff);
-			gr.FillRectangle(this.x, ppt.headerBarHeight - 2, this.w + cScrollBar.width, 1, g_colour_text & 0x22ffffff);
+			var total = this.groups.length;
 			var nb_groups = (ppt.showAllItem && total > 1 ? total - 1 : total);
 			var boxText = nb_groups + " " + ppt.tagText[ppt.tagMode];
-			if (nb_groups > 1) boxText += "s";
-			gr.WriteText(boxText, g_font_box, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
+			if (nb_groups != 1) boxText += "s";
+			draw_header_bar(gr, boxText, this)
 		}
 	}
 
@@ -769,6 +770,7 @@ function oGroup(index, start, metadb, groupkey, cachekey) {
 	var arr = this.groupkey.split(" ^^ ");
 	this.artist = arr[0];
 	this.album = arr[1] || "";
+	this.date = arr[2] || "";
 
 	this.finalise = function (handles) {
 		this.handles = handles.Clone();
@@ -820,9 +822,9 @@ function g_sendResponse() {
 	brw.populate();
 }
 
-ppt.sort_album_tf = window.GetProperty("SMOOTH.SORT.ALBUM", "%album artist% | %album% | %discnumber% | %tracknumber% | %title%");
-ppt.sort_artist_tf = window.GetProperty("SMOOTH.SORT.ARTIST", "$meta(artist,0) | %album% | %discnumber% | %tracknumber% | %title%");
-ppt.sort_album_artist_tf = window.GetProperty("SMOOTH.SORT.ALBUM.ARTIST", "%album artist% | %album% | %discnumber% | %tracknumber% | %title%");
+ppt.sort_album_tf = window.GetProperty("SMOOTH.SORT.ALBUM", "%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%");
+ppt.sort_artist_tf = window.GetProperty("SMOOTH.SORT.ARTIST", "$meta(artist,0) | %date% | %album% | %discnumber% | %tracknumber% | %title%");
+ppt.sort_album_artist_tf = window.GetProperty("SMOOTH.SORT.ALBUM.ARTIST", "%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%");
 
 ppt.panelMode = window.GetProperty("SMOOTH.DISPLAY.MODE", 2); // 0 = column, 1 = column + art, 2 = album art grid, 3 - album art grid + overlay text
 ppt.sendto_playlist = window.GetProperty("SMOOTH.SENDTO.PLAYLIST", "Library selection");
@@ -842,7 +844,7 @@ ppt.default_lineHeightMin = window.GetProperty("SMOOTH.LINE.MIN.HEIGHT", 120);
 ppt.lineHeightMin = ppt.default_lineHeightMin;
 
 var tfo = {
-	groupkey_album : fb.TitleFormat("$if2(%album artist%,Unknown Artist) ^^ $if2(%album%,'('Singles')') ^^ $crc32(%path%)"),
+	groupkey_album : fb.TitleFormat("$if2(%album artist%,Unknown Artist) ^^ $if2(%album%,'('Singles')') ^^ [$year(%date%)] ^^ $crc32(%path%)"),
 	groupkey_artist : fb.TitleFormat("$if2($meta(artist,0),Unknown Artist) ^^ $crc32(artists$meta(artist,0))"),
 	groupkey_album_artist : fb.TitleFormat("%album artist% ^^ $crc32(artists%album artist%)"),
 };

@@ -408,12 +408,9 @@ function oBrowser() {
 		this.scrollbar.draw(gr);
 
 		if (ppt.showHeaderBar) {
-			gr.FillRectangle(0, 0, ww, this.y - 1, g_colour_background);
-			gr.FillRectangle(this.x, 0, this.w + cScrollBar.width, ppt.headerBarHeight - 1, g_colour_background & 0x20ffffff);
-			gr.FillRectangle(this.x, ppt.headerBarHeight - 2, this.w + cScrollBar.width, 1, g_colour_text & 0x22ffffff);
 			var boxText = this.rows.length + " playlist";
-			if (this.rows.length > 1) boxText += "s";
-			gr.WriteText(boxText, g_font_box, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
+			if (this.rows.length != 1) boxText += "s";
+			draw_header_bar(gr, boxText, this);
 		}
 	}
 

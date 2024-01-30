@@ -51,6 +51,13 @@ function clamp(value, min, max) {
 	return value;
 }
 
+function draw_header_bar(gr, text, obj) {
+	gr.FillRectangle(0, 0, ww, obj.y - 1, g_colour_background);
+	gr.FillRectangle(obj.x, 0, obj.w + cScrollBar.width, ppt.headerBarHeight - 1, g_colour_background & 0x20ffffff);
+	gr.FillRectangle(obj.x, ppt.headerBarHeight - 2, obj.w + cScrollBar.width, 1, g_colour_text & 0x22ffffff);
+	gr.WriteText(text, g_font_box, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
+}
+
 function update_extra_font_size(step) {
 	var tmp = clamp(ppt.extra_font_size + step, 0, 10);
 	if (ppt.extra_font_size != tmp) {
@@ -265,10 +272,6 @@ function setWallpaperImg() {
 	}
 }
 
-function height(font) {
-	return JSON.parse(font).Size + 4;
-}
-
 function scale(size) {
 	return Math.round(size * g_fsize / 12);
 }
@@ -314,9 +317,7 @@ function get_font() {
 	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_rating) + 4;
 	g_time_width = "00:00:00".calc_width(g_font) + 20;
 
-	g_font_height = height(g_font);
-	g_font_bold_height = height(g_font_bold);
-	g_font_group2_height = height(g_font_group2);
+	g_font_height = g_fsize + 4;
 }
 
 function get_colours() {

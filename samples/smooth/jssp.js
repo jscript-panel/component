@@ -630,9 +630,11 @@ function oBrowser() {
 	this.update_playlist_info = function () {
 		this.playlist_info = "";
 		if (g_active_playlist > -1) {
-			this.playlist_info = plman.GetPlaylistName(g_active_playlist);
+			this.playlist_info += plman.GetPlaylistName(g_active_playlist) + ", " + this.list.count + " track";
+			if (this.list.count != 1) this.playlist_info += "s";
+
 			var duration = this.list.CalcTotalDuration();
-			this.playlist_info += ", " + this.list.count + (this.list.count == 1 ? " track" : " tracks") + (duration > 0 ? ", " + utils.FormatDuration(duration) : "");
+			if (duration > 0) this.playlist_info += ", " + utils.FormatDuration(duration);
 		}
 	}
 
@@ -706,7 +708,7 @@ function oBrowser() {
 						gr.WriteText(group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1), ah, 0, 2, 1, 1);
 						gr.WriteText(group.top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
 
-						var bottom_y = ay + 5 + g_font_group2_height;
+						var bottom_y = ay + (g_font_height * 1.5);
 						gr.WriteText(group.bottom_left, g_font_group2, group_text_colour_fader, ax + image_height + 5, bottom_y, text_width - group.bottom_right.calc_width(g_font_group2), ah, 0, 2, 1, 1);
 						gr.WriteText(group.bottom_right, g_font_group2, group_text_colour_fader, 0, bottom_y, aw - 5, ah, 1, 2, 1, 1);
 					}
@@ -780,10 +782,7 @@ function oBrowser() {
 		this.scrollbar.draw(gr);
 
 		if (ppt.showHeaderBar) {
-			gr.FillRectangle(0, 0, ww, this.y - 1, g_colour_background);
-			gr.FillRectangle(this.x, 0, this.w + cScrollBar.width, ppt.headerBarHeight - 1, g_colour_background & 0x20ffffff);
-			gr.FillRectangle(this.x, ppt.headerBarHeight - 2, this.w + cScrollBar.width, 1, g_colour_text & 0x22ffffff);
-			gr.WriteText(this.playlist_info, g_font_box, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
+			draw_header_bar(gr, this.playlist_info, this);
 		}
 	}
 

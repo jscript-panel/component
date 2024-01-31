@@ -175,13 +175,14 @@ function _text_display(x, y, w, h) {
 
 	this.size = function () {
 		this.text_height = 0;
-		var margin = _scale(12);
+		var margin = _scale(6);
 
 		switch (this.properties.layout.value) {
 		case 0:
-			this.x = margin;
+			var margin_property = _scale(this.properties.margin.value);
+			this.x = margin_property;
 			this.y = 0;
-			this.w = panel.w - (margin * 2);
+			this.w = panel.w - (margin_property * 2);
 			this.h = panel.h;
 			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
 			break;
@@ -251,5 +252,6 @@ function _text_display(x, y, w, h) {
 		albumart : new _p('2K3.TEXT.ALBUMART', true),
 		albumart_blur : new _p('2K3.TEXT.ALBUMART.BLUR', true),
 		layout : new _p('2K3.TEXT.LAYOUT', 0), // 0 text only, 1 album art top text bottom 2 album art left text right
+		margin : new _p('2K3.TEXT.MARGIN', 6),
 	}
 }

@@ -181,11 +181,7 @@ function oPlaylistManager() {
 
 			// draw selected bg if active or being hovered over
 			if (this.playlists[i].idx == g_active_playlist || is_hovering) {
-				if (g_themed) {
-					g_theme.DrawThemeBackground(gr, cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2);
-				} else {
-					gr.FillRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, g_colour_selection);
-				}
+				gr.FillRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, g_colour_selection);
 
 				if (is_hovering) { // only draw outline if hovering
 					gr.DrawRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, 1, setAlpha(txt_color, 190));

@@ -1320,7 +1320,6 @@ function get_colours() {
 			g_colour_selection = arr[2];
 			g_colour_selected_text = arr[3];
 			g_colour_highlight = g_colour_text;
-			g_themed = false;
 			return;
 		}
 	}
@@ -1331,7 +1330,6 @@ function get_colours() {
 		g_colour_text = window.GetProperty("JSPLAYLIST.COLOUR TEXT NORMAL", RGB(180, 180, 180));
 		g_colour_selected_text = DetermineTextColour(g_colour_selection);
 		g_colour_highlight = window.GetProperty("JSPLAYLIST.COLOUR TEXT HIGHLIGHT", g_colour_text);
-		g_themed = false;
 	} else {
 		if (window.IsDefaultUI) {
 			g_colour_background = window.GetColourDUI(ColourTypeDUI.background);
@@ -1345,14 +1343,6 @@ function get_colours() {
 			g_colour_text = window.GetColourCUI(ColourTypeCUI.text);
 			g_colour_selected_text = window.GetColourCUI(ColourTypeCUI.selection_text);
 			g_colour_highlight = g_colour_text;
-		}
-
-		// check g_theme to make sure window.CreateThemeManager didn't return null
-		// window.IsThemed is a new boolean property for 3.2.11 and later, undefined for previous versions
-		g_themed = g_theme && window.IsThemed;
-		if (g_themed) {
-			g_theme.SetPartAndStateID(6, 12);
-			g_colour_selected_text = utils.GetSysColour(COLOR_WINDOWTEXT);
 		}
 	}
 }
@@ -1428,10 +1418,6 @@ var g_colour_mood = 0;
 var g_colour_rating = 0;
 var g_font_size = 0;
 var g_dynamic = false;
-
-var g_themed = false;
-var g_theme = window.CreateThemeManager("LISTVIEW");
-var COLOR_WINDOWTEXT = 8;
 
 var g_tf_pattern = "";
 var g_tf2_pattern = "";

@@ -174,11 +174,7 @@ function drawImage(gr, img, dst_x, dst_y, dst_w, dst_h, auto_fill, border, opaci
 }
 
 function drawSelectedRectangle(gr, x, y, w, h) {
-	if (g_themed) {
-		g_theme.DrawThemeBackground(gr, x, y, w, h);
-	} else {
-		gr.FillRectangle(x, y, w, h, g_colour_selection);
-	}
+	gr.FillRectangle(x, y, w, h, g_colour_selection);
 }
 
 function GetKeyboardMask() {
@@ -356,14 +352,6 @@ function get_colours() {
 			g_colour_selected_text = window.GetColourCUI(ColourTypeCUI.selection_text);
 			g_colour_highlight = g_colour_text;
 		}
-
-		// check g_theme to make sure window.CreateThemeManager didn't return null
-		// window.IsThemed is a new boolean property for 3.2.11 and later, undefined for previous versions
-		g_themed = g_theme && window.IsThemed;
-		if (g_themed) {
-			g_theme.SetPartAndStateID(6, 12);
-			g_colour_selected_text = utils.GetSysColour(COLOR_WINDOWTEXT);
-		}
 	}
 	get_images();
 }
@@ -425,9 +413,6 @@ var g_colour_selected_text = 0;
 var g_colour_background = 0;
 var g_colour_selection = 0;
 var g_colour_highlight = 0;
-var g_themed = false;
-var g_theme = window.CreateThemeManager("LISTVIEW");
-var COLOR_WINDOWTEXT = 8;
 
 var g_time_width = 0;
 var g_rating_width = 0;

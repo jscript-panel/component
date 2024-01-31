@@ -45,13 +45,9 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 		var mood_colour = g_dynamic ? txt_color : g_colour_mood;
 
 		if (is_item_selected) {
-			if (g_themed) {
-				g_theme.DrawThemeBackground(gr, this.x, this.y, this.w, this.h);
-			} else {
-				gr.FillRectangle(this.x, this.y, this.w, this.h, g_colour_selection);
-				if (p.list.focusedTrackId == this.track_index) {
-					DrawRectangle(gr, this.x + 1, this.y, this.w - 2, this.h - 1, setAlpha(txt_color, 150));
-				}
+			gr.FillRectangle(this.x, this.y, this.w, this.h, g_colour_selection);
+			if (p.list.focusedTrackId == this.track_index) {
+				DrawRectangle(gr, this.x + 1, this.y, this.w - 2, this.h - 1, setAlpha(txt_color, 150));
 			}
 		}
 

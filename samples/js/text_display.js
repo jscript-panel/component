@@ -74,6 +74,10 @@ function _text_display(x, y, w, h) {
 			panel.s11.AppendMenuItem(MF_STRING, 1222, 'Centre');
 			panel.s11.CheckMenuRadioItem(1220, 1222, this.properties.valign.value + 1220);
 			panel.s11.AppendTo(panel.m, MF_STRING, 'Text alignment (vertical)');
+			if (this.properties.layout.value == 0)
+			{
+				panel.m.AppendMenuItem(MF_STRING, 1230, 'Margin...');
+			}
 			panel.m.AppendMenuSeparator();
 		}
 	}
@@ -123,6 +127,14 @@ function _text_display(x, y, w, h) {
 		case 1222:
 			this.properties.valign.value = idx - 1220;
 			this.refresh(true);
+			break;
+		case 1230:
+			var tmp = utils.InputBox('Enter a margin here. It will be ignored if Album Art is enabled.', window.Name, this.properties.margin.value);
+			if (tmp != this.properties.margin.value) {
+				this.properties.margin.value = tmp;
+				this.size();
+				window.Repaint();
+			}
 			break;
 		}
 	}
@@ -178,15 +190,15 @@ function _text_display(x, y, w, h) {
 		var margin = _scale(6);
 
 		switch (this.properties.layout.value) {
-		case 0:
+		case 0: // text only
 			var margin_property = _scale(this.properties.margin.value);
 			this.x = margin_property;
-			this.y = 0;
+			this.y = margin_property;
 			this.w = panel.w - (margin_property * 2);
-			this.h = panel.h;
+			this.h = panel.h - (margin_property * 2);
 			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
 			break;
-		case 1:
+		case 1: // album art top, text bottom
 			this.x = margin;
 			this.w = panel.w - (margin * 2);
 			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
@@ -197,7 +209,7 @@ function _text_display(x, y, w, h) {
 			albumart.w = panel.w - (margin * 2);
 			albumart.h = panel.h - this.h - margin;
 			break;
-		case 2:
+		case 2: // album art left, text right
 			albumart.x = margin;
 			albumart.y = margin;
 			albumart.w = (panel.w / 2) - margin;

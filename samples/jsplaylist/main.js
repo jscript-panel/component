@@ -508,6 +508,7 @@ function on_key_up(vkey) {
 }
 
 function on_mouse_lbtn_dblclk(x, y, mask) {
+	g_double_clicked = true;
 	if (cSettings.visible) {
 		p.settings.on_mouse("lbtn_dblclk", x, y);
 	} else {
@@ -869,12 +870,14 @@ function on_playback_stop(reason) {
 }
 
 function on_playback_time(time) {
+	g_double_clicked = false;
 	g_seconds = time;
 	if (!cSettings.visible && p.list.nowplaying_y + cRow.playlist_h > p.list.y && p.list.nowplaying_y < p.list.y + p.list.h)
 		window.RepaintRect(p.list.x, p.list.nowplaying_y, p.list.w, cRow.playlist_h);
 }
 
 function on_playlist_item_ensure_visible(playlist, index) {
+	if (g_double_clicked) return;
 	on_item_focus_change(playlist, 0, index);
 }
 
@@ -1418,6 +1421,7 @@ var g_colour_mood = 0;
 var g_colour_rating = 0;
 var g_font_size = 0;
 var g_dynamic = false;
+var g_double_clicked = false;
 
 var g_tf_pattern = "";
 var g_tf2_pattern = "";

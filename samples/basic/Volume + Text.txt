@@ -4,6 +4,20 @@
 // @import "%fb2k_component_path%helpers.txt"
 // ==/PREPROCESSOR==
 
+var stops_back = [[0, RGB(240, 240, 240)], [1, RGB(100, 230, 100)]];
+var brush_back = {
+	Start : [0, 0], // x and y values
+	End : [0, 0], // x and y values
+	Stops: stops_back
+};
+
+var stops_fore = [[0, RGB(240, 240, 240)], [1, RGB(190, 190, 190)]];
+var brush_fore = {
+	Start : [0, 0], // x and y values
+	End : [0, 0], // x and y values
+	Stops: stops_fore
+};
+
 var g_drag = 0;
 var ww = 0, wh = 0;
 
@@ -13,11 +27,14 @@ function on_size() {
 }
 
 function on_paint(gr) {
+	brush_back.End = [ww, 0];
+	brush_fore.End = [ww, 0];
+
 	var volume = fb.Volume;
 	var pos = ww * vol2pos(volume);
 	var txt = volume.toFixed(2) + 'dB';
-	gr.FillGradientRectangle(0, 0, pos, wh, 0, RGB(240, 240, 240), RGB(100, 230, 100));
-	gr.FillGradientRectangle(pos, 0, ww - pos, wh, 0, RGB(240, 240, 240), RGB(190, 190, 190));
+	gr.FillRectangle(0, 0, pos, wh, JSON.stringify(brush_back));
+	gr.FillRectangle(pos, 0, ww - pos, wh, JSON.stringify(brush_fore));
 	gr.WriteText(txt, '', RGB(64, 64, 128), 0, 0, ww, wh, 2, 2);
 	gr.DrawRectangle(0, 0, ww - 1, wh - 1, 1.0, RGB(150, 150, 150));
 }

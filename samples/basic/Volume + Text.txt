@@ -27,8 +27,7 @@ function on_size() {
 }
 
 function on_paint(gr) {
-	brush_back.End = [ww, 0];
-	brush_fore.End = [ww, 0];
+	brush_back.End = brush_fore.End = [0, wh];
 
 	var volume = fb.Volume;
 	var pos = ww * vol2pos(volume);

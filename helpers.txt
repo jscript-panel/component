@@ -2,7 +2,7 @@ function pos2vol(pos) {
 	return Math.max(-100, 10 * Math.log(pos) / Math.LN2);
 }
 
-function vol2pos(v){
+function vol2pos(v) {
 	return Math.pow(2, v / 10);
 }
 

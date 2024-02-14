@@ -34,7 +34,7 @@ function on_drag_over(action, x, y, mask) {
 function on_focus(is_focused) {
 	if (is_focused) {
 		plman.SetActivePlaylistContext();
-		g_selHolder.SetPlaylistSelectionTracking();
+		window.SetPlaylistSelectionTracking();
 	} else {
 		brw.repaint();
 	}
@@ -1447,10 +1447,6 @@ var g_focus_row = 0;
 var g_focus_album_id = -1;
 var g_seconds = 0;
 var g_time = "";
-
-var g_selHolder = fb.AcquireSelectionHolder();
-g_selHolder.SetPlaylistSelectionTracking();
-plman.SetActivePlaylistContext();
 
 var brw = new oBrowser();
 

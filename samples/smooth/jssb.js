@@ -460,7 +460,7 @@ function oBrowser() {
 		case "rbtn_down":
 			if (this.ishover && this.activeIndex > -1 && this.activeIndex != this.selectedIndex) {
 				this.activateItem(this.activeIndex)
-				g_selHolder.SetSelection(this.groups[this.activeIndex].handles, 6);
+				window.SetSelection(this.groups[this.activeIndex].handles, 6);
 				this.repaint();
 			}
 			break;
@@ -851,7 +851,6 @@ var tfo = {
 
 var g_drag_drop = false;
 var g_filter_text = "";
-var g_selHolder = fb.AcquireSelectionHolder();
 var brw = new oBrowser();
 
 get_metrics();

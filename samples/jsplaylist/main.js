@@ -144,7 +144,7 @@ function on_focus(is_focused) {
 	}
 	if (is_focused) {
 		plman.SetActivePlaylistContext();
-		g_selHolder.SetPlaylistSelectionTracking();
+		window.SetPlaylistSelectionTracking();
 	} else {
 		p.playlistManager.inputboxID = -1;
 		full_repaint();
@@ -1401,8 +1401,6 @@ var g_mouse_wheel_timeout = false;
 var g_active_playlist = plman.ActivePlaylist;
 var g_image_cache = new image_cache();
 var g_stub_image = null;
-var g_selHolder = fb.AcquireSelectionHolder();
-g_selHolder.SetPlaylistSelectionTracking();
 
 var g_drag_drop_status = false;
 var g_drag_drop_bottom = false;

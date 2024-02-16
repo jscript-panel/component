@@ -155,9 +155,6 @@ function _text(mode, x, y, w, h) {
 				this.clear_layout();
 				this.colour_string = '';
 				var lines = _(console.GetLines(this.properties.timestamp.enabled).toArray())
-					.filter(function (item) {
-						return !_.includes(item, 'Using decoder shim');
-					})
 					.takeRight(100)
 					.value();
 				if (lines.length > 0) {

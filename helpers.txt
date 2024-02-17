@@ -383,7 +383,8 @@ var fluent_chars = {
 	menu : '\ue700',
 	music : '\uec4f',
 	volume : '\ue767',
-	repeat : '\ue8ee',
+	repeat_all : '\ue8ee',
+	repeat_one : '\ue8ed',
 };
 
 var DWRITE_FONT_WEIGHT_THIN = 100;

@@ -9,11 +9,18 @@ function oTopBar() {
 	}
 
 	this.setDatas = function () {
-		var item_count = plman.GetPlaylistItemCount(g_active_playlist);
-		var totalDurationText = p.list ? utils.FormatDuration(plman.GetPlaylistItems(g_active_playlist).CalcTotalDuration()) : "";
+		if (g_active_playlist == -1) {
+			this.line1 = "No playlist.";
+			this.line2 = "";
+		} else {
+			this.line1 = plman.GetPlaylistName(g_active_playlist);
 
-		this.line1 = plman.GetPlaylistName(g_active_playlist);
-		this.line2 = plman.PlaylistCount == 0 ? "no playlist" : item_count > 0 ? (item_count + (item_count > 1 ? " tracks. " : " track. ") + totalDurationText) : "empty playlist";
+			var item_count = plman.GetPlaylistItemCount(g_active_playlist);
+			if (item_count == 1) this.line2 = "1 track.";
+			else this.line2 = item_count + " tracks.";
+
+			if (p.list) this.line2 += " " + utils.FormatDuration(plman.GetPlaylistItems(g_active_playlist).CalcTotalDuration()) + ".";
+		}
 	}
 
 	this.setButtons = function () {

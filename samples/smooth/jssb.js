@@ -355,7 +355,8 @@ function oBrowser() {
 					if (ppt.panelMode == 0) { // no art
 						gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 2, 0, 0, 1, 1);
 					} else {
-						str += "\r\n" + group.count + " track";
+						if (str.length) str += "\r\n";
+						str += group.count + " track";
 						if (group.count > 1) str += "s";
 						str += ". " + group.duration + ".";
 						gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);

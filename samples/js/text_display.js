@@ -187,7 +187,7 @@ function _text_display(x, y, w, h) {
 
 	this.size = function () {
 		this.text_height = 0;
-		var margin = _scale(6);
+		var margin = _scale(12);
 
 		switch (this.properties.layout.value) {
 		case 0: // text only

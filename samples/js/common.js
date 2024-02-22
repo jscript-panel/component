@@ -272,12 +272,12 @@ function _lockSize(w, h) {
 
 function _menu(x, y, flags) {
 	var menu = window.CreatePopupMenu();
-	var file = new _main_menu_helper('File', 1000, menu);
-	var edit = new _main_menu_helper('Edit', 2000, menu);
-	var view = new _main_menu_helper('View', 3000, menu);
-	var playback = new _main_menu_helper('Playback', 4000, menu);
-	var library = new _main_menu_helper('Library', 5000, menu);
-	var help = new _main_menu_helper('Help', 6000, menu);
+	var file = new _main_menu_helper('File', 10000, menu);
+	var edit = new _main_menu_helper('Edit', 20000, menu);
+	var view = new _main_menu_helper('View', 30000, menu);
+	var playback = new _main_menu_helper('Playback', 40000, menu);
+	var library = new _main_menu_helper('Library', 50000, menu);
+	var help = new _main_menu_helper('Help', 60000, menu);
 
 	var idx = menu.TrackPopupMenu(x, y, flags);
 	menu.Dispose();
@@ -285,23 +285,23 @@ function _menu(x, y, flags) {
 	switch (true) {
 	case idx == 0:
 		break;
-	case idx < 2000:
-		file.mm.ExecuteByID(idx - 1000);
+	case idx < 20000:
+		file.mm.ExecuteByID(idx - 10000);
 		break;
-	case idx < 3000:
-		edit.mm.ExecuteByID(idx - 2000);
+	case idx < 30000:
+		edit.mm.ExecuteByID(idx - 20000);
 		break;
-	case idx < 4000:
-		view.mm.ExecuteByID(idx - 3000);
+	case idx < 40000:
+		view.mm.ExecuteByID(idx - 30000);
 		break;
-	case idx < 5000:
-		playback.mm.ExecuteByID(idx - 4000);
+	case idx < 50000:
+		playback.mm.ExecuteByID(idx - 40000);
 		break;
-	case idx < 6000:
-		library.mm.ExecuteByID(idx - 5000);
+	case idx < 60000:
+		library.mm.ExecuteByID(idx - 50000);
 		break;
-	case idx < 7000:
-		help.mm.ExecuteByID(idx - 6000);
+	case idx < 70000:
+		help.mm.ExecuteByID(idx - 60000);
 		break;
 	}
 

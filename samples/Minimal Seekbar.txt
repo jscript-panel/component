@@ -9,6 +9,7 @@
 
 var seekbar = new _seekbar(0, 0, 0, 0);
 var font = CreateFontString("Segoe UI", 12);
+var is_dark = window.IsDark;
 
 var tfo = {
 	playback_time : fb.TitleFormat('[%playback_time%]'),
@@ -16,17 +17,14 @@ var tfo = {
 };
 
 var colours = {
-	background : function () {
-		return window.IsDark ? RGB(30, 30, 30) : RGB(240, 240, 240);
-	},
-	text : function () {
-		return window.IsDark ? RGB(240, 240, 240) : RGB(30, 30, 30);
-	},
+	dark : RGB(30, 30, 30),
+	light : RGB(240, 240, 240),
 	slider_background : RGB(160, 160, 160),
 	slider_contrast : RGB(196, 30, 35),
 };
 
 function on_colours_changed() {
+	is_dark = window.IsDark;
 	window.Repaint();
 }
 
@@ -47,13 +45,13 @@ function on_mouse_wheel(s) {
 }
 
 function on_paint(gr) {
-	gr.Clear(colours.background());
+	gr.Clear(is_dark ? colours.dark : colours.light);
 	gr.FillRoundedRectangle(seekbar.x, seekbar.y, seekbar.w, seekbar.h, _scale(2), _scale(2), colours.slider_background);
 
 	if (fb.PlaybackLength > 0) {
-		gr.WriteText(tfo.playback_time.Eval(), font, colours.text(), 0, 0, seekbar.x - _scale(6), window.Height - 3, 1, 2); 
+		gr.WriteText(tfo.playback_time.Eval(), font, is_dark ? colours.light : colours.dark, 0, 0, seekbar.x - _scale(6), window.Height - 3, 1, 2); 
 		gr.FillEllipse(seekbar.x + _scale(3) + seekbar.pos(), seekbar.y + _scale(3), _scale(6), _scale(6), colours.slider_contrast);
-		gr.WriteText(tfo.length.Eval(), font, colours.text(), window.Width - seekbar.x + _scale(6), 0, seekbar.x - _scale(6), window.Height - 3, 0, 2); 
+		gr.WriteText(tfo.length.Eval(), font, is_dark ? colours.light : colours.dark, window.Width - seekbar.x + _scale(6), 0, seekbar.x - _scale(6), window.Height - 3, 0, 2); 
 	}
 }
 

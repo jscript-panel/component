@@ -1,0 +1,62 @@
+// ==PREPROCESSOR==
+// @name "Minimal Seekbar"
+// @author "marc2003"
+// @import "%fb2k_component_path%helpers.txt"
+// @import "%fb2k_component_path%samples\js\lodash.min.js"
+// @import "%fb2k_component_path%samples\js\common.js"
+// @import "%fb2k_component_path%samples\js\seekbar.js"
+// ==/PREPROCESSOR==
+
+var seekbar = new _seekbar(0, 0, 0, 0);
+
+var colours = {
+	background : function () {
+		return window.IsDark ? RGB(30, 30, 30) : RGB(240, 240, 240);
+	},
+	slider_background : RGB(160, 160, 160),
+	slider_contrast : RGB(196, 30, 35),
+};
+
+function on_colours_changed() {
+	window.Repaint();
+}
+
+function on_mouse_lbtn_down(x, y) {
+	seekbar.lbtn_down(x, y);
+}
+
+function on_mouse_lbtn_up(x, y) {
+	seekbar.lbtn_up(x, y);
+}
+
+function on_mouse_move(x, y) {
+	seekbar.move(x, y);
+}
+
+function on_mouse_wheel(s) {
+	seekbar.wheel(s);
+}
+
+function on_paint(gr) {
+	gr.Clear(colours.background());
+	gr.FillRoundedRectangle(seekbar.x, seekbar.y, seekbar.w, seekbar.h, _scale(2), _scale(2), colours.slider_background);
+
+	if (fb.PlaybackLength > 0) {
+		gr.FillEllipse(seekbar.x + _scale(3) + seekbar.pos(), seekbar.y + _scale(3), _scale(6), _scale(6), colours.slider_contrast);
+	}
+}
+
+function on_playback_seek() {
+	seekbar.playback_seek();
+}
+
+function on_playback_stop() {
+	window.Repaint();
+}
+
+function on_size() {
+	seekbar.h  = _scale(6);
+	seekbar.x = _scale(16);
+	seekbar.y = (window.Height / 2) - _scale(3);
+	seekbar.w = window.Width - (seekbar.x * 2);
+}

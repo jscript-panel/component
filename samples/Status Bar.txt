@@ -33,7 +33,7 @@ function refresh() {
 		var items = plman.GetPlaylistItems(ap);
 		var count = items.Count;
 		if (properties.name.enabled) {
-			var str = plman.IsPlaylistLocked(ap) ? '🔒' : '';
+			var str = plman.IsPlaylistLocked(ap) ? '🔒 ' : '';
 			str += plman.GetPlaylistName(ap);
 			tmp.push(str);
 		}
@@ -46,8 +46,8 @@ function refresh() {
 		if (properties.size.enabled) {
 			tmp.push(utils.FormatFileSize(items.CalcTotalSize()));
 		}
+		items.Dispose();
 	}
-	items.Dispose();
 	right_text = tmp.join(' :: ');
 	window.Repaint();
 }

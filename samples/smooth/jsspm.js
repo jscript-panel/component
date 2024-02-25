@@ -400,7 +400,7 @@ function oBrowser() {
 				}
 				else
 				{
-					gr.WriteText(chars.menu, g_font_fluent_20, normal_text, ax + scale(7), ay, ah, ah, 0, 2);
+					gr.WriteText(chars.list, g_font_fluent_20, normal_text, ax + scale(7), ay, ah, ah, 0, 2);
 				}
 
 				if (this.inputboxID == i) {

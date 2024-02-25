@@ -734,8 +734,8 @@ function oBrowser() {
 					if (ppt.showRating) {
 						rw = g_rating_width;
 						this.rating_x = aw - rw - g_time_width;
-						gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_18, setAlpha(normal_text, 98), this.rating_x, ay, rw, ah, 0, 2);
-						gr.WriteText(chars.rating_on.repeat(tags.rating), g_font_fluent_18, normal_text, this.rating_x, ay, rw, ah, 0, 2);
+						gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_20, setAlpha(normal_text, 98), this.rating_x, ay, rw, ah, 0, 2);
+						gr.WriteText(chars.rating_on.repeat(tags.rating), g_font_fluent_20, normal_text, this.rating_x, ay, rw, ah, 0, 2);
 					}
 
 					var artist = tags.artist;
@@ -748,9 +748,9 @@ function oBrowser() {
 
 						this.nowplaying_y = ay;
 						if (fb.IsPaused) {
-							gr.WriteText(chars.pause, g_font_fluent_18, normal_text, ax, ay, ah, ah, 2, 2);
+							gr.WriteText(chars.pause, g_font_fluent_20, normal_text, ax, ay, ah, ah, 2, 2);
 						} else {
-							gr.WriteText(chars.play, g_font_fluent_18, g_seconds % 2 == 0 ? normal_text : setAlpha(normal_text, 128), ax, ay, ah, ah, 2, 2);
+							gr.WriteText(chars.play, g_font_fluent_20, g_seconds % 2 == 0 ? normal_text : setAlpha(normal_text, 128), ax, ay, ah, ah, 2, 2);
 						}
 					}
 

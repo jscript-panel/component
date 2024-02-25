@@ -348,7 +348,7 @@ var chars = {
 	rating_off : '\ue734',
 	list : '\uea37',
 	lock : '\ue72e',
-	working : '\ue9f5',
+	working : '\ue916',
 	up : '\ue70e',
 	down : '\ue70d',
 	left : '\ue76b',

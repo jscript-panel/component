@@ -114,7 +114,7 @@ function on_paint(gr) {
 		if (brw.inputbox.text.length > 0) {
 			brw.reset_bt.draw(gr, 0, 0);
 		} else {
-			gr.WriteText(chars.search, g_font_fluent_18, g_colour_text, 0, -2, size, size, 2, 2);
+			gr.WriteText(chars.search, g_font_fluent_20, g_colour_text, 0, -2, size, size, 2, 2);
 		}
 
 		brw.inputbox.draw(gr, size + 4, 2);

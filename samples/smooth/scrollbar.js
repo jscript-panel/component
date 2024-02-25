@@ -27,32 +27,32 @@ function oScrollbar() {
 
 		this.upImage_normal = utils.CreateImage(this.w, this.w);
 		gb = this.upImage_normal.GetGraphics();
-		gb.WriteText(chars.up, g_font_fluent_18, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.up, g_font_fluent_20, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.upImage_normal.ReleaseGraphics();
 
 		this.upImage_hover = utils.CreateImage(this.w, this.w);
 		gb = this.upImage_hover.GetGraphics();
-		gb.WriteText(chars.up, g_font_fluent_18, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.up, g_font_fluent_20, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.upImage_hover.ReleaseGraphics();
 
 		this.upImage_down = utils.CreateImage(this.w, this.w);
 		gb = this.upImage_down.GetGraphics();
-		gb.WriteText(chars.up, g_font_fluent_18, g_colour_text, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.up, g_font_fluent_20, g_colour_text, 0, 0, this.w, this.w, 2, 2);
 		this.upImage_down.ReleaseGraphics();
 
 		this.downImage_normal = utils.CreateImage(this.w, this.w);
 		gb = this.downImage_normal.GetGraphics();
-		gb.WriteText(chars.down, g_font_fluent_18, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.down, g_font_fluent_20, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.downImage_normal.ReleaseGraphics();
 
 		this.downImage_hover = utils.CreateImage(this.w, this.w);
 		gb = this.downImage_hover.GetGraphics();
-		gb.WriteText(chars.down, g_font_fluent_18, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.down, g_font_fluent_20, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.downImage_hover.ReleaseGraphics();
 
 		this.downImage_down = utils.CreateImage(this.w, this.w);
 		gb = this.downImage_down.GetGraphics();
-		gb.WriteText(chars.down, g_font_fluent_18, g_colour_text, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.down, g_font_fluent_20, g_colour_text, 0, 0, this.w, this.w, 2, 2);
 		this.downImage_down.ReleaseGraphics();
 
 		this.buttons[cScrollBar.ButtonType.up] = new button(this.upImage_normal, this.upImage_hover, this.upImage_down);

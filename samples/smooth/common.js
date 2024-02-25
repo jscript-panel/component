@@ -299,9 +299,9 @@ function get_font() {
 	g_font_group1 = _font(name, 20, true);
 	g_font_group2 = _font(name, 16);
 	g_font_fluent_12 = _font("Segoe Fluent Icons", 12);
-	g_font_fluent_18 = _font("Segoe Fluent Icons", 18);
+	g_font_fluent_20 = _font("Segoe Fluent Icons", 20);
 
-	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_18) + 4;
+	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_20) + 4;
 	g_time_width = "00:00:00".calc_width(g_font) + 20;
 
 	g_font_height = g_fsize + 4;
@@ -397,7 +397,7 @@ var g_font_box = "";
 var g_font_group1 = "";
 var g_font_group2 = "";
 var g_font_fluent_12 = "";
-var g_font_fluent_18 = "";
+var g_font_fluent_20 = "";
 var g_fsize = 16;
 
 var g_colour_text = 0;

@@ -142,7 +142,7 @@ function _rating(x, y, h, colour) {
 	this.h = _scale(h);
 	this.w = this.h * this.get_max();
 	this.colour = colour;
-	this.font = JSON.stringify({Name:'FontAwesome',Size:this.h-2});
+	this.font = JSON.stringify({Name:'Segoe Fluent Icons',Size:this.h-2});
 	this.hover = false;
 	this.rating = 0;
 	this.hrating = 0;

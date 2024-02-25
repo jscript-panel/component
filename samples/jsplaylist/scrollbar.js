@@ -34,62 +34,25 @@ function PlaylistScrollBar() {
 		gb.FillRectangle(0, 0, this.cursorWidth, this.cursorHeight, g_colour_text & 0x33ffffff);
 		this.cursorImage_normal.ReleaseGraphics();
 
-		// hover cursor Image
-		this.cursorImage_hover = utils.CreateImage(this.cursorWidth, this.cursorHeight);
-		gb = this.cursorImage_hover.GetGraphics();
-		gb.FillRectangle(0, 0, this.cursorWidth, this.cursorHeight, g_colour_text & 0x55ffffff);
-		this.cursorImage_hover.ReleaseGraphics();
-
-		// down cursor Image
-		this.cursorImage_down = utils.CreateImage(this.cursorWidth, this.cursorHeight);
-		gb = this.cursorImage_down.GetGraphics();
-
-		gb.FillRectangle(0, 0, this.cursorWidth, this.cursorHeight, g_colour_text & 0x99ffffff);
-		this.cursorImage_down.ReleaseGraphics();
-
 		// create/refresh cursor Button in buttons array
-		this.buttons[cScrollBar.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
+		this.buttons[cScrollBar.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_normal, this.cursorImage_normal);
 	}
 
 	this.setButtons = function () {
 		// normal scroll_up Image
 		this.upImage_normal = utils.CreateImage(this.w, this.w);
 		var gb = this.upImage_normal.GetGraphics();
-		gb.WriteText(chars.up, g_font_awesome_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.up, g_font_fluent_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.upImage_normal.ReleaseGraphics();
-
-		// hover scroll_up Image
-		this.upImage_hover = utils.CreateImage(this.w, this.w);
-		gb = this.upImage_hover.GetGraphics();
-		gb.WriteText(chars.up, g_font_awesome_12, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
-		this.upImage_hover.ReleaseGraphics();
-
-		// down scroll_up Image
-		this.upImage_down = utils.CreateImage(this.w, this.w);
-		gb = this.upImage_down.GetGraphics();
-		gb.WriteText(chars.up, g_font_awesome_12, g_colour_text, 0, 0, this.w, this.w, 2, 2);
-		this.upImage_down.ReleaseGraphics();
 
 		// normal scroll_down Image
 		this.downImage_normal = utils.CreateImage(this.w, this.w);
 		gb = this.downImage_normal.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.down, g_font_fluent_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.downImage_normal.ReleaseGraphics();
 
-		// hover scroll_down Image
-		this.downImage_hover = utils.CreateImage(this.w, this.w);
-		gb = this.downImage_hover.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
-		this.downImage_hover.ReleaseGraphics();
-
-		// down scroll_down Image
-		this.downImage_down = utils.CreateImage(this.w, this.w);
-		gb = this.downImage_down.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text, 0, 0, this.w, this.w, 2, 2);
-		this.downImage_down.ReleaseGraphics();
-
-		this.buttons[cScrollBar.buttonType.up] = new button(this.upImage_normal, this.upImage_hover, this.upImage_down);
-		this.buttons[cScrollBar.buttonType.down] = new button(this.downImage_normal, this.downImage_hover, this.downImage_down);
+		this.buttons[cScrollBar.buttonType.up] = new button(this.upImage_normal, this.upImage_normal, this.upImage_normal);
+		this.buttons[cScrollBar.buttonType.down] = new button(this.downImage_normal, this.downImage_normal, this.downImage_normal);
 	}
 
 	this.setSize = function (x, y, w, h) {
@@ -307,61 +270,25 @@ function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
 		gb.FillRectangle(0, 0, this.cursorWidth, this.cursorHeight, g_colour_text & 0x33ffffff);
 		this.cursorImage_normal.ReleaseGraphics();
 
-		// hover cursor Image
-		this.cursorImage_hover = utils.CreateImage(this.cursorWidth, this.cursorHeight);
-		gb = this.cursorImage_hover.GetGraphics();
-		gb.FillRectangle(0, 0, this.cursorWidth, this.cursorHeight, g_colour_text & 0x55ffffff);
-		this.cursorImage_hover.ReleaseGraphics();
-
-		// down cursor Image
-		this.cursorImage_down = utils.CreateImage(this.cursorWidth, this.cursorHeight);
-		gb = this.cursorImage_down.GetGraphics();
-		gb.FillRectangle(0, 0, this.cursorWidth, this.cursorHeight, g_colour_text & 0x99ffffff);
-		this.cursorImage_down.ReleaseGraphics();
-
 		// create/refresh cursor Button in buttons array
-		this.buttons[cScrollBar.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
+		this.buttons[cScrollBar.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_normal, this.cursorImage_normal);
 	}
 
 	this.setButtons = function () {
 		// normal scroll_up Image
 		this.upImage_normal = utils.CreateImage(this.w, this.w);
 		var gb = this.upImage_normal.GetGraphics();
-		gb.WriteText(chars.up, g_font_awesome_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.up, g_font_fluent_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.upImage_normal.ReleaseGraphics();
-
-		// hover scroll_up Image
-		this.upImage_hover = utils.CreateImage(this.w, this.w);
-		gb = this.upImage_hover.GetGraphics();
-		gb.WriteText(chars.up, g_font_awesome_12, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
-		this.upImage_hover.ReleaseGraphics();
-
-		// down scroll_up Image
-		this.upImage_down = utils.CreateImage(this.w, this.w);
-		gb = this.upImage_down.GetGraphics();
-		gb.WriteText(chars.up, g_font_awesome_12, g_colour_text, 0, 0, this.w, this.w, 2, 2);
-		this.upImage_down.ReleaseGraphics();
 
 		// normal scroll_down Image
 		this.downImage_normal = utils.CreateImage(this.w, this.w);
 		gb = this.downImage_normal.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
+		gb.WriteText(chars.down, g_font_fluent_12, g_colour_text & 0x55ffffff, 0, 0, this.w, this.w, 2, 2);
 		this.downImage_normal.ReleaseGraphics();
 
-		// hover scroll_down Image
-		this.downImage_hover = utils.CreateImage(this.w, this.w);
-		gb = this.downImage_hover.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text & 0x99ffffff, 0, 0, this.w, this.w, 2, 2);
-		this.downImage_hover.ReleaseGraphics();
-
-		// down scroll_down Image
-		this.downImage_down = utils.CreateImage(this.w, this.w);
-		gb = this.downImage_down.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text, 0, 0, this.w, this.w, 2, 2);
-		this.downImage_down.ReleaseGraphics();
-
-		this.buttons[cScrollBar.buttonType.up] = new button(this.upImage_normal, this.upImage_hover, this.upImage_down);
-		this.buttons[cScrollBar.buttonType.down] = new button(this.downImage_normal, this.downImage_hover, this.downImage_down);
+		this.buttons[cScrollBar.buttonType.up] = new button(this.upImage_normal, this.upImage_normal, this.upImage_normal);
+		this.buttons[cScrollBar.buttonType.down] = new button(this.downImage_normal, this.downImage_normal, this.downImage_normal);
 	}
 
 	this.updateCursorPos = function (offset) {

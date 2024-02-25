@@ -89,9 +89,9 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 
 					if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist && this.track_index == p.list.nowplaying.PlaylistItemIndex) {
 						if (fb.IsPaused) {
-							gr.WriteText(chars.pause, g_font_awesome_20, txt_color, cx, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 4, 2, 2);
+							gr.WriteText(chars.pause, g_font_fluent_20, txt_color, cx, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 4, 2, 2);
 						} else {
-							gr.WriteText(chars.play, g_font_awesome_20, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 4, 2, 2);
+							gr.WriteText(chars.play, g_font_fluent_20, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 4, 2, 2);
 						}
 					} else {
 						var queue_index = tf_arr[j];
@@ -122,7 +122,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 						this.mood = StripCode(tf_arr[j], chars.etx) || 0;
 					}
 
-					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_awesome_20, mood_colour, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
+					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_fluent_20, mood_colour, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
 					break;
 				case "Rating":
 					cw = p.headerBar.columns[j].w - g_z5;
@@ -140,8 +140,8 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 					}
 
 					this.rating = StripCode(tf_arr[j], chars.etx) || 0;
-					gr.WriteText(chars.rating_off.repeat(5), g_font_awesome_20, rating_colour & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
-					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_awesome_20, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_20, rating_colour & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_fluent_20, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
 					break;
 				default:
 					this.drawText(gr, tf_arr[j], txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);

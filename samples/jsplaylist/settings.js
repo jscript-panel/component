@@ -378,27 +378,26 @@ function oCheckBox(id, x, y, label, linkedVariable, parentPageId) {
 
 		this.checkbox_normal_off = utils.CreateImage(48, 48);
 		gb = this.checkbox_normal_off.GetGraphics();
-		gb.DrawRectangle(0, 0, 48, 48, 1, p.settings.color2);
+		gb.WriteText(chars.check_off, g_font_fluent_40, p.settings.color1, 0, 0, 48, 48, 2, 2);
 		this.checkbox_normal_off.ReleaseGraphics();
 		this.checkbox_normal_off.Resize(button_zoomSize, button_zoomSize);
 
 		this.checkbox_hover_off = utils.CreateImage(48, 48);
 		gb = this.checkbox_hover_off.GetGraphics();
-		gb.DrawRectangle(0, 0, 48, 48, 1, p.settings.color2);
+		gb.WriteText(chars.check_off, g_font_fluent_40, p.settings.color1, 0, 0, 48, 48, 2, 2);
 		this.checkbox_hover_off.ReleaseGraphics();
 		this.checkbox_hover_off.Resize(button_zoomSize, button_zoomSize);
 
 		this.checkbox_normal_on = utils.CreateImage(48, 48);
 		gb = this.checkbox_normal_on.GetGraphics();
 		gb.DrawRectangle(0, 0, 48, 48, 1, p.settings.color1);
-		gb.WriteText("\uF00C", g_font_awesome_40, p.settings.color1, 0, 0, 48, 48, 2, 2);
+		gb.WriteText(chars.check_on, g_font_fluent_40, p.settings.color2, 0, 0, 48, 48, 2, 2);
 		this.checkbox_normal_on.ReleaseGraphics();
 		this.checkbox_normal_on.Resize(button_zoomSize, button_zoomSize);
 
 		this.checkbox_hover_on = utils.CreateImage(48, 48);
 		gb = this.checkbox_hover_on.GetGraphics();
-		gb.DrawRectangle(0, 0, 48, 48, 1, p.settings.color1);
-		gb.WriteText("\uF00C", g_font_awesome_40, p.settings.color1, 0, 0, 48, 48, 2, 2);
+		gb.WriteText(chars.check_on, g_font_fluent_40, p.settings.color2, 0, 0, 48, 48, 2, 2);
 		this.checkbox_hover_on.ReleaseGraphics();
 		this.checkbox_hover_on.Resize(button_zoomSize, button_zoomSize);
 
@@ -464,25 +463,25 @@ function oRadioButton(id, x, y, label, status, parentPageId) {
 
 		this.radiobt_normal_off = utils.CreateImage(48, 48);
 		gb = this.radiobt_normal_off.GetGraphics();
-		gb.WriteText("\uF10C", g_font_awesome_40, p.settings.color2, 0, 0, 48, 48, 2, 2);
+		gb.WriteText(chars.radio_off, g_font_fluent_40, p.settings.color1, 0, 0, 48, 48, 2, 2);
 		this.radiobt_normal_off.ReleaseGraphics();
 		this.radiobt_normal_off.Resize(button_zoomSize, button_zoomSize);
 
 		this.radiobt_hover_off = utils.CreateImage(48, 48);
 		gb = this.radiobt_hover_off.GetGraphics();
-		gb.WriteText("\uF10C", g_font_awesome_40, p.settings.color2, 0, 0, 48, 48, 2, 2);
+		gb.WriteText(chars.radio_off, g_font_fluent_40, p.settings.color1, 0, 0, 48, 48, 2, 2);
 		this.radiobt_hover_off.ReleaseGraphics();
 		this.radiobt_hover_off.Resize(button_zoomSize, button_zoomSize);
 
 		this.radiobt_normal_on = utils.CreateImage(48, 48);
 		var gb = this.radiobt_normal_on.GetGraphics();
-		gb.WriteText("\uF111", g_font_awesome_40, p.settings.color1, 0, 0, 48, 48, 2, 2);;
+		gb.WriteText(chars.radio_on, g_font_fluent_40, p.settings.color2, 0, 0, 48, 48, 2, 2);;
 		this.radiobt_normal_on.ReleaseGraphics();
 		this.radiobt_normal_on.Resize(button_zoomSize, button_zoomSize);
 
 		this.radiobt_hover_on = utils.CreateImage(48, 48);
 		gb = this.radiobt_hover_on.GetGraphics();
-		gb.WriteText("\uF111", g_font_awesome_40, p.settings.color1, 0, 0, 48, 48, 2, 2);
+		gb.WriteText(chars.radio_on, g_font_fluent_40, p.settings.color2, 0, 0, 48, 48, 2, 2);
 		this.radiobt_hover_on.ReleaseGraphics();
 		this.radiobt_hover_on.Resize(button_zoomSize, button_zoomSize)
 
@@ -1316,10 +1315,8 @@ function oSettings() {
 	this.currentPageId = 0;
 
 	this.setButtons = function () {
-		this.color0 = blendColours(g_colour_background, g_colour_text, 0.15);
-		this.color1 = blendColours(g_colour_background, g_colour_text, 0.5);
+		this.color1 = setAlpha(g_colour_text, 200);
 		this.color2 = g_colour_text;
-		this.color3 = g_colour_background;
 
 		var rect_w = "Delete Pattern".calc_width(g_font_12_1) + 30;
 		var rect_h = scale(32);

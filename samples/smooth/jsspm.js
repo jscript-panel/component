@@ -394,7 +394,14 @@ function oBrowser() {
 					gr.DrawRectangle(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_colour_text & 0xa0ffffff);
 				}
 
-				gr.WriteText(plman.IsPlaylistLocked(this.rows[i].idx) ? chars.lock : chars.list, g_font_awesome, normal_text, ax, ay, ah, ah, 2, 2);
+				if (plman.IsPlaylistLocked(this.rows[i].idx))
+				{
+					gr.WriteText(chars.lock, g_font_fluent_18, normal_text, ax + scale(5), ay, ah, ah, 0, 2);
+				}
+				else
+				{
+					gr.WriteText(chars.menu, g_font_fluent_18, normal_text, ax + scale(7), ay, ah, ah, 0, 2);
+				}
 
 				if (this.inputboxID == i) {
 					this.inputbox.draw(gr, ah, ay + 5);

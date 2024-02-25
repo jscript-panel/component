@@ -78,7 +78,7 @@ function get_images() {
 	var background = setAlpha(g_colour_text, 10);
 	var text_colour = setAlpha(g_colour_text, 150);
 
-	var image_font = JSON.stringify({"Name":"FontAwesome","Size":40,"Weight":700})
+	var image_font = JSON.stringify({"Name":"Segoe UI","Size":40,"Weight":700})
 
 	images.noart = utils.CreateImage(cover_size, cover_size);
 	gb = images.noart.GetGraphics();
@@ -100,12 +100,12 @@ function get_images() {
 
 	images.reset = utils.CreateImage(button_size, button_size);
 	gb = images.reset.GetGraphics();
-	gb.WriteText(chars.close, g_font_awesome, g_colour_text, 0, 0, button_size, button_size, 2, 2);
+	gb.WriteText(chars.close, g_font_fluent_12, g_colour_text, 0, 0, button_size, button_size, 2, 2);
 	images.reset.ReleaseGraphics();
 
 	images.reset_hover = utils.CreateImage(button_size, button_size);
 	gb = images.reset_hover.GetGraphics();
-	gb.WriteText(chars.close, g_font_awesome, RGB(255, 50, 50), 0, 0, button_size, button_size, 2, 2);
+	gb.WriteText(chars.close, g_font_fluent_12, RGB(255, 50, 50), 0, 0, button_size, button_size, 2, 2);
 	images.reset_hover.ReleaseGraphics();
 }
 
@@ -298,19 +298,10 @@ function get_font() {
 	g_font_box = _font(name, 10, true);
 	g_font_group1 = _font(name, 20, true);
 	g_font_group2 = _font(name, 16);
-	g_font_awesome = _font("FontAwesome", 18);
+	g_font_fluent_12 = _font("Segoe Fluent Icons", 12);
+	g_font_fluent_18 = _font("Segoe Fluent Icons", 18);
 
-	if (ppt.ratingGUIFX && utils.CheckFont("Guifx v2 Transports")) {
-		g_font_rating = _font("Guifx v2 Transports", 16);
-		chars.rating_on = 'b';
-		chars.rating_off = 'b';
-	} else {
-		g_font_rating = _font("FontAwesome", 18);
-		chars.rating_on = '\uF005';
-		chars.rating_off = '\uF006';
-	}
-
-	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_rating) + 4;
+	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_18) + 4;
 	g_time_width = "00:00:00".calc_width(g_font) + 20;
 
 	g_font_height = g_fsize + 4;
@@ -405,7 +396,8 @@ var g_font_bold = "";
 var g_font_box = "";
 var g_font_group1 = "";
 var g_font_group2 = "";
-var g_font_awesome = "";
+var g_font_fluent_12 = "";
+var g_font_fluent_18 = "";
 var g_fsize = 16;
 
 var g_colour_text = 0;

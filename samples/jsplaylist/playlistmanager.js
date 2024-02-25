@@ -1,7 +1,6 @@
 function oPlaylist(idx, parent) {
 	this.idx = idx;
 	this.name = plman.GetPlaylistName(idx);
-	this.bt_remove = new button(parent.bt_remove_normal, parent.bt_remove_hover, parent.bt_remove_down);
 	this.y = -1;
 }
 
@@ -25,9 +24,6 @@ function oPlaylistManager() {
 	}
 
 	this.setButtons = function () {
-		var bt_w = g_z16;
-		var bt_h = g_z16;
-
 		// Az & zA vars
 		var Az_h = cPlaylistManager.statusBarHeight;
 		var Az_w = Math.floor(Az_h * 1.9);
@@ -38,57 +34,22 @@ function oPlaylistManager() {
 		this.bt_sortAz_normal = utils.CreateImage(Az_w, Az_h);
 		var gb = this.bt_sortAz_normal.GetGraphics();
 		gb.FillRectangle(0, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
-		gb.WriteText(chars.up, g_font_awesome_12, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
+		gb.WriteText(chars.up, g_font_fluent_12, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
 		gb.WriteText("Az", g_font_12, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
 		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
 		this.bt_sortAz_normal.ReleaseGraphics();
 
-		// hover sort Az playlist Image
-		this.bt_sortAz_hover = utils.CreateImage(Az_w, Az_h);
-		var gb = this.bt_sortAz_hover.GetGraphics();
-		gb.FillRectangle(0, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
-		gb.WriteText(chars.up, g_font_awesome_12, g_colour_text, left_padding, 1, Az_w, Az_h, 0, 2);
-		gb.WriteText("Az", g_font_12, g_colour_text, 0, 0, Az_w - right_padding, Az_h, 1, 2);
-		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
-		this.bt_sortAz_hover.ReleaseGraphics();
-
-		this.sortAz_button = new button(this.bt_sortAz_normal, this.bt_sortAz_hover, this.bt_sortAz_hover);
+		this.sortAz_button = new button(this.bt_sortAz_normal, this.bt_sortAz_normal, this.bt_sortAz_normal);
 
 		// normal sort Za playlist Image
 		this.bt_sortZa_normal = utils.CreateImage(Az_w, Az_h);
 		var gb = this.bt_sortZa_normal.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
+		gb.WriteText(chars.down, g_font_fluent_12, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
 		gb.WriteText("Za", g_font_12, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
 		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
 		this.bt_sortZa_normal.ReleaseGraphics();
 
-		// hover sort Za playlist Image
-		this.bt_sortZa_hover = utils.CreateImage(Az_w, Az_h);
-		var gb = this.bt_sortZa_hover.GetGraphics();
-		gb.WriteText(chars.down, g_font_awesome_12, g_colour_text, left_padding, 1, Az_w, Az_h, 0, 2);
-		gb.WriteText("Za", g_font_12, g_colour_text, 0, 0, Az_w - right_padding, Az_h, 1, 2);
-		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
-		this.bt_sortZa_hover.ReleaseGraphics();
-
-		this.sortZa_button = new button(this.bt_sortZa_normal, this.bt_sortZa_hover, this.bt_sortZa_hover);
-
-		// normal remove playlist Image
-		this.bt_remove_normal = utils.CreateImage(bt_w, bt_h);
-		var gb = this.bt_remove_normal.GetGraphics();
-		gb.WriteText(chars.close, g_font_awesome_12, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, bt_w, bt_h, 2, 2);
-		this.bt_remove_normal.ReleaseGraphics();
-
-		// hover remove playlist Image
-		this.bt_remove_hover = utils.CreateImage(bt_w, bt_h);
-		gb = this.bt_remove_hover.GetGraphics();
-		gb.WriteText(chars.close, g_font_awesome_12, RGB(255, 0, 0), 0, 0, bt_w, bt_h, 2, 2);
-		this.bt_remove_hover.ReleaseGraphics();
-
-		// down remove playlist Image
-		this.bt_remove_down = utils.CreateImage(bt_w, bt_h);
-		gb = this.bt_remove_down.GetGraphics();
-		gb.WriteText(chars.close, g_font_awesome_12, g_colour_text, 0, 0, bt_w, bt_h, 2, 2);
-		this.bt_remove_down.ReleaseGraphics();
+		this.sortZa_button = new button(this.bt_sortZa_normal, this.bt_sortZa_normal, this.bt_sortZa_normal);
 	}
 	this.setButtons();
 
@@ -144,7 +105,6 @@ function oPlaylistManager() {
 		var cw = this.w - this.border - this.scrollbarWidth - 10;
 		var ch = cPlaylistManager.rowHeight;
 		var row_idx = 0;
-		var bt_w = this.bt_remove_normal.Width;
 
 		// panel bg
 		gr.FillRectangle(this.x - this.woffset + 1, this.y + this.border, this.w, this.h - this.border, setAlpha(g_colour_background, 230));
@@ -194,7 +154,7 @@ function oPlaylistManager() {
 				gr.DrawRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, 2, g_colour_text);
 			}
 
-			gr.WriteText(plman.IsPlaylistLocked(this.playlists[i].idx) ? chars.lock : chars.list, g_font_awesome_20, txt_color, cx, cy, ch, ch, 2, 2);
+			gr.WriteText(plman.IsPlaylistLocked(this.playlists[i].idx) ? chars.lock : chars.list, g_font_fluent_12, txt_color, cx, cy, ch, ch, 2, 2);
 
 			// draw INPUTBOX if rename requested
 			if (this.inputboxID == i) {
@@ -202,14 +162,11 @@ function oPlaylistManager() {
 			} else {
 				// playlist total items
 				var count = plman.GetPlaylistItemCount(this.playlists[i].idx);
-				gr.WriteText(count, g_font_12, txt_color, cx + g_z10, cy, cw - g_z5 - bt_w, ch, 1, 2, 1);
+				gr.WriteText(count, g_font_12, txt_color, cx + g_z10, cy, cw - g_z5, ch, 1, 2, 1);
 
 				var count_width = "99999".calc_width(g_font_12);
 				// draw playlist name
-				gr.WriteText(this.playlists[i].name, g_font_12, txt_color, cx + g_z10 + height(g_font_12), cy, cw - (g_z10 * 3) - bt_w - count_width, ch, 0, 2, 1);
-
-				// draw remove button
-				this.playlists[i].bt_remove.draw(gr, cx + cw - bt_w + 9, cy + 2);
+				gr.WriteText(this.playlists[i].name, g_font_12, txt_color, cx + g_z10 + height(g_font_12), cy, cw - (g_z10 * 3) - count_width, ch, 0, 2, 1);
 			}
 
 			// draw "drag destination bar" on dragging playlist item
@@ -328,17 +285,6 @@ function oPlaylistManager() {
 					plman.SortPlaylistsByName(-1);
 					this.refresh();
 					full_repaint();
-				} else {
-					// check remove button
-					for (var pl = 0; pl < this.playlists.length; pl++) {
-						if (this.playlists[pl].bt_remove.checkstate(event, x, y) == ButtonStates.hover) {
-							plman.RemovePlaylistSwitch(pl);
-							if (this.offset > 0 && this.offset >= this.playlists.length - Math.floor((this.h - (cPlaylistManager.showStatusBar ? cPlaylistManager.statusBarHeight : 0)) / cPlaylistManager.rowHeight)) {
-								this.offset--;
-								this.refresh();
-							}
-						}
-					}
 				}
 
 				// hide playlist manager panel if not visible by default
@@ -408,10 +354,6 @@ function oPlaylistManager() {
 						}
 					}
 				} else {
-					for (var pl = 0; pl < this.playlists.length; pl++) {
-						this.playlists[pl].bt_remove.checkstate(event, x, y);
-					}
-
 					if (cPlaylistManager.drag_clicked) {
 						cPlaylistManager.drag_moved = true;
 					}

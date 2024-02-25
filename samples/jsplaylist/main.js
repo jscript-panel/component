@@ -1299,14 +1299,14 @@ function get_font() {
 	g_font_19_1 = _font(name, 19, 1);
 	g_font_21_1 = _font(name, 21, 1);
 
-	g_font_awesome_12 = _font("FontAwesome", 12);
-	g_font_awesome_20 = _font("FontAwesome", 20);
-	g_font_awesome_40 = _font("FontAwesome", 40);
+	g_font_fluent_12 = _font("Segoe Fluent Icons", 12);
+	g_font_fluent_20 = _font("Segoe Fluent Icons", 20);
+	g_font_fluent_40 = _font("Segoe Fluent Icons", 40);
 
 	g_font_group1 = _font(name, 16);
 	g_font_group2 = _font(name, 14);
 
-	columns.rating_w = (chars.rating_off.calc_width(g_font_awesome_20) * 5) + 4;
+	columns.rating_w = (chars.rating_off.calc_width(g_font_fluent_20) * 5) + 4;
 }
 
 function get_colours() {

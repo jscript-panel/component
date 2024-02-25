@@ -338,46 +338,27 @@ function playlist_can_remove(playlistIndex) {
 }
 
 var chars = {
-	// FontAwesome
-	up : '\uF077',
-	down : '\uF078',
-	left : '\uF060',
-	right : '\uF061',
-	close : '\uF00D',
-	rating_on : '\uF005',
-	rating_off : '\uF006',
-	heart_on : '\uF004',
-	heart_off : '\uF08A',
-	prev : '\uF049',
-	next : '\uF050',
-	play : '\uF04B',
-	pause : '\uF04C',
-	stop : '\uF04D',
-	preferences : '\uF013',
-	search : '\uF002',
-	console : '\uF120',
-	info : '\uF05A',
-	audioscrobbler : '\uF202',
-	minus : '\uF068',
-	music : '\uF001',
-	menu : '\uF0C9',
-	hourglass : '\uF254',
-	lock : '\uF023',
-	list : '\uF0C9',
-	volume : '\uF028',
-	// Ignore these, they are special chars for $rgb and $font parsing
-	etx : String.fromCharCode(3),
-	bel : String.fromCharCode(7),
-	tab : '\t',
-};
-
-var fluent_chars = {
+	check_on : '\ue73a',
+	check_off : '\ue739',
+	heart_on : '\ueb52',
+	heart_off : '\ueb51',
+	radio_on : '\ueccb',
+	radio_off : '\uecca',
+	rating_on : '\ue735',
+	rating_off : '\ue734',
+	list : '\uea37',
+	lock : '\ue72e',
+	working : '\ue9f5',
+	up : '\ue70e',
+	down : '\ue70d',
+	left : '\ue76b',
+	right : '\ue76c',
+	close : '\uef2c',
 	stop : '\uE71A',
 	prev : '\uE892',
 	play : '\uE768',
 	pause : '\uE769',
 	next : '\uE893',
-	console : '\uea37',
 	search : '\uE721',
 	preferences : '\uE713',
 	menu : '\ue700',
@@ -385,6 +366,10 @@ var fluent_chars = {
 	volume : '\ue767',
 	repeat_all : '\ue8ee',
 	repeat_one : '\ue8ed',
+// Ignore these, they are special chars for $rgb and $font parsing
+	etx : String.fromCharCode(3),
+	bel : String.fromCharCode(7),
+	tab : '\t',
 };
 
 var DWRITE_FONT_WEIGHT_THIN = 100;

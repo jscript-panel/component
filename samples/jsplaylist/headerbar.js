@@ -69,14 +69,14 @@ function oHeaderBar() {
 		this.slide_close = utils.CreateImage(cScrollBar.width, this.h);
 		var gb = this.slide_close.GetGraphics();
 		gb.FillRectangle(0, 0, cScrollBar.width, this.h, g_colour_text & 0x15ffffff);
-		gb.WriteText(chars.right, g_font_awesome_12, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
+		gb.WriteText(chars.right, g_font_fluent_12, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
 		this.slide_close.ReleaseGraphics();
 
 		// hover playlistManager slide Image
 		this.slide_open = utils.CreateImage(cScrollBar.width, this.h);
 		gb = this.slide_open.GetGraphics();
 		gb.FillRectangle(0, 0, cScrollBar.width, this.h, g_colour_text & 0x15ffffff);
-		gb.WriteText(chars.left, g_font_awesome_12, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
+		gb.WriteText(chars.left, g_font_fluent_12, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
 		this.slide_open.ReleaseGraphics();
 
 		if (cPlaylistManager.visible) {

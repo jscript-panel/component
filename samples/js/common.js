@@ -48,7 +48,7 @@ function _button(x, y, w, h, normal, hover, fn, tiptext) {
 	this.normal = normal;
 	this.hover = hover || normal;
 	this.current = normal;
-	this.font = JSON.stringify({Name:'FontAwesome',Size:this.h - _scale(10)});
+	this.font = JSON.stringify({Name:'Segoe Fluent Icons',Size:this.h - _scale(10)});
 }
 
 function _buttons() {
@@ -391,7 +391,7 @@ function _sb(ch, x, y, w, h, v, fn) {
 	this.h = h;
 	this.v = v;
 	this.fn = fn;
-	this.font = JSON.stringify({Name:'FontAwesome',Size:h});
+	this.font = JSON.stringify({Name:'Segoe Fluent Icons',Size:h});
 }
 
 function _scale(size) {

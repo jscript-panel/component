@@ -1431,7 +1431,7 @@ function oSettings() {
 		this.txtHeight = scale(12);
 		this.setButtons();
 
-		if (this.pages.length == 0) {
+		if (this.pages.empty()) {
 			this.pages.push(new oPage(0, "p.settings.pages[0]", "General", 7));
 			this.pages.push(new oPage(1, "p.settings.pages[1]", "Columns", 16));
 			this.pages.push(new oPage(2, "p.settings.pages[2]", "Groups", 23));

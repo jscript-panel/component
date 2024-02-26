@@ -1,11 +1,3 @@
-Array.prototype.empty = function () {
-	return this.length == 0;
-}
-
-String.prototype.empty = function () {
-	return this.length == 0;
-}
-
 function _artistFolder(artist) {
 	var folder = folders.artists + utils.ReplaceIllegalChars(artist, true, true);
 	utils.CreateFolder(folder);

@@ -122,7 +122,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 
 	this.on_focus = function (is_focused) {
 		if (!is_focused && this.edit) {
-			if (this.text.length == 0) {
+			if (this.text.empty()) {
 				this.text = this.default_text;
 			}
 			this.edit = false;

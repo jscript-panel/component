@@ -258,13 +258,13 @@ function oBrowser() {
 	}
 
 	this.activateItem = function (index) {
-		if (this.groups.length == 0)
+		if (this.groups.empty())
 			return;
 		this.selectedIndex = index;
 	}
 
 	this.sendItemsToPlaylist = function (index) {
-		if (this.groups.length == 0)
+		if (this.groups.empty())
 			return;
 
 		var p = plman.FindOrCreatePlaylist(ppt.sendto_playlist, true);
@@ -815,7 +815,7 @@ function check_scroll(scroll___) {
 }
 
 function g_sendResponse() {
-	if (brw.inputbox.text.length == 0) {
+	if (brw.inputbox.text.empty()) {
 		g_filter_text = "";
 	} else {
 		g_filter_text = brw.inputbox.text;

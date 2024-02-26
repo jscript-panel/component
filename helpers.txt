@@ -792,3 +792,31 @@ var colours = {
 	Yellow : 0xFFFFFF00,
 	YellowGreen : 0xFF9ACD32,
 };
+
+Array.prototype.empty = function () {
+	return this.length == 0;
+}
+
+String.prototype.calc_width = function (font_str) {
+	if (this.empty()) return 0;
+	var font = JSON.parse(font_str);
+	if (font.Size == 0) return 0;
+	return utils.CalcTextWidth(this, font.Name, font.Size, font.Weight || 400);
+}
+
+String.prototype.empty = function () {
+	return this.length == 0;
+}
+
+String.prototype.repeat = function (num) {
+	if (num >= 0 && num <= 5) {
+		return new Array(Math.round(num) + 1).join(this);
+	}
+	return "";
+}
+
+Number.prototype.calc_width = function (font_str) {
+	var font = JSON.parse(font_str);
+	if (font.Size == 0) return 0;
+	return utils.CalcTextWidth(this.toString(), font.Name, font.Size, font.Weight || 400);
+}

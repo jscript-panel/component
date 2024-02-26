@@ -70,7 +70,7 @@ function on_key_down(vkey) {
 		var mask = GetKeyboardMask();
 
 		if (mask == KMask.none) {
-			if (brw.rows.length == 0) return;
+			if (brw.rows.empty()) return;
 
 			switch (vkey) {
 			case VK_F2:

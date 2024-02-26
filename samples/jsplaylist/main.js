@@ -1373,25 +1373,6 @@ function get_wallpaper() {
 	return img;
 }
 
-String.prototype.calc_width = function (font_str) {
-	var font = JSON.parse(font_str);
-	return utils.CalcTextWidth(this, font.Name, font.Size, font.Weight || 400);
-}
-
-Number.prototype.calc_width = function (font_str) {
-	var font = JSON.parse(font_str);
-	return utils.CalcTextWidth(this.toString(), font.Name, font.Size, font.Weight || 400);
-}
-
-String.prototype.repeat = function (num) {
-	if (num >= 0 && num <= 5) {
-		var g = Math.round(num);
-	} else {
-		return "";
-	}
-	return new Array(g + 1).join(this);
-}
-
 var g_middle_clicked = false;
 var g_middle_click_timeout = false;
 var g_textbox_tabbed = false;

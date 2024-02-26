@@ -425,7 +425,7 @@ function oCheckBox(id, x, y, label, linkedVariable, parentPageId) {
 			var button_y = this.ly - 1 + Math.ceil((p.settings.txtHeight + 10 - this.button.h) / 2);
 			this.button.draw(gr, this.x, button_y);
 			var label_x = this.x + this.button.w + 5;
-			gr.WriteText(this.label, g_font_12_1, (this.status ? p.settings.color2 : p.settings.color1), label_x, this.ly, p.settings.w, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText(this.label, g_font_12_bold, (this.status ? p.settings.color2 : p.settings.color1), label_x, this.ly, p.settings.w, p.settings.txtHeight + 10, 0, 2, 1);
 		}
 	}
 
@@ -505,7 +505,7 @@ function oRadioButton(id, x, y, label, status, parentPageId) {
 			var button_y = this.ly - 1 + Math.ceil((p.settings.txtHeight + 10 - this.button.h) / 2);
 			this.button.draw(gr, this.x, button_y);
 			var label_x = this.x + this.button.w + 5;
-			gr.WriteText(this.label, g_font_12_1, (this.status ? p.settings.color2 : p.settings.color1), label_x, this.ly, p.settings.w, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText(this.label, g_font_12_bold, (this.status ? p.settings.color2 : p.settings.color1), label_x, this.ly, p.settings.w, p.settings.txtHeight + 10, 0, 2, 1);
 		}
 	}
 
@@ -543,7 +543,7 @@ function oTextBox(id, x, y, w, h, label, value, parentPageId) {
 	this.draw = function (gr) {
 		this.ly = this.y - (p.settings.pages[this.parentPageId].offset * cSettings.rowHeight);
 		if (this.ly + this.h > cSettings.topBarHeight) {
-			gr.WriteText(this.label, g_font_12_1, p.settings.color1, this.x, this.ly, p.list.w - p.settings.pages[this.parentPageId].scrollbarWidth - 10, this.h, 0, 2, 1);
+			gr.WriteText(this.label, g_font_12_bold, p.settings.color1, this.x, this.ly, p.list.w - p.settings.pages[this.parentPageId].scrollbarWidth - 10, this.h, 0, 2, 1);
 			this.inputbox.draw(gr, this.x, this.ly + this.h);
 		}
 	}
@@ -747,7 +747,7 @@ function oListBox(id, objectName, x, y, w, h, row_height, label, arr, selectedId
 
 		// listbox bg
 		if (this.label.length > 0) {
-			gr.WriteText(this.label, g_font_12_1, p.settings.color1, this.x, this.ly - this.rowHeight - g_z2, this.w, this.rowHeight, 0, 2, 1);
+			gr.WriteText(this.label, g_font_12_bold, p.settings.color1, this.x, this.ly - this.rowHeight - g_z2, this.w, this.rowHeight, 0, 2, 1);
 		}
 		gr.FillRectangle(this.x, this.ly, this.w, this.h + 1, RGB(240, 240, 240));
 		gr.DrawRectangle(this.x - 1, this.ly - 1, this.w + 1, this.h + 2, 1, RGB(180, 180, 180));
@@ -770,7 +770,7 @@ function oListBox(id, objectName, x, y, w, h, row_height, label, arr, selectedId
 			if (i == this.selectedId) {
 				gr.FillRectangle(this.x + 1, this.ly + row * this.rowHeight + 1, this.w - this.scrollbarWidth - 2, this.rowHeight - 1, RGBA(150, 150, 150, 200));
 			}
-			gr.WriteText((isCustom ? "[" : "") + this.arr[i] + (isCustom ? "]" : ""), i == this.selectedId ? g_font_12_1 : g_font_12, (i == this.selectedId ? RGB(0, 0, 0) : RGB(0, 0, 0)), this.x + g_z5, this.ly + row * this.rowHeight, this.w - this.scrollbarWidth - g_z10, this.rowHeight, 0, 2, 1);
+			gr.WriteText((isCustom ? "[" : "") + this.arr[i] + (isCustom ? "]" : ""), i == this.selectedId ? g_font_12_bold : g_font_12, (i == this.selectedId ? RGB(0, 0, 0) : RGB(0, 0, 0)), this.x + g_z5, this.ly + row * this.rowHeight, this.w - this.scrollbarWidth - g_z10, this.rowHeight, 0, 2, 1);
 			row++;
 		}
 	}
@@ -1009,13 +1009,13 @@ function oPage(id, objectName, label, nbrows) {
 
 		switch (this.id) {
 		case 0:
-			gr.WriteText("Layout", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 1.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Layout", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 1.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
 			break;
 		case 1:
 			var listBoxWidth = scale(100);
 			var listBox_button_x = listBoxWidth + scale(50);
-			gr.WriteText("Status", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 4.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
-			gr.WriteText("Text Alignment", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 14.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Status", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 4.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Text Alignment", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 14.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
 
 			// new column button
 			var ny = Math.floor(cSettings.topBarHeight + rh * 2.1) - (this.offset * cSettings.rowHeight);
@@ -1046,13 +1046,13 @@ function oPage(id, objectName, label, nbrows) {
 
 			gr.FillRectangle(txtbox_x, cSettings.topBarHeight + rh * 8.5 - (this.offset * cSettings.rowHeight), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.borderWidth, p.settings.color1);
 
-			gr.WriteText("Row Height", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 8.75 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
-			gr.WriteText("Cover Art Status", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 10.75 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Row Height", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 8.75 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Cover Art Status", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 10.75 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
 			break;
 		case 3:
-			gr.WriteText("Wallpaper Status", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 1.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
-			gr.WriteText("Wallpaper Image", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 3.25 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
-			gr.WriteText("Wallpaper Effects", g_font_12_1, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Wallpaper Status", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 1.5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Wallpaper Image", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 3.25 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
+			gr.WriteText("Wallpaper Effects", g_font_12_bold, p.settings.color1, txtbox_x, cSettings.topBarHeight + rh * 5 - (this.offset * cSettings.rowHeight), p.settings.w - 10, p.settings.txtHeight + 10, 0, 2, 1);
 			break;
 		}
 
@@ -1318,20 +1318,20 @@ function oSettings() {
 		this.color1 = setAlpha(g_colour_text, 200);
 		this.color2 = g_colour_text;
 
-		var rect_w = "Delete Pattern".calc_width(g_font_12_1) + 30;
+		var rect_w = "Delete Pattern".calc_width(g_font_12_bold) + 30;
 		var rect_h = scale(32);
 
 		// Add a Custom Column
 		var newColumn_off = utils.CreateImage(rect_w, rect_h);
 		gb = newColumn_off.GetGraphics();
 		gb.DrawRectangle(0, 0, rect_w - 1, rect_h - 1, 1, this.color1);
-		gb.WriteText("New Column", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("New Column", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		newColumn_off.ReleaseGraphics();
 
 		var newColumn_ov = utils.CreateImage(rect_w, rect_h);
 		gb = newColumn_ov.GetGraphics();
 		gb.DrawRectangle(1, 1, rect_w - 2, rect_h - 2, 2, this.color1);
-		gb.WriteText("New Column", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("New Column", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		newColumn_ov.ReleaseGraphics();
 
 		this.newbutton = new button(newColumn_off, newColumn_ov, newColumn_ov);
@@ -1340,13 +1340,13 @@ function oSettings() {
 		var delColumn_off = utils.CreateImage(rect_w, rect_h);
 		gb = delColumn_off.GetGraphics();
 		gb.DrawRectangle(0, 0, rect_w - 1, rect_h - 1, 1, this.color1);
-		gb.WriteText("Delete Column", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("Delete Column", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		delColumn_off.ReleaseGraphics();
 
 		var delColumn_ov = utils.CreateImage(rect_w, rect_h);
 		gb = delColumn_ov.GetGraphics();
 		gb.DrawRectangle(1, 1, rect_w - 2, rect_h - 2, 2, this.color1);
-		gb.WriteText("Delete Column", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("Delete Column", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		delColumn_ov.ReleaseGraphics();
 
 		this.delbutton = new button(delColumn_off, delColumn_ov, delColumn_ov);
@@ -1355,13 +1355,13 @@ function oSettings() {
 		var newPattern_off = utils.CreateImage(rect_w, rect_h);
 		gb = newPattern_off.GetGraphics();
 		gb.DrawRectangle(0, 0, rect_w - 1, rect_h - 1, 1, this.color1);
-		gb.WriteText("New Pattern", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("New Pattern", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		newPattern_off.ReleaseGraphics();
 
 		var newPattern_ov = utils.CreateImage(rect_w, rect_h);
 		gb = newPattern_ov.GetGraphics();
 		gb.DrawRectangle(1, 1, rect_w - 2, rect_h - 2, 2, this.color1);
-		gb.WriteText("New Pattern", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("New Pattern", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		newPattern_ov.ReleaseGraphics();
 
 		this.newbuttonPattern = new button(newPattern_off, newPattern_ov, newPattern_ov);
@@ -1370,13 +1370,13 @@ function oSettings() {
 		var delPattern_off = utils.CreateImage(rect_w, rect_h);
 		gb = delPattern_off.GetGraphics();
 		gb.DrawRectangle(0, 0, rect_w - 1, rect_h - 1, 1, this.color1);
-		gb.WriteText("Delete Pattern", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("Delete Pattern", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		delPattern_off.ReleaseGraphics();
 
 		var delPattern_ov = utils.CreateImage(rect_w, rect_h);
 		gb = delPattern_ov.GetGraphics();
 		gb.DrawRectangle(1, 1, rect_w - 2, rect_h - 2, 2, this.color1);
-		gb.WriteText("Delete Pattern", g_font_12_1, this.color2, 0, 0, rect_w, rect_h, 2, 2);
+		gb.WriteText("Delete Pattern", g_font_12_bold, this.color2, 0, 0, rect_w, rect_h, 2, 2);
 		delPattern_ov.ReleaseGraphics();
 
 		this.delbuttonPattern = new button(delPattern_off, delPattern_ov, delPattern_ov);
@@ -1417,7 +1417,7 @@ function oSettings() {
 			}
 		}
 
-		this.tab_width = "Appearance".calc_width(g_font_12_1) + cSettings.tabPaddingWidth;
+		this.tab_width = "Appearance".calc_width(g_font_12_bold) + cSettings.tabPaddingWidth;
 		this.tab_height = this.txtHeight + scale(10) + cHeaderBar.borderWidth;
 		this.tab_img = utils.CreateImage(this.tab_width, this.tab_height);
 		this.tabButtons = [];
@@ -1461,7 +1461,7 @@ function oSettings() {
 		// draw close button
 		this.closebutton.draw(gr, this.x + 13, this.y + 10);
 		// draw Panel Title
-		gr.WriteText("Panel Settings", g_font_21_1, this.color2, this.x + this.closebutton.w + 20, this.y + 10, this.w - 50, height(g_font_21_1), 0, 2, 1);
+		gr.WriteText("Panel Settings", g_font_19_bold, this.color2, this.x + this.closebutton.w + 20, this.y + 10, this.w - 50, height(g_font_19_bold), 0, 2, 1);
 
 		// draw tabs
 		for (var i = 0; i < this.tabButtons.length; i++) {
@@ -1472,9 +1472,9 @@ function oSettings() {
 			if (i == this.currentPageId) {
 				gr.DrawRectangle(x, ty, this.tab_width, this.tab_height, 1, this.color1);
 				gr.FillRectangle(x + 1, ty + 1, this.tab_width - 2, this.tab_height, g_colour_background);
-				gr.WriteText(this.pages[i].label, g_font_12_1, this.color2, x, ty, this.tab_width, this.tab_height, 2, 2, 1);
+				gr.WriteText(this.pages[i].label, g_font_12_bold, this.color2, x, ty, this.tab_width, this.tab_height, 2, 2, 1);
 			} else {
-				gr.WriteText(this.pages[i].label, g_font_12_1, this.color1, x, ty, this.tab_width, this.tab_height, 2, 2, 1);
+				gr.WriteText(this.pages[i].label, g_font_12_bold, this.color1, x, ty, this.tab_width, this.tab_height, 2, 2, 1);
 			}
 		}
 

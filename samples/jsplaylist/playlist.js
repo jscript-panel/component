@@ -76,28 +76,31 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 				switch (p.headerBar.columns[j].ref) {
 				case "State":
 					switch (p.headerBar.columns[j].align) {
+					case 0:
+						// do nothing
+						break;
 					case 1:
-						cx += cw - cRow.playlist_h;
+						cx += cw - g_queue_width;
 						break;
 					case 2:
-						cx += (cw - cRow.playlist_h) / 2;
+						cx += (cw - g_queue_width) / 2;
 						break;
 					};
 
 					if (!is_item_selected)
-						gr.FillRectangle(cx, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 4, txt_color & 0x08ffffff);
+						gr.FillRectangle(cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, txt_color & 0x08ffffff);
 
 					if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist && this.track_index == p.list.nowplaying.PlaylistItemIndex) {
 						if (fb.IsPaused) {
-							gr.WriteText(chars.pause, g_font_fluent_20, txt_color, cx, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 4, 2, 2);
+							gr.WriteText(chars.pause, g_font_fluent_20, txt_color, cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
 						} else {
-							gr.WriteText(chars.play, g_font_fluent_20, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 4, 2, 2);
+							gr.WriteText(chars.play, g_font_fluent_20, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
 						}
 					} else {
 						var queue_index = tf_arr[j];
 						if (queue_index.length) {
-							DrawRectangle(gr, cx, this.y + 2, cRow.playlist_h - 4, cRow.playlist_h - 5, txt_color);
-							gr.WriteText(queue_index, g_font_15_1, txt_color, cx + 1, this.y + 3, cRow.playlist_h - 4, cRow.playlist_h - 4, 2, 2, 1, 1);
+							DrawRectangle(gr, cx, this.y + 2, g_queue_width, cRow.playlist_h - 5, txt_color);
+							gr.WriteText(queue_index, g_font_19_bold, txt_color, cx + 1, this.y + 1, g_queue_width, cRow.playlist_h - 4, 2, 2, 1, 1);
 						}
 					}
 					break;

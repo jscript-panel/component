@@ -768,9 +768,9 @@ function on_paint(gr) {
 					var text_bot = "Create a playlist to start!";
 				}
 				var y = Math.floor(wh / 2);
-				gr.WriteText(text_top, g_font_19_1, g_colour_text, 0, y - g_z5 - height(g_font_19_1), ww, height(g_font_19_1), 2, 1, 1);
+				gr.WriteText(text_top, g_font_19_bold, g_colour_text, 0, y - g_z5 - height(g_font_19_bold), ww, height(g_font_19_bold), 2, 1, 1);
 				gr.FillRectangle(40, Math.floor(wh / 2), ww - 80, 1, g_colour_text & 0x40ffffff);
-				gr.WriteText(text_bot, g_font_12_1, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_1), 2, 0, 1);
+				gr.WriteText(text_bot, g_font_12_bold, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold), 2, 0, 1);
 			}
 		}
 
@@ -1258,7 +1258,7 @@ function _font(name, size, bold) {
 	var font = {
 		Name : name,
 		Size : scale(size),
-		Weight : bold == 1 ? 700 : 400,
+		Weight : bold ? 700 : 400,
 	};
 	return JSON.stringify(font);
 }
@@ -1293,11 +1293,8 @@ function get_font() {
 	g_z16 = scale(16);
 
 	g_font_12 = _font(name, 12);
-	g_font_12_1 = _font(name, 12, 1);
-
-	g_font_15_1 = _font(name, 15, 1);
-	g_font_19_1 = _font(name, 19, 1);
-	g_font_21_1 = _font(name, 21, 1);
+	g_font_12_bold = _font(name, 12, true);
+	g_font_19_bold = _font(name, 19, true);
 
 	g_font_fluent_12 = _font("Segoe Fluent Icons", 12);
 	g_font_fluent_20 = _font("Segoe Fluent Icons", 20);
@@ -1307,6 +1304,7 @@ function get_font() {
 	g_font_group2 = _font(name, 14);
 
 	columns.rating_w = (chars.rating_off.calc_width(g_font_fluent_20) * 5) + 4;
+	g_queue_width = "0000".calc_width(g_font_19_bold);
 }
 
 function get_colours() {
@@ -1399,6 +1397,7 @@ var g_colour_highlight = 0;
 var g_colour_mood = 0;
 var g_colour_rating = 0;
 var g_font_size = 0;
+var g_queue_width = 0;
 var g_dynamic = false;
 var g_double_clicked = false;
 

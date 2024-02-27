@@ -768,9 +768,9 @@ function on_paint(gr) {
 					var text_bot = "Create a playlist to start!";
 				}
 				var y = Math.floor(wh / 2);
-				gr.WriteText(text_top, g_font_19_bold, g_colour_text, 0, y - g_z5 - height(g_font_19_bold), ww, height(g_font_19_bold), 2, 1, 1);
+				gr.WriteText(text_top, g_font_20_bold, g_colour_text, 0, y - g_z5 - height(g_font_20_bold_obj), ww, height(g_font_20_bold_obj), 2, 1, 1);
 				gr.FillRectangle(40, Math.floor(wh / 2), ww - 80, 1, g_colour_text & 0x40ffffff);
-				gr.WriteText(text_bot, g_font_12_bold, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold), 2, 0, 1);
+				gr.WriteText(text_bot, g_font_12_bold, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold_obj), 2, 0, 1);
 			}
 		}
 
@@ -1247,14 +1247,14 @@ function update_playlist() {
 }
 
 function height(font) {
-	return JSON.parse(font).Size + scale(4);
+	return font.Size + scale(4);
 }
 
 function scale(size) {
 	return Math.round(size * g_font_size / 12);
 }
 
-function _font(name, size, bold) {
+function js_font(name, size, bold) {
 	var font = {
 		Name : name,
 		Size : scale(size),
@@ -1292,19 +1292,26 @@ function get_font() {
 	g_z10 = scale(10);
 	g_z16 = scale(16);
 
-	g_font_12 = _font(name, 12);
-	g_font_12_bold = _font(name, 12, true);
-	g_font_19_bold = _font(name, 19, true);
+	g_font_12 = js_font(name, 12);
+	g_font_12_bold = js_font(name, 12, true);
+	g_font_20_bold = js_font(name, 20, true);
 
-	g_font_fluent_12 = _font("Segoe Fluent Icons", 12);
-	g_font_fluent_20 = _font("Segoe Fluent Icons", 20);
-	g_font_fluent_40 = _font("Segoe Fluent Icons", 40);
+	g_font_fluent_12 = js_font("Segoe Fluent Icons", 12);
+	g_font_fluent_20 = js_font("Segoe Fluent Icons", 20);
+	g_font_fluent_40 = js_font("Segoe Fluent Icons", 40);
 
-	g_font_group1 = _font(name, 16);
-	g_font_group2 = _font(name, 14);
+	g_font_group1 = js_font(name, 16);
+	g_font_group2 = js_font(name, 14);
 
-	columns.rating_w = (chars.rating_off.calc_width(g_font_fluent_20) * 5) + 4;
-	g_queue_width = "0000".calc_width(g_font_19_bold);
+	g_font_12_obj = JSON.parse(g_font_12);
+	g_font_12_bold_obj = JSON.parse(g_font_12_bold);
+	g_font_20_bold_obj = JSON.parse(g_font_20_bold);
+	g_font_group1_obj = JSON.parse(g_font_group1);
+	g_font_group2_obj = JSON.parse(g_font_group2);
+	g_font_fluent_20_obj = JSON.parse(g_font_fluent_20);
+
+	columns.rating_w = (chars.rating_off.calc_width(g_font_fluent_20_obj) * 5) + 4;
+	g_queue_width = "0000".calc_width(g_font_20_bold_obj);
 }
 
 function get_colours() {

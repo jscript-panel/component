@@ -258,7 +258,7 @@ function scale(size) {
 	return Math.round(size * g_fsize / 12);
 }
 
-function _font(name, size, bold) {
+function smooth_font(name, size, bold) {
 	var font = {
 		Name : name,
 		Size : scale(size),
@@ -279,16 +279,21 @@ function get_font() {
 	var name = default_font.Name;
 	g_fsize = default_font.Size + Math.min(ppt.extra_font_size, 10);
 
-	g_font = _font(name, 12);
-	g_font_bold = _font(name, 14, true);
-	g_font_box = _font(name, 10, true);
-	g_font_group1 = _font(name, 20, true);
-	g_font_group2 = _font(name, 16);
-	g_font_fluent_12 = _font("Segoe Fluent Icons", 12);
-	g_font_fluent_20 = _font("Segoe Fluent Icons", 20);
+	g_font = smooth_font(name, 12);
+	g_font_bold = smooth_font(name, 14, true);
+	g_font_box = smooth_font(name, 10, true);
+	g_font_group1 = smooth_font(name, 20, true);
+	g_font_group2 = smooth_font(name, 16);
+	g_font_fluent_12 = smooth_font("Segoe Fluent Icons", 12);
+	g_font_fluent_20 = smooth_font("Segoe Fluent Icons", 20);
 
-	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_20) + 4;
-	g_time_width = "00:00:00".calc_width(g_font) + 20;
+	g_font_obj = JSON.parse(g_font);
+	g_font_fluent_20_obj = JSON.parse(g_font_fluent_20);
+	g_font_group1_obj = JSON.parse(g_font_group1);
+	g_font_group2_obj = JSON.parse(g_font_group2);
+
+	g_time_width = "00:00:00".calc_width(g_font_obj) + 20;
+	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_20_obj) + 4;
 
 	g_font_height = g_fsize + 4;
 }
@@ -384,6 +389,10 @@ var g_font_group1 = "";
 var g_font_group2 = "";
 var g_font_fluent_12 = "";
 var g_font_fluent_20 = "";
+var g_font_obj = null;
+var g_font_fluent_20_obj = null;
+var g_font_group1_obj = null;
+var g_font_group2_obj = null;
 var g_fsize = 16;
 
 var g_colour_text = 0;

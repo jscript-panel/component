@@ -44,10 +44,10 @@ function oInputbox(w, h, default_text, empty_text, func) {
 
 		// adjust offset to always see the cursor
 		if (!this.drag && !this.select) {
-			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12);
+			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
 			while (this.Cx >= this.w - this.right_margin) {
 				this.offset++;
-				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12);
+				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
 			}
 		}
 		// draw selection
@@ -113,12 +113,12 @@ function oInputbox(w, h, default_text, empty_text, func) {
 	}
 
 	this.CalcText = function () {
-		this.TWidth = this.text.substr(this.offset).calc_width(g_font_12);
+		this.TWidth = this.text.substr(this.offset).calc_width(g_font_12_obj);
 	}
 
 	this.GetCx = function (pos) {
 		if (pos >= this.offset) {
-			return this.text.substr(this.offset, pos - this.offset).calc_width(g_font_12);
+			return this.text.substr(this.offset, pos - this.offset).calc_width(g_font_12_obj);
 		}
 		return 0;
 	}
@@ -127,7 +127,7 @@ function oInputbox(w, h, default_text, empty_text, func) {
 		var tx = x - this.x;
 		var pos = 0;
 		for (var i = this.offset; i < this.text.length; i++) {
-			pos += this.text.substr(i, 1).calc_width(g_font_12);
+			pos += this.text.substr(i, 1).calc_width(g_font_12_obj);
 			if (pos >= tx + 3) {
 				break;
 			}
@@ -555,10 +555,10 @@ function oInputbox(w, h, default_text, empty_text, func) {
 							}
 						}
 
-						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12);
+						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
 						while (this.Cx >= this.w - this.right_margin) {
 							this.offset++;
-							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12);
+							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
 						}
 
 						this.repaint();

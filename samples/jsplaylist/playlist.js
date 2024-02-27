@@ -100,7 +100,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 						var queue_index = tf_arr[j];
 						if (queue_index.length) {
 							DrawRectangle(gr, cx, this.y + 2, g_queue_width, cRow.playlist_h - 5, txt_color);
-							gr.WriteText(queue_index, g_font_19_bold, txt_color, cx + 1, this.y + 1, g_queue_width, cRow.playlist_h - 4, 2, 2, 1, 1);
+							gr.WriteText(queue_index, g_font_20_bold, txt_color, cx + 1, this.y + 1, g_queue_width, cRow.playlist_h - 4, 2, 2, 1, 1);
 						}
 					}
 					break;
@@ -208,8 +208,8 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 
 			var text_left_padding = g_z2;
 			var scrollbar_gap = (p.scrollbar.visible && (p.list.totalRows > p.list.totalRowVisible)) ? 0 : cScrollBar.width;
-			var lg1_right_field_w = this.r1.calc_width(g_font_group1) + cList.borderWidth * 2;
-			var lg2_right_field_w = this.r2.calc_width(g_font_group2) + cList.borderWidth * 2;
+			var lg1_right_field_w = this.r1.calc_width(g_font_group1_obj) + cList.borderWidth * 2;
+			var lg2_right_field_w = this.r2.calc_width(g_font_group2_obj) + cList.borderWidth * 2;
 
 			var group_text_colour = g_colour_highlight;
 			var group_text_colour_fader = setAlpha(group_text_colour, 180);
@@ -228,7 +228,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 				if (this.obj && this.heightInRow > 2) {
 					var lg3_left_field = this.obj.count + (this.obj.count > 1 ? " tracks. " : " track. ") + this.obj.total_group_duration_txt + ".";
 					var lg3_right_field = (this.group_index + 1) + " / " + p.list.groups.length;
-					var lg3_right_field_w = lg3_right_field.calc_width(g_font_12) + cList.borderWidth * 2;
+					var lg3_right_field_w = lg3_right_field.calc_width(g_font_12_obj) + cList.borderWidth * 2;
 					gr.WriteText(lg3_left_field, g_font_12, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h * 2 - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg3_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 0, 1);
 				}
 			}

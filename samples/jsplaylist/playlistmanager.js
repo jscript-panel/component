@@ -164,9 +164,9 @@ function oPlaylistManager() {
 				var count = plman.GetPlaylistItemCount(this.playlists[i].idx);
 				gr.WriteText(count, g_font_12, txt_color, cx + g_z10, cy, cw - g_z5, ch, 1, 2, 1);
 
-				var count_width = "99999".calc_width(g_font_12);
+				var count_width = "99999".calc_width(g_font_12_obj);
 				// draw playlist name
-				gr.WriteText(this.playlists[i].name, g_font_12, txt_color, cx + g_z10 + height(g_font_12), cy, cw - (g_z10 * 3) - count_width, ch, 0, 2, 1);
+				gr.WriteText(this.playlists[i].name, g_font_12, txt_color, cx + g_z10 + height(g_font_12_obj), cy, cw - (g_z10 * 3) - count_width, ch, 0, 2, 1);
 			}
 
 			// draw "drag destination bar" on dragging playlist item

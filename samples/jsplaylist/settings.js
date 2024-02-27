@@ -1318,7 +1318,7 @@ function oSettings() {
 		this.color1 = setAlpha(g_colour_text, 200);
 		this.color2 = g_colour_text;
 
-		var rect_w = "Delete Pattern".calc_width(g_font_12_bold) + 30;
+		var rect_w = "Delete Pattern".calc_width(g_font_12_bold_obj) + 30;
 		var rect_h = scale(32);
 
 		// Add a Custom Column
@@ -1417,7 +1417,7 @@ function oSettings() {
 			}
 		}
 
-		this.tab_width = "Appearance".calc_width(g_font_12_bold) + cSettings.tabPaddingWidth;
+		this.tab_width = "Appearance".calc_width(g_font_12_bold_obj) + cSettings.tabPaddingWidth;
 		this.tab_height = this.txtHeight + scale(10) + cHeaderBar.borderWidth;
 		this.tab_img = utils.CreateImage(this.tab_width, this.tab_height);
 		this.tabButtons = [];
@@ -1461,7 +1461,7 @@ function oSettings() {
 		// draw close button
 		this.closebutton.draw(gr, this.x + 13, this.y + 10);
 		// draw Panel Title
-		gr.WriteText("Panel Settings", g_font_19_bold, this.color2, this.x + this.closebutton.w + 20, this.y + 10, this.w - 50, height(g_font_19_bold), 0, 2, 1);
+		gr.WriteText("Panel Settings", g_font_20_bold, this.color2, this.x + this.closebutton.w + 20, this.y + 10, this.w - 50, height(g_font_20_bold_obj), 0, 2, 1);
 
 		// draw tabs
 		for (var i = 0; i < this.tabButtons.length; i++) {

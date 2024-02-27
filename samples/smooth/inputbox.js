@@ -35,10 +35,10 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 		gr.FillRectangle(this.x, this.y, this.w, this.h, g_colour_background);
 
 		if (!this.drag && !this.select) {
-			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font);
+			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_obj);
 			while (this.Cx >= this.w - this.right_margin) {
 				this.offset++;
-				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font);
+				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_obj);
 			}
 		}
 
@@ -98,12 +98,12 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 	}
 
 	this.CalcText = function () {
-		this.TWidth = this.text.substr(this.offset).calc_width(g_font);
+		this.TWidth = this.text.substr(this.offset).calc_width(g_font_obj);
 	}
 
 	this.GetCx = function (pos) {
 		if (pos >= this.offset) {
-			return this.text.substr(this.offset, pos - this.offset).calc_width(g_font);
+			return this.text.substr(this.offset, pos - this.offset).calc_width(g_font_obj);
 		}
 		return 0;
 	}
@@ -112,7 +112,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 		var tx = x - this.x;
 		var pos = 0;
 		for (var i = this.offset; i < this.text.length; i++) {
-			pos += this.text.substr(i, 1).calc_width(g_font);
+			pos += this.text.substr(i, 1).calc_width(g_font_obj);
 			if (pos >= tx + 3) {
 				break;
 			}
@@ -523,10 +523,10 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 							}
 						}
 
-						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font);
+						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_obj);
 						while (this.Cx >= this.w - this.right_margin) {
 							this.offset++;
-							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font);
+							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_obj);
 						}
 
 						this.repaint();

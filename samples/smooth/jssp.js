@@ -702,14 +702,14 @@ function oBrowser() {
 
 					var text_width = aw - image_height - 30;
 					if (ppt.groupHeaderRowsNumber == 1) {
-						gr.WriteText(group.bottom_left + " - " + group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1), ah, 0, 2, 1, 1);
+						gr.WriteText(group.bottom_left + " - " + group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1_obj), ah, 0, 2, 1, 1);
 						gr.WriteText(group.top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
 					} else {
-						gr.WriteText(group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1), ah, 0, 2, 1, 1);
+						gr.WriteText(group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1_obj), ah, 0, 2, 1, 1);
 						gr.WriteText(group.top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
 
 						var bottom_y = ay + (g_font_height * 1.5);
-						gr.WriteText(group.bottom_left, g_font_group2, group_text_colour_fader, ax + image_height + 5, bottom_y, text_width - group.bottom_right.calc_width(g_font_group2), ah, 0, 2, 1, 1);
+						gr.WriteText(group.bottom_left, g_font_group2, group_text_colour_fader, ax + image_height + 5, bottom_y, text_width - group.bottom_right.calc_width(g_font_group2_obj), ah, 0, 2, 1, 1);
 						gr.WriteText(group.bottom_right, g_font_group2, group_text_colour_fader, 0, bottom_y, aw - 5, ah, 1, 2, 1, 1);
 					}
 					break;

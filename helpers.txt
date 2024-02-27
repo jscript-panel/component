@@ -797,11 +797,9 @@ Array.prototype.empty = function () {
 	return this.length == 0;
 }
 
-String.prototype.calc_width = function (font_str) {
+String.prototype.calc_width = function (font_obj) {
 	if (this.empty()) return 0;
-	var font = JSON.parse(font_str);
-	if (font.Size == 0) return 0;
-	return utils.CalcTextWidth(this, font.Name, font.Size, font.Weight || 400);
+	return utils.CalcTextWidth(this, font_obj.Name, font_obj.Size, font_obj.Weight || 400);
 }
 
 String.prototype.empty = function () {
@@ -815,8 +813,6 @@ String.prototype.repeat = function (num) {
 	return "";
 }
 
-Number.prototype.calc_width = function (font_str) {
-	var font = JSON.parse(font_str);
-	if (font.Size == 0) return 0;
-	return utils.CalcTextWidth(this.toString(), font.Name, font.Size, font.Weight || 400);
+Number.prototype.calc_width = function (font_obj) {
+	return utils.CalcTextWidth(this.toString(), font_obj.Name, font_obj.Size, font_obj.Weight || 400);
 }

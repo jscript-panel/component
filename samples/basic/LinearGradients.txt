@@ -38,11 +38,11 @@ var linear_brush = {
 function on_paint(gr) {
 	linear_brush.End = [0, 100];
 	var str = JSON.stringify(linear_brush);
-	
+
 	gr.DrawEllipse(100, 100, 50, 50, 5, red);
 	gr.DrawEllipse(300, 100, 50, 50, 5, str);
 	gr.FillEllipse(500, 100, 50, 50, str);
-	
+
 	gr.DrawRectangle(50, 200, 100, 100, 5, red);
 	gr.DrawRectangle(250, 200, 100, 100, 5, str);
 	gr.FillRectangle(450, 200, 100, 100, str);

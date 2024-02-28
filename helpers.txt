@@ -366,6 +366,8 @@ var chars = {
 	volume : '\ue767',
 	repeat_all : '\ue8ee',
 	repeat_one : '\ue8ed',
+	shuffle : '\ue8b1',
+	random : '\ue897',
 // Ignore these, they are special chars for $rgb and $font parsing
 	etx : String.fromCharCode(3),
 	bel : String.fromCharCode(7),

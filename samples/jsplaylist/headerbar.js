@@ -69,14 +69,14 @@ function oHeaderBar() {
 		this.slide_close = utils.CreateImage(cScrollBar.width, this.h);
 		var gb = this.slide_close.GetGraphics();
 		gb.FillRectangle(0, 0, cScrollBar.width, this.h, g_colour_text & 0x15ffffff);
-		gb.WriteText(chars.right, g_font_fluent_12, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
+		gb.WriteText(chars.right, g_font_fluent_12.str, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
 		this.slide_close.ReleaseGraphics();
 
 		// hover playlistManager slide Image
 		this.slide_open = utils.CreateImage(cScrollBar.width, this.h);
 		gb = this.slide_open.GetGraphics();
 		gb.FillRectangle(0, 0, cScrollBar.width, this.h, g_colour_text & 0x15ffffff);
-		gb.WriteText(chars.left, g_font_fluent_12, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
+		gb.WriteText(chars.left, g_font_fluent_12.str, g_colour_text, 0, 1, cScrollBar.width, this.h, 2, 2);
 		this.slide_open.ReleaseGraphics();
 
 		if (cPlaylistManager.visible) {
@@ -166,7 +166,7 @@ function oHeaderBar() {
 							gr.FillRectangle(cx, cy, cw, this.h, g_colour_text & 0x15ffffff);
 						}
 					}
-					gr.WriteText(this.columns[j].label, g_font_12_bold, g_colour_text, cx + (this.borderWidth * 2), cy + 1, cw - (this.borderWidth * 4) - 1, this.h, this.columns[j].align, 2, 1, 1);
+					gr.WriteText(this.columns[j].label, g_font_12_bold.str, g_colour_text, cx + (this.borderWidth * 2), cy + 1, cw - (this.borderWidth * 4) - 1, this.h, this.columns[j].align, 2, 1, 1);
 				} else if (j == this.columnDraggedId && this.columnDragged == 2) {
 					gr.FillRectangle(cx, cy, cw, this.h, RGBA(0, 0, 0, 60));
 				}
@@ -195,7 +195,7 @@ function oHeaderBar() {
 							gr.FillRectangle(cx, cy, cw, this.h, g_colour_text & 0x15ffffff);
 						}
 					}
-					gr.WriteText(this.columns[i].label, g_font_12_bold, g_colour_text, cx + (this.borderWidth * 2), cy + 1, cw - (this.borderWidth * 4) - 1, this.h, this.columns[i].align, 2, 1, 1);
+					gr.WriteText(this.columns[i].label, g_font_12_bold.str, g_colour_text, cx + (this.borderWidth * 2), cy + 1, cw - (this.borderWidth * 4) - 1, this.h, this.columns[i].align, 2, 1, 1);
 				} else if (i == this.columnDraggedId && this.columnDragged == 2) {
 					gr.FillRectangle(cx, cy, cw, this.h, RGBA(0, 0, 0, 70));
 				}
@@ -216,7 +216,7 @@ function oHeaderBar() {
 			gr.DrawRectangle(cx, cy + 1, Math.floor(this.columns[this.columnDraggedId].w - 2), this.h - 2, 2, g_colour_text);
 			gr.DrawRectangle(cx + 1, cy + 2, Math.floor(this.columns[this.columnDraggedId].w - 5), this.h - 5, 1, blendColours(g_colour_text, g_colour_background, 0.55));
 			// header text info
-			gr.WriteText(this.columns[this.columnDraggedId].label, g_font_12_bold, g_colour_background, cx + (this.borderWidth * 2), cy + 1, this.columns[this.columnDraggedId].w - (this.borderWidth * 4) - 2, this.h, this.columns[this.columnDraggedId].align, 2, 1, 1);
+			gr.WriteText(this.columns[this.columnDraggedId].label, g_font_12_bold.str, g_colour_background, cx + (this.borderWidth * 2), cy + 1, this.columns[this.columnDraggedId].w - (this.borderWidth * 4) - 2, this.h, this.columns[this.columnDraggedId].align, 2, 1, 1);
 		}
 		// draw settings button
 		this.button.draw(gr, this.x + this.w, this.y);

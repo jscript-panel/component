@@ -41,7 +41,7 @@ function draw_header_bar(gr, text, obj) {
 	gr.FillRectangle(0, 0, ww, obj.y - 1, g_colour_background);
 	gr.FillRectangle(obj.x, 0, obj.w + cScrollBar.width, ppt.headerBarHeight - 1, g_colour_background & 0x20ffffff);
 	gr.FillRectangle(obj.x, ppt.headerBarHeight - 2, obj.w + cScrollBar.width, 1, g_colour_text & 0x22ffffff);
-	gr.WriteText(text, g_font_box, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
+	gr.WriteText(text, g_font_box.str, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
 }
 
 function update_extra_font_size(step) {
@@ -86,12 +86,12 @@ function get_images() {
 
 	images.reset = utils.CreateImage(button_size, button_size);
 	gb = images.reset.GetGraphics();
-	gb.WriteText(chars.close, g_font_fluent_12, g_colour_text, 0, 0, button_size, button_size, 2, 2);
+	gb.WriteText(chars.close, g_font_fluent_12.str, g_colour_text, 0, 0, button_size, button_size, 2, 2);
 	images.reset.ReleaseGraphics();
 
 	images.reset_hover = utils.CreateImage(button_size, button_size);
 	gb = images.reset_hover.GetGraphics();
-	gb.WriteText(chars.close, g_font_fluent_12, RGB(255, 50, 50), 0, 0, button_size, button_size, 2, 2);
+	gb.WriteText(chars.close, g_font_fluent_12.str, RGB(255, 50, 50), 0, 0, button_size, button_size, 2, 2);
 	images.reset_hover.ReleaseGraphics();
 }
 
@@ -259,12 +259,15 @@ function scale(size) {
 }
 
 function smooth_font(name, size, bold) {
-	var font = {
+	var obj = {
 		Name : name,
 		Size : scale(size),
 		Weight : bold ? 700 : 400,
 	};
-	return JSON.stringify(font);
+	return {
+		obj : obj,
+		str : JSON.stringify(obj),
+	};
 }
 
 function get_font() {
@@ -287,13 +290,8 @@ function get_font() {
 	g_font_fluent_12 = smooth_font("Segoe Fluent Icons", 12);
 	g_font_fluent_20 = smooth_font("Segoe Fluent Icons", 20);
 
-	g_font_obj = JSON.parse(g_font);
-	g_font_fluent_20_obj = JSON.parse(g_font_fluent_20);
-	g_font_group1_obj = JSON.parse(g_font_group1);
-	g_font_group2_obj = JSON.parse(g_font_group2);
-
-	g_time_width = "00:00:00".calc_width(g_font_obj) + 20;
-	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_20_obj) + 4;
+	g_time_width = "00:00:00".calc_width(g_font.obj) + 20;
+	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_20.obj) + 4;
 
 	g_font_height = g_fsize + 4;
 }
@@ -382,17 +380,13 @@ var ppt = {
 var CACHE_FOLDER = fb.ProfilePath + "js_smooth_cache\\";
 utils.CreateFolder(CACHE_FOLDER);
 
-var g_font = "";
-var g_font_bold = "";
-var g_font_box = "";
-var g_font_group1 = "";
-var g_font_group2 = "";
-var g_font_fluent_12 = "";
-var g_font_fluent_20 = "";
-var g_font_obj = null;
-var g_font_fluent_20_obj = null;
-var g_font_group1_obj = null;
-var g_font_group2_obj = null;
+var g_font;
+var g_font_bold;
+var g_font_box;
+var g_font_group1;
+var g_font_group2;
+var g_font_fluent_12;
+var g_font_fluent_20;
 var g_fsize = 16;
 
 var g_colour_text = 0;

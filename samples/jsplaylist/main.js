@@ -743,23 +743,8 @@ function on_paint(gr) {
 			DrawWallpaper(gr);
 		}
 
-		// List
 		if (p.list) {
-			if (p.list.count > 0) {
-				// calculate columns metrics before drawing row contents!
-				p.headerBar.calculateColumns();
-
-				// scrollbar
-				if (properties.showscrollbar && p.scrollbar && p.list.totalRows > 0 && (p.list.totalRows > p.list.totalRowVisible)) {
-					p.scrollbar.visible = true;
-					p.scrollbar.draw(gr);
-				} else {
-					p.scrollbar.visible = false;
-				}
-
-				// draw rows of the playlist
-				p.list.draw(gr);
-			} else {
+			if (p.list.count == 0) {
 				if (plman.PlaylistCount > 0) {
 					var text_top = plman.GetPlaylistName(g_active_playlist);
 					var text_bot = "This playlist is empty";
@@ -768,9 +753,20 @@ function on_paint(gr) {
 					var text_bot = "Create a playlist to start!";
 				}
 				var y = Math.floor(wh / 2);
-				gr.WriteText(text_top, g_font_20_bold, g_colour_text, 0, y - g_z5 - height(g_font_20_bold_obj), ww, height(g_font_20_bold_obj), 2, 1, 1);
+				gr.WriteText(text_top, g_font_20_bold.str, g_colour_text, 0, y - g_z5 - height(g_font_20_bold.obj), ww, height(g_font_20_bold.obj), 2, 1, 1);
 				gr.FillRectangle(40, Math.floor(wh / 2), ww - 80, 1, g_colour_text & 0x40ffffff);
-				gr.WriteText(text_bot, g_font_12_bold, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold_obj), 2, 0, 1);
+				gr.WriteText(text_bot, g_font_12_bold.str, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold.obj), 2, 0, 1);
+			} else {
+				p.headerBar.calculateColumns();
+
+				if (properties.showscrollbar && p.scrollbar && p.list.totalRows > 0 && (p.list.totalRows > p.list.totalRowVisible)) {
+					p.scrollbar.visible = true;
+					p.scrollbar.draw(gr);
+				} else {
+					p.scrollbar.visible = false;
+				}
+
+				p.list.draw(gr);
 			}
 		}
 
@@ -819,7 +815,6 @@ function on_paint(gr) {
 			p.headerBar && p.headerBar.drawHiddenPanel(gr);
 		}
 
-		// PlaylistManager
 		p.playlistManager && p.playlistManager.draw(gr);
 	}
 }
@@ -1255,12 +1250,15 @@ function scale(size) {
 }
 
 function js_font(name, size, bold) {
-	var font = {
+	var obj = {
 		Name : name,
 		Size : scale(size),
 		Weight : bold ? 700 : 400,
 	};
-	return JSON.stringify(font);
+	return {
+		obj : obj,
+		str : JSON.stringify(obj),
+	};
 }
 
 function get_font() {
@@ -1303,15 +1301,8 @@ function get_font() {
 	g_font_group1 = js_font(name, 16);
 	g_font_group2 = js_font(name, 14);
 
-	g_font_12_obj = JSON.parse(g_font_12);
-	g_font_12_bold_obj = JSON.parse(g_font_12_bold);
-	g_font_20_bold_obj = JSON.parse(g_font_20_bold);
-	g_font_group1_obj = JSON.parse(g_font_group1);
-	g_font_group2_obj = JSON.parse(g_font_group2);
-	g_font_fluent_20_obj = JSON.parse(g_font_fluent_20);
-
-	columns.rating_w = (chars.rating_off.calc_width(g_font_fluent_20_obj) * 5) + 4;
-	g_queue_width = "0000".calc_width(g_font_20_bold_obj);
+	columns.rating_w = (chars.rating_off.calc_width(g_font_fluent_20.obj) * 5) + 4;
+	g_queue_width = "0000".calc_width(g_font_20_bold.obj);
 }
 
 function get_colours() {

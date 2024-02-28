@@ -114,7 +114,7 @@ function on_paint(gr) {
 		if (brw.inputbox.text.length > 0) {
 			brw.reset_bt.draw(gr, 0, 0);
 		} else {
-			gr.WriteText(chars.search, g_font_fluent_20, g_colour_text, 0, -2, size, size, 2, 2);
+			gr.WriteText(chars.search, g_font_fluent_20.str, g_colour_text, 0, -2, size, size, 2, 2);
 		}
 
 		brw.inputbox.draw(gr, size + 4, 2);
@@ -350,19 +350,19 @@ function oBrowser() {
 				}
 
 				if (ppt.tagMode == 0) { // album
-					gr.WriteText(group.album, g_font_bold, normal_text, ax + text_left, ay + (fh * 0.2), text_width, fh, 0, 0, 1, 1);
+					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + text_left, ay + (fh * 0.2), text_width, fh, 0, 0, 1, 1);
 
 					if (ppt.panelMode == 0) { // no art
-						gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 2, 0, 0, 1, 1);
+						gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 2, 0, 0, 1, 1);
 					} else {
 						if (str.length) str += "\r\n";
 						str += group.count + " track";
 						if (group.count > 1) str += "s";
 						str += ". " + group.duration + ".";
-						gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);
+						gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);
 					}
 				} else { // artist/album artist, 1 line
-					gr.WriteText(group.artist, g_font, normal_text, ax + text_left, ay, text_width, ah, 0, 2, 1, 1);
+					gr.WriteText(group.artist, g_font.str, normal_text, ax + text_left, ay, text_width, ah, 0, 2, 1, 1);
 				}
 				break;
 			case 2:
@@ -388,10 +388,10 @@ function oBrowser() {
 				}
 
 				if (ppt.tagMode == 0) {
-					gr.WriteText(group.album, g_font_bold, normal_text, ax + text_left, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
-					gr.WriteText(str, g_font, fader_txt, ax + text_left, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
+					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + text_left, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
+					gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
 				} else {
-					gr.WriteText(group.artist, g_font_bold, normal_text, ax + text_left, ay + cover_size + text_left, cover_size, fh * 3, 2, 2);
+					gr.WriteText(group.artist, g_font_bold.str, normal_text, ax + text_left, ay + cover_size + text_left, cover_size, fh * 3, 2, 2);
 				}
 
 				break;
@@ -404,10 +404,10 @@ function oBrowser() {
 					var hh = h / 2;
 					gr.FillRectangle(ax, ay + ah - h, aw, h, RGBA(0, 0, 0, 230));
 					if (ppt.tagMode == 0) {
-						gr.WriteText(group.album, g_font_bold, RGB(240, 240, 240), ax + 8, ay + ah - h + 2, aw - 16, hh, 0, 2, 1, 1);
-						gr.WriteText(group.artist, g_font, RGB(230, 230, 230), ax + 8, ay + ah - hh - 2, aw - 16, hh, 0, 2, 1, 1);
+						gr.WriteText(group.album, g_font_bold.str, RGB(240, 240, 240), ax + 8, ay + ah - h + 2, aw - 16, hh, 0, 2, 1, 1);
+						gr.WriteText(group.artist, g_font.str, RGB(230, 230, 230), ax + 8, ay + ah - hh - 2, aw - 16, hh, 0, 2, 1, 1);
 					} else {
-						gr.WriteText(group.artist, g_font, RGB(230, 230, 230), ax + 8, ay + ah - h, aw - 16, h, 0, 2, 1, 1);
+						gr.WriteText(group.artist, g_font.str, RGB(230, 230, 230), ax + 8, ay + ah - h, aw - 16, h, 0, 2, 1, 1);
 					}
 				}
 				if (i == this.selectedIndex) {

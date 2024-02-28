@@ -92,15 +92,15 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 
 					if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist && this.track_index == p.list.nowplaying.PlaylistItemIndex) {
 						if (fb.IsPaused) {
-							gr.WriteText(chars.pause, g_font_fluent_20, txt_color, cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
+							gr.WriteText(chars.pause, g_font_fluent_20.str, txt_color, cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
 						} else {
-							gr.WriteText(chars.play, g_font_fluent_20, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
+							gr.WriteText(chars.play, g_font_fluent_20.str, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
 						}
 					} else {
 						var queue_index = tf_arr[j];
 						if (queue_index.length) {
 							DrawRectangle(gr, cx, this.y + 2, g_queue_width, cRow.playlist_h - 5, txt_color);
-							gr.WriteText(queue_index, g_font_20_bold, txt_color, cx + 1, this.y + 1, g_queue_width, cRow.playlist_h - 4, 2, 2, 1, 1);
+							gr.WriteText(queue_index, g_font_20_bold.str, txt_color, cx + 1, this.y + 1, g_queue_width, cRow.playlist_h - 4, 2, 2, 1, 1);
 						}
 					}
 					break;
@@ -125,7 +125,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 						this.mood = StripCode(tf_arr[j], chars.etx) || 0;
 					}
 
-					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_fluent_20, mood_colour, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
+					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_fluent_20.str, mood_colour, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
 					break;
 				case "Rating":
 					cw = p.headerBar.columns[j].w - g_z5;
@@ -143,8 +143,8 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 					}
 
 					this.rating = StripCode(tf_arr[j], chars.etx) || 0;
-					gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_20, rating_colour & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
-					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_fluent_20, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_20.str, rating_colour & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_fluent_20.str, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
 					break;
 				default:
 					this.drawText(gr, tf_arr[j], txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);
@@ -158,7 +158,7 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 	this.drawText = function (gr, text, colour, x, y, w, h, align) {
 		if (!text || text == "null") return;
 		if (g_dynamic) text = StripCode(text, chars.etx);
-		DrawColouredText(gr, text, g_font_12, colour, x, y, w, h, align, 2, 1, 1);
+		DrawColouredText(gr, text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
 	}
 
 	this.draw = function (gr, x, y, w, h) {
@@ -208,28 +208,28 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 
 			var text_left_padding = g_z2;
 			var scrollbar_gap = (p.scrollbar.visible && (p.list.totalRows > p.list.totalRowVisible)) ? 0 : cScrollBar.width;
-			var lg1_right_field_w = this.r1.calc_width(g_font_group1_obj) + cList.borderWidth * 2;
-			var lg2_right_field_w = this.r2.calc_width(g_font_group2_obj) + cList.borderWidth * 2;
+			var lg1_right_field_w = this.r1.calc_width(g_font_group1.obj) + cList.borderWidth * 2;
+			var lg2_right_field_w = this.r2.calc_width(g_font_group2.obj) + cList.borderWidth * 2;
 
 			var group_text_colour = g_colour_highlight;
 			var group_text_colour_fader = setAlpha(group_text_colour, 180);
 
 			if (this.heightInRow == 1) {
-				gr.WriteText(this.l1 + " / " + this.l2, g_font_group1, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) - 1, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, this.h, 0, 2, 1, 1);
+				gr.WriteText(this.l1 + " / " + this.l2, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) - 1, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, this.h, 0, 2, 1, 1);
 				gr.WriteText(this.r1, g_font_group1, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) - 1, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, this.h, 1, 2, 1, 1);
 				gr.FillRectangle(this.x + cover_size + text_left_padding, Math.round(this.y + cRow.playlist_h * 1 - groupDelta - 5), this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, 1, group_text_colour);
 			} else {
-				gr.WriteText(this.l1, g_font_group1, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 2, 1, 1);
-				gr.WriteText(this.l2, g_font_group2, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg2_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 2, 1, 1);
-				gr.WriteText(this.r1, g_font_group1, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, cRow.playlist_h, 1, 2, 1, 1);
-				gr.WriteText(this.r2, g_font_group2, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 5 + 1 - scrollbar_gap, cRow.playlist_h, 1, 2, 1, 1);
+				gr.WriteText(this.l1, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 2, 1, 1);
+				gr.WriteText(this.l2, g_font_group2.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg2_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 2, 1, 1);
+				gr.WriteText(this.r1, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, cRow.playlist_h, 1, 2, 1, 1);
+				gr.WriteText(this.r2, g_font_group2.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 5 + 1 - scrollbar_gap, cRow.playlist_h, 1, 2, 1, 1);
 				gr.FillRectangle(this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h * 2 - groupDelta) - 8, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, 1, group_text_colour);
 
 				if (this.obj && this.heightInRow > 2) {
 					var lg3_left_field = this.obj.count + (this.obj.count > 1 ? " tracks. " : " track. ") + this.obj.total_group_duration_txt + ".";
 					var lg3_right_field = (this.group_index + 1) + " / " + p.list.groups.length;
-					var lg3_right_field_w = lg3_right_field.calc_width(g_font_12_obj) + cList.borderWidth * 2;
-					gr.WriteText(lg3_left_field, g_font_12, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h * 2 - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg3_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 0, 1);
+					var lg3_right_field_w = lg3_right_field.calc_width(g_font_12.obj) + cList.borderWidth * 2;
+					gr.WriteText(lg3_left_field, g_font_12.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h * 2 - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg3_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 0, 1);
 				}
 			}
 

@@ -702,15 +702,15 @@ function oBrowser() {
 
 					var text_width = aw - image_height - 30;
 					if (ppt.groupHeaderRowsNumber == 1) {
-						gr.WriteText(group.bottom_left + " - " + group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1_obj), ah, 0, 2, 1, 1);
-						gr.WriteText(group.top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
+						gr.WriteText(group.bottom_left + " - " + group.top_left, g_font_group1.str, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1.obj), ah, 0, 2, 1, 1);
+						gr.WriteText(group.top_right, g_font_group1.str, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
 					} else {
-						gr.WriteText(group.top_left, g_font_group1, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1_obj), ah, 0, 2, 1, 1);
-						gr.WriteText(group.top_right, g_font_group1, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
+						gr.WriteText(group.top_left, g_font_group1.str, group_text_colour, ax + image_height + 5, ay, text_width - group.top_right.calc_width(g_font_group1.obj), ah, 0, 2, 1, 1);
+						gr.WriteText(group.top_right, g_font_group1.str, group_text_colour, 0, ay, aw - 5, ah, 1, 2, 1, 1);
 
 						var bottom_y = ay + (g_font_height * 1.5);
-						gr.WriteText(group.bottom_left, g_font_group2, group_text_colour_fader, ax + image_height + 5, bottom_y, text_width - group.bottom_right.calc_width(g_font_group2_obj), ah, 0, 2, 1, 1);
-						gr.WriteText(group.bottom_right, g_font_group2, group_text_colour_fader, 0, bottom_y, aw - 5, ah, 1, 2, 1, 1);
+						gr.WriteText(group.bottom_left, g_font_group2.str, group_text_colour_fader, ax + image_height + 5, bottom_y, text_width - group.bottom_right.calc_width(g_font_group2.obj), ah, 0, 2, 1, 1);
+						gr.WriteText(group.bottom_right, g_font_group2.str, group_text_colour_fader, 0, bottom_y, aw - 5, ah, 1, 2, 1, 1);
 					}
 					break;
 				case 0:
@@ -734,8 +734,8 @@ function oBrowser() {
 					if (ppt.showRating) {
 						rw = g_rating_width;
 						this.rating_x = aw - rw - g_time_width;
-						gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_20, setAlpha(normal_text, 98), this.rating_x, ay, rw, ah, 0, 2);
-						gr.WriteText(chars.rating_on.repeat(tags.rating), g_font_fluent_20, normal_text, this.rating_x, ay, rw, ah, 0, 2);
+						gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_20.str, setAlpha(normal_text, 98), this.rating_x, ay, rw, ah, 0, 2);
+						gr.WriteText(chars.rating_on.repeat(tags.rating), g_font_fluent_20.str, normal_text, this.rating_x, ay, rw, ah, 0, 2);
 					}
 
 					var artist = tags.artist;
@@ -748,31 +748,31 @@ function oBrowser() {
 
 						this.nowplaying_y = ay;
 						if (fb.IsPaused) {
-							gr.WriteText(chars.pause, g_font_fluent_20, normal_text, ax, ay, ah, ah, 2, 2);
+							gr.WriteText(chars.pause, g_font_fluent_20.str, normal_text, ax, ay, ah, ah, 2, 2);
 						} else {
-							gr.WriteText(chars.play, g_font_fluent_20, g_seconds % 2 == 0 ? normal_text : setAlpha(normal_text, 128), ax, ay, ah, ah, 2, 2);
+							gr.WriteText(chars.play, g_font_fluent_20.str, g_seconds % 2 == 0 ? normal_text : setAlpha(normal_text, 128), ax, ay, ah, ah, 2, 2);
 						}
 					}
 
 					if (ppt.doubleRowText) {
 						if (isplaying) {
-							gr.WriteText(g_time, g_font, normal_text, ax, ay, aw - 5, ah / 2, 1, 2, 1, 1);
+							gr.WriteText(g_time, g_font.str, normal_text, ax, ay, aw - 5, ah / 2, 1, 2, 1, 1);
 						} else {
-							gr.WriteText(tags.tracknumber, g_font, normal_text, ax, ay, ah, ah / 2, 2, 2, 1, 1);
-							gr.WriteText(tags.length, g_font, normal_text, ax, ay, aw - 5, ah / 2, 1, 2, 1, 1);
+							gr.WriteText(tags.tracknumber, g_font.str, normal_text, ax, ay, ah, ah / 2, 2, 2, 1, 1);
+							gr.WriteText(tags.length, g_font.str, normal_text, ax, ay, aw - 5, ah / 2, 1, 2, 1, 1);
 						}
 
-						gr.WriteText(title, g_font, normal_text, ax + ah, ay, aw - ah - rw - g_time_width - 10, ah / 2, 0, 2, 1, 1);
-						gr.WriteText(artist, g_font, fader_txt, ax + ah, ay + (ah / 2) - 2, aw - ah - rw - g_time_width - 10, ah / 2, 0, 2, 1, 1);
+						gr.WriteText(title, g_font.str, normal_text, ax + ah, ay, aw - ah - rw - g_time_width - 10, ah / 2, 0, 2, 1, 1);
+						gr.WriteText(artist, g_font.str, fader_txt, ax + ah, ay + (ah / 2) - 2, aw - ah - rw - g_time_width - 10, ah / 2, 0, 2, 1, 1);
 					} else {
 						if (isplaying) {
-							gr.WriteText(g_time, g_font, normal_text, ax, ay, aw - 5, ah, 1, 2, 1, 1);
+							gr.WriteText(g_time, g_font.str, normal_text, ax, ay, aw - 5, ah, 1, 2, 1, 1);
 						} else {
-							gr.WriteText(tags.tracknumber, g_font, fader_txt, ax, ay, ah, ah, 2, 2, 1, 1);
-							gr.WriteText(tags.length, g_font, normal_text, ax, ay, aw - 5, ah, 1, 2, 1, 1);
+							gr.WriteText(tags.tracknumber, g_font.str, fader_txt, ax, ay, ah, ah, 2, 2, 1, 1);
+							gr.WriteText(tags.length, g_font.str, normal_text, ax, ay, aw - 5, ah, 1, 2, 1, 1);
 						}
 
-						gr.WriteText(ppt.showArtistAlways ? artist + " - " + title : title, g_font, normal_text, ax + ah, ay, aw - ah - rw - g_time_width - 10, ah, 0, 2, 1, 1);
+						gr.WriteText(ppt.showArtistAlways ? artist + " - " + title : title, g_font.str, normal_text, ax + ah, ay, aw - ah - rw - g_time_width - 10, ah, 0, 2, 1, 1);
 					}
 					break;
 				}

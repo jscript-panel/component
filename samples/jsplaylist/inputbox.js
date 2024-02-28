@@ -44,10 +44,10 @@ function oInputbox(w, h, default_text, empty_text, func) {
 
 		// adjust offset to always see the cursor
 		if (!this.drag && !this.select) {
-			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
+			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12.obj);
 			while (this.Cx >= this.w - this.right_margin) {
 				this.offset++;
-				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
+				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12.obj);
 			}
 		}
 		// draw selection
@@ -85,9 +85,9 @@ function oInputbox(w, h, default_text, empty_text, func) {
 
 		// draw text
 		if (this.text.length > 0) {
-			gr.WriteText(this.text.substr(this.offset), g_font_12, this.edit ? this.textcolor : blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
+			gr.WriteText(this.text.substr(this.offset), g_font_12.str, this.edit ? this.textcolor : blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
 		} else {
-			gr.WriteText(this.empty_text, g_font_12, blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
+			gr.WriteText(this.empty_text, g_font_12.str, blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
 		}
 		// draw cursor
 		if (this.edit && !this.select)
@@ -113,12 +113,12 @@ function oInputbox(w, h, default_text, empty_text, func) {
 	}
 
 	this.CalcText = function () {
-		this.TWidth = this.text.substr(this.offset).calc_width(g_font_12_obj);
+		this.TWidth = this.text.substr(this.offset).calc_width(g_font_12.obj);
 	}
 
 	this.GetCx = function (pos) {
 		if (pos >= this.offset) {
-			return this.text.substr(this.offset, pos - this.offset).calc_width(g_font_12_obj);
+			return this.text.substr(this.offset, pos - this.offset).calc_width(g_font_12.obj);
 		}
 		return 0;
 	}
@@ -127,7 +127,7 @@ function oInputbox(w, h, default_text, empty_text, func) {
 		var tx = x - this.x;
 		var pos = 0;
 		for (var i = this.offset; i < this.text.length; i++) {
-			pos += this.text.substr(i, 1).calc_width(g_font_12_obj);
+			pos += this.text.substr(i, 1).calc_width(g_font_12.obj);
 			if (pos >= tx + 3) {
 				break;
 			}
@@ -555,10 +555,10 @@ function oInputbox(w, h, default_text, empty_text, func) {
 							}
 						}
 
-						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
+						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12.obj);
 						while (this.Cx >= this.w - this.right_margin) {
 							this.offset++;
-							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12_obj);
+							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font_12.obj);
 						}
 
 						this.repaint();

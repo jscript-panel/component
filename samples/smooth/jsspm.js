@@ -396,18 +396,18 @@ function oBrowser() {
 
 				if (plman.IsPlaylistLocked(this.rows[i].idx))
 				{
-					gr.WriteText(chars.lock, g_font_fluent_20, normal_text, ax + scale(5), ay, ah, ah, 0, 2);
+					gr.WriteText(chars.lock, g_font_fluent_20.str, normal_text, ax + scale(5), ay, ah, ah, 0, 2);
 				}
 				else
 				{
-					gr.WriteText(chars.list, g_font_fluent_20, normal_text, ax + scale(7), ay, ah, ah, 0, 2);
+					gr.WriteText(chars.list, g_font_fluent_20.str, normal_text, ax + scale(7), ay, ah, ah, 0, 2);
 				}
 
 				if (this.inputboxID == i) {
 					this.inputbox.draw(gr, ah, ay + 5);
 				} else {
-					gr.WriteText(this.rows[i].name, g_font, normal_text, ah, ay, aw - (ah * 3), ah, 0, 2, 1, 1);
-					gr.WriteText(plman.GetPlaylistItemCount(this.rows[i].idx), g_font, normal_text, ah, ay, aw - ah - 5, ah, 1, 2, 1, 1);
+					gr.WriteText(this.rows[i].name, g_font.str, normal_text, ah, ay, aw - (ah * 3), ah, 0, 2, 1, 1);
+					gr.WriteText(plman.GetPlaylistItemCount(this.rows[i].idx), g_font.str, normal_text, ah, ay, aw - ah - 5, ah, 1, 2, 1, 1);
 				}
 			}
 		}

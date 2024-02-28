@@ -1426,7 +1426,7 @@ ppt.showArtistAlways = window.GetProperty("SMOOTH.SHOW.ARTIST.ALWAYS", true);
 ppt.showGroupHeaders = window.GetProperty("SMOOTH.SHOW.GROUP.HEADERS", true);
 ppt.showRating = window.GetProperty("SMOOTH.SHOW.RATING", true);
 
-ppt.defaultRowHeight = window.GetProperty("SMOOTH.ROW.HEIGHT", 35);
+ppt.defaultRowHeight = 32;
 ppt.rowHeight = ppt.defaultRowHeight;
 
 if (ppt.groupHeaderRowsNumber < 1) ppt.groupHeaderRowsNumber = 1;

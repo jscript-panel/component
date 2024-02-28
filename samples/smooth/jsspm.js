@@ -406,7 +406,7 @@ function oBrowser() {
 				if (this.inputboxID == i) {
 					this.inputbox.draw(gr, ah, ay + 5);
 				} else {
-					gr.WriteText(this.rows[i].name, g_font.str, normal_text, ah, ay, aw - (ah * 3), ah, 0, 2, 1, 1);
+					gr.WriteText(this.rows[i].name, g_font.str, normal_text, ah * 1.2, ay, aw - (ah * 2.5), ah, 0, 2, 1, 1);
 					gr.WriteText(plman.GetPlaylistItemCount(this.rows[i].idx), g_font.str, normal_text, ah, ay, aw - ah - 5, ah, 1, 2, 1, 1);
 				}
 			}
@@ -915,7 +915,7 @@ function renamePlaylist() {
 	brw.inputboxID = -1;
 }
 
-ppt.defaultRowHeight = window.GetProperty("SMOOTH.ROW.HEIGHT", 35);
+ppt.defaultRowHeight = 32;
 ppt.rowHeight = ppt.defaultRowHeight;
 ppt.autoplaylist_sort_pattern = "%album artist% | $if(%album%,%date%,9999) | %album% | %discnumber% | %tracknumber% | %title%";
 

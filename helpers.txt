@@ -793,10 +793,6 @@ var colours = {
 	YellowGreen : 0xFF9ACD32,
 };
 
-Array.prototype.empty = function () {
-	return this.length == 0;
-}
-
 String.prototype.calc_width = function (font_obj) {
 	if (this.empty()) return 0;
 	return utils.CalcTextWidth(this, font_obj.Name, font_obj.Size, font_obj.Weight || 400);

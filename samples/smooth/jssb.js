@@ -258,13 +258,13 @@ function oBrowser() {
 	}
 
 	this.activateItem = function (index) {
-		if (this.groups.empty())
+		if (this.groups.length == 0)
 			return;
 		this.selectedIndex = index;
 	}
 
 	this.sendItemsToPlaylist = function (index) {
-		if (this.groups.empty())
+		if (this.groups.length == 0)
 			return;
 
 		var p = plman.FindOrCreatePlaylist(ppt.sendto_playlist, true);

@@ -179,7 +179,7 @@ function _thumbs() {
 
 	this.image_containsxXY = function (x, y) {
 		switch (true) {
-		case this.images.empty():
+		case this.images.length == 0:
 		case this.properties.mode.value == 0 && !this.overlay: // grid
 		case this.properties.mode.value != 0 && this.containsXY(x, y): // not grid
 			return false;
@@ -311,7 +311,7 @@ function _thumbs() {
 		var offset_px = this.offset * this.properties.px.value;
 
 		switch (true) {
-		case this.images.empty():
+		case this.images.length == 0:
 			this.image_xywh = [];
 			break;
 		case this.properties.mode.value == 5: // off
@@ -420,7 +420,7 @@ function _thumbs() {
 		panel.s14.AppendTo(panel.m, MF_STRING, 'Main image maximum size');
 		panel.m.AppendMenuSeparator();
 
-		if (panel.text_objects.empty() && panel.list_objects.empty()) {
+		if (panel.text_objects.length == 0 && panel.list_objects.length == 0) {
 			this.modes.forEach(function (item, i) {
 				panel.s11.AppendMenuItem(MF_STRING, i + 1050, _.capitalize(item));
 			});
@@ -460,7 +460,7 @@ function _thumbs() {
 				panel.m.AppendMenuSeparator();
 			}
 			panel.m.AppendMenuItem(MF_STRING, 1530, 'Open image');
-			panel.m.AppendMenuItem(MF_STRING, 1531, 'Delete image');
+			panel.m.AppendMenuItem(EnableMenuIf(this.get_count() > 0), 1531, 'Delete image');
 			panel.m.AppendMenuSeparator();
 			panel.s13.AppendMenuItem(MF_STRING, 1540, 'Opens image in external viewer');
 			panel.s13.AppendMenuItem(MF_STRING, 1541, 'Opens image using fb2k viewer');
@@ -511,9 +511,7 @@ function _thumbs() {
 		case 1054:
 		case 1055:
 			this.properties.mode.value = idx - 1050;
-			if (this.properties.mode.value != 5 && this.thumbs.empty()) {
-				this.create_thumbs();
-			}
+			this.create_thumbs();
 			this.size(true);
 			window.Repaint();
 			break;
@@ -679,7 +677,7 @@ function _thumbs() {
 			}
 		}, this);
 
-		if (this.images.empty() && this.properties.source.value == 1) {
+		if (this.images.length == 0 && this.properties.source.value == 1) {
 			var stub_img = fb.GetAlbumArtStub(4);
 			if (stub_img) {
 				this.using_stub = true;

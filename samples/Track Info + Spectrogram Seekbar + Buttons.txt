@@ -24,7 +24,7 @@ var colours = {
 	title : RGB(255, 255, 255),
 	artist : RGB(240, 240, 240),
 	time : RGB(240, 240, 240),
-	sac : RGB(196, 30, 35),
+	contrast : RGB(196, 30, 35),
 };
 
 var tfo = {
@@ -42,6 +42,9 @@ var buttons = new _buttons();
 var img = null;
 var bs = _scale(24);
 
+var pbo_chars = [chars.repeat_all, chars.repeat_all, chars.repeat_one, chars.random, chars.shuffle, chars.album, chars.folder];
+var pbo_names = plman.GetPlaybackOrders().toArray();
+
 var normal_font = CreateFontString('Segoe UI', 12);
 var bold_font = CreateFontString('Segoe UI', 12, true);
 
@@ -52,7 +55,10 @@ else on_item_focus_change();
 
 buttons.update = function () {
 	var y = Math.round((panel.h - bs) / 2);
-	this.buttons.stop = new _button(panel.w - LM - (bs * 8), y, bs, bs, { char : chars.stop, colour:fb.StopAfterCurrent ? colours.sac : colours.buttons}, null, function () { fb.Stop(); }, 'Stop');
+	
+	var pbo = plman.PlaybackOrder;
+	this.buttons.pbo = new _button(panel.w - LM - (bs * 10), y - 2, bs + 4, bs + 4, { char : pbo_chars[pbo], colour: pbo == 0 ? setAlpha(colours.buttons, 60) : colours.contrast }, null, function () { pbo >= pbo_chars.length - 1 ? plman.PlaybackOrder = 0 : plman.PlaybackOrder++ }, "Playback Order: " + pbo_names[pbo]);
+	this.buttons.stop = new _button(panel.w - LM - (bs * 8), y, bs, bs, { char : chars.stop, colour:fb.StopAfterCurrent ? colours.contrast : colours.buttons}, null, function () { fb.Stop(); }, 'Stop');
 	this.buttons.previous = new _button(panel.w - LM - (bs * 7), y, bs, bs, { char : chars.prev, colour:colours.buttons }, null, function () { fb.Prev(); }, 'Previous');
 	this.buttons.play = new _button(panel.w - LM - (bs * 6), y, bs, bs, { char : !fb.IsPlaying || fb.IsPaused ? chars.play : chars.pause, colour:colours.buttons}, null, function () { fb.PlayOrPause(); }, !fb.IsPlaying || fb.IsPaused ? 'Play' : 'Pause');
 	this.buttons.next = new _button(panel.w - LM - (bs * 5), y, bs, bs, { char : chars.next, colour:colours.buttons }, null, function () { fb.Next(); }, 'Next');
@@ -170,6 +176,11 @@ function on_playback_new_track(metadb) {
 	seekbar.playback_new_track(metadb);
 }
 
+function on_playback_order_changed() {
+	buttons.update();
+	window.Repaint();
+}
+
 function on_playback_pause() {
 	buttons.update();
 	window.Repaint();
@@ -211,7 +222,7 @@ function on_size() {
 	panel.size();
 	seekbar.x = _scale(300);
 	seekbar.y = _scale(10);
-	seekbar.w = panel.w - seekbar.x - _scale(280);
+	seekbar.w = panel.w - seekbar.x - _scale(300);
 	seekbar.h = panel.h - (seekbar.y * 2);
 	buttons.update();
 }

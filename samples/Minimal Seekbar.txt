@@ -49,9 +49,11 @@ function on_paint(gr) {
 	gr.FillRoundedRectangle(seekbar.x, seekbar.y, seekbar.w, seekbar.h, _scale(2), _scale(2), colours.slider_background);
 
 	if (fb.PlaybackLength > 0) {
-		gr.WriteText(tfo.playback_time.Eval(), font, is_dark ? colours.light : colours.dark, 0, 0, seekbar.x - _scale(6), window.Height - 3, 1, 2); 
-		gr.FillEllipse(seekbar.x + _scale(3) + seekbar.pos(), seekbar.y + _scale(3), _scale(6), _scale(6), colours.slider_contrast);
-		gr.WriteText(tfo.length.Eval(), font, is_dark ? colours.light : colours.dark, window.Width - seekbar.x + _scale(6), 0, seekbar.x - _scale(6), window.Height - 3, 0, 2); 
+		gr.FillEllipse(seekbar.x + seekbar.pos(), seekbar.y + _scale(3), _scale(6), _scale(6), colours.slider_contrast);
+
+		var time_width = seekbar.x - _scale(12);
+		gr.WriteText(tfo.playback_time.Eval(), font, is_dark ? colours.light : colours.dark, 0, 0, time_width, window.Height - 3, 1, 2); 
+		gr.WriteText(tfo.length.Eval(), font, is_dark ? colours.light : colours.dark, window.Width - seekbar.x, 0, time_width, window.Height - 3, 0, 2); 
 	}
 }
 
@@ -64,8 +66,8 @@ function on_playback_stop() {
 }
 
 function on_size() {
-	seekbar.h  = _scale(6);
 	seekbar.x = _scale(60);
 	seekbar.y = (window.Height / 2) - _scale(3);
-	seekbar.w = window.Width - (seekbar.x * 2);
+	seekbar.w = window.Width - (seekbar.x * 2) - _scale(12);
+	seekbar.h  = _scale(6);
 }

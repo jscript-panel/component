@@ -97,7 +97,7 @@ function _text_display(x, y, w, h) {
 			this.properties.per_second.toggle();
 			break;
 		case 1202:
-			utils.Run('https://jscript-panel.github.io/docs/font-rgb/');
+			utils.Run('https://jscript-panel.github.io/docs/guides/font-rgb/');
 			break;
 		case 1204:
 		case 1205:

@@ -1,6 +1,6 @@
 window.SetProperty('2K3.ARTREADER.ID', 0);
 
-function _text_display(x, y, w, h) {
+function _text_display(x, y, w, h, buttons) {
 	this.clear_layout = function () {
 		if (this.text_layout) {
 			this.text_layout.Dispose();
@@ -54,15 +54,19 @@ function _text_display(x, y, w, h) {
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(MF_STRING, 1202, 'Custom colours and fonts explained');
 		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(MF_GRAYED, 1203, 'Layout');
-		panel.m.AppendMenuItem(MF_STRING, 1204, 'Text only');
-		panel.m.AppendMenuItem(MF_STRING, 1205, 'Album Art top, Text bottom');
-		panel.m.AppendMenuItem(MF_STRING, 1206, 'Album Art left, Text right');
-		panel.m.CheckMenuRadioItem(1204, 1206, this.properties.layout.value + 1204);
-		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
-		panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
-		panel.m.AppendMenuSeparator();
+
+		if (!this.buttons) {
+			panel.m.AppendMenuItem(MF_GRAYED, 1203, 'Layout');
+			panel.m.AppendMenuItem(MF_STRING, 1204, 'Text only');
+			panel.m.AppendMenuItem(MF_STRING, 1205, 'Album Art top, Text bottom');
+			panel.m.AppendMenuItem(MF_STRING, 1206, 'Album Art left, Text right');
+			panel.m.CheckMenuRadioItem(1204, 1206, this.properties.layout.value + 1204);
+			panel.m.AppendMenuSeparator();
+			panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
+			panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
+			panel.m.AppendMenuSeparator();
+		}
+
 		if (this.properties.layout.value != 1) {
 			panel.s10.AppendMenuItem(MF_STRING, 1210, 'Left');
 			panel.s10.AppendMenuItem(MF_STRING, 1211, 'Right');
@@ -108,7 +112,10 @@ function _text_display(x, y, w, h) {
 		case 1207:
 			this.properties.albumart.toggle();
 			if (this.properties.albumart.enabled) {
+				panel.custom_background = false;
 				albumart.metadb_changed();
+			} else {
+				panel.custom_background = true;
 			}
 			this.refresh(true);
 			break;
@@ -202,12 +209,25 @@ function _text_display(x, y, w, h) {
 			this.x = margin;
 			this.w = panel.w - (margin * 2);
 			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
-			this.y = panel.h - this.text_height - (margin * 2);
-			this.h = this.text_height + (margin * 2);
+
+			if (this.buttons) {
+				this.y = panel.h - _scale(30) - this.text_height - (margin * 2);
+				this.h = this.text_height;
+			} else {
+				this.y = panel.h - this.text_height - (margin * 2);
+				this.h = this.text_height + (margin * 2);
+			}
+
 			albumart.x = margin;
 			albumart.y = margin;
 			albumart.w = panel.w - (margin * 2);
-			albumart.h = panel.h - this.h - margin;
+
+			if (this.buttons) {
+				albumart.h = panel.h - this.h - margin - _scale(60);
+			} else {
+				albumart.h = panel.h - this.h - margin;
+			}
+
 			break;
 		case 2: // album art left, text right
 			albumart.x = margin;
@@ -246,6 +266,7 @@ function _text_display(x, y, w, h) {
 	this.y = y;
 	this.w = w;
 	this.h = h;
+	this.buttons = buttons;
 	this.default_colour = 0;
 	this.colour_string = '';
 	this.text_layout = null;
@@ -256,6 +277,12 @@ function _text_display(x, y, w, h) {
 	this.offset = 0;
 	this.text = '';
 
+	if (this.buttons) {
+		window.SetProperty('2K3.TEXT.ALBUMART', true);
+		window.SetProperty('2K3.TEXT.ALBUMART.BLUR', true);
+		window.SetProperty('2K3.TEXT.LAYOUT', 1);
+	}
+
 	this.properties = {
 		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '$font(Segoe UI,24,700)\r\n[%title%$crlf()]\r\n$font(Segoe UI,18)\r\n[%artist%$crlf()]\r\n$font(Segoe UI,14)\r\n[%album% \'(\'%date%\')\'$crlf()]\r\n$font(Segoe UI,10)\r\n[%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype%]]'),
 		halign : new _p('2K3.TEXT.HALIGN', 2),
@@ -265,5 +292,9 @@ function _text_display(x, y, w, h) {
 		albumart_blur : new _p('2K3.TEXT.ALBUMART.BLUR', true),
 		layout : new _p('2K3.TEXT.LAYOUT', 0), // 0 text only, 1 album art top text bottom 2 album art left text right
 		margin : new _p('2K3.TEXT.MARGIN', 6),
+	}
+
+	if (this.properties.albumart.enabled) {
+		panel.custom_background = false;
 	}
 }

@@ -67,6 +67,12 @@ function on_metadb_changed(handles, fromhook) {
 	text.metadb_changed();
 }
 
+function on_mouse_lbtn_dblclk(x, y) {
+	if (albumart.img && albumart.containsXY(x, y)) {
+		panel.metadb.ShowAlbumArtViewer();
+	}
+}
+
 function on_mouse_lbtn_down(x, y) {
 	seekbar.lbtn_down(x, y);
 }

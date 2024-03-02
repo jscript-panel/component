@@ -368,7 +368,7 @@ var ppt = {
 	wallpaperblurred: window.GetProperty("SMOOTH.WALLPAPER.BLURRED", false),
 	wallpaperblur: window.GetProperty("SMOOTH.WALLPAPER.BLUR", 50),
 	wallpaperpath: window.GetProperty("SMOOTH.WALLPAPER.PATH", ""),
-	wallpaperopacity: 0.2,
+	wallpaperopacity: 0.1,
 	refreshRate: 40,
 	defaultHeaderBarHeight: 25,
 	headerBarHeight: 25,

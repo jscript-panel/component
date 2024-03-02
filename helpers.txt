@@ -366,6 +366,7 @@ var chars = {
 	volume : '\ue767',
 	repeat_all : '\ue8ee',
 	repeat_one : '\ue8ed',
+	repeat_off : '\uf5e7',
 	shuffle : '\ue8b1',
 	random : '\ue9ce',
 	album : '\ue93c',

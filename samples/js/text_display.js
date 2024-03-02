@@ -151,11 +151,7 @@ function _text_display(x, y, w, h, buttons) {
 
 		if (panel.metadb) {
 			var tmp = '';
-
-			if (!panel.tfo[this.properties.text_tf.value]) {
-				panel.tfo[this.properties.text_tf.value] = fb.TitleFormat(this.properties.text_tf.value);
-			}
-			var tfo = panel.tfo[this.properties.text_tf.value];
+			var tfo = panel.get_tfo(this.properties.text_tf.value);
 
 			if (panel.selection.value == 0 && fb.IsPlaying) {
 				var loc = plman.GetPlayingItemLocation();

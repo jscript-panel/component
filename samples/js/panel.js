@@ -30,6 +30,13 @@ function _panel(options) {
 		_.invoke(this.display_objects, 'refresh', true);
 	}
 
+	this.get_tfo = function (t) {
+		if (!this.tfo[t]) {
+			this.tfo[t] = fb.TitleFormat(t);
+		}
+		return this.tfo[t];
+	}
+
 	this.item_focus_change = function () {
 		if (!this.metadb_func) return;
 
@@ -143,13 +150,11 @@ function _panel(options) {
 		if (!this.metadb) {
 			return '';
 		}
-		if (!this.tfo[t]) {
-			this.tfo[t] = fb.TitleFormat(t);
-		}
+		var tfo = this.get_tfo(t);
 		if (this.selection.value == 0 && fb.IsPlaying) {
-			return this.tfo[t].Eval();
+			return tfo.Eval();
 		}
-		return this.tfo[t].EvalWithMetadb(this.metadb);
+		return tfo.EvalWithMetadb(this.metadb);
 	}
 
 	this.fonts = {};

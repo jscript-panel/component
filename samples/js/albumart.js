@@ -210,7 +210,7 @@ function _albumart(x, y, w, h) {
 	this.properties = {
 		aspect : new _p('2K3.ARTREADER.ASPECT', image.crop),
 		id : new _p('2K3.ARTREADER.ID', 0),
-		double_click_mode : new _p('2K3.ARTREADER.DOUBLE.CLICK.MODE', 0), // 0 external viewer 1 fb2k viewer 2 explorer
+		double_click_mode : new _p('2K3.ARTREADER.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer
 	};
 
 	if (this.is_review_panel) {

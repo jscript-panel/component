@@ -798,7 +798,7 @@ function _thumbs() {
 		auto_download : new _p('2K3.THUMBS.AUTO.DOWNLOAD', true),
 		circular : new _p('2K3.THUMBS.CIRCULAR', false),
 		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
-		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 0), // 0 external viewer 1 fb2k viewer 2 explorer
+		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer
 		max_size : new _p('2K3.THUMBS.MAX.SIZE', 1024), // improve performance
 	};
 

@@ -31,6 +31,7 @@ var tfo = {
 var font = CreateFontString("Segoe UI", 12);
 var buttons = new _buttons();
 var bs = _scale(24);
+var bottom_y = 0;
 
 buttons.update = function () {
 	var x = (panel.w - (bs * 7)) / 2
@@ -123,12 +124,14 @@ function on_paint(gr) {
 
 	gr.FillRoundedRectangle(seekbar.x, seekbar.y, seekbar.w, seekbar.h, _scale(2), _scale(2), colours.slider_background);
 
-	if (fb.PlaybackLength > 0) {
-		gr.FillEllipse(seekbar.x + seekbar.pos(), seekbar.y + _scale(3), _scale(6), _scale(6), colours.white);
-
+	if (fb.IsPlaying) {
 		var time_width = seekbar.x - _scale(12);
-		gr.WriteText(tfo.playback_time.Eval(), font, colours.white, 0, seekbar.y - _scale(4), time_width, _scale(12), 1, 2); 
-		gr.WriteText(tfo.length.Eval(), font, colours.white, panel.w - seekbar.x, seekbar.y - _scale(4), seekbar.x, _scale(12), 0, 2);
+		gr.WriteText(tfo.playback_time.Eval(), font, colours.white, 0, bottom_y, time_width, _scale(12), 1, 2); 
+		gr.WriteText(tfo.length.Eval(), font, colours.white, seekbar.x + seekbar.w + _scale(12), bottom_y, time_width, _scale(12), 0, 2);
+
+		if (fb.PlaybackLength > 0) {
+			gr.FillEllipse(seekbar.x + seekbar.pos(), seekbar.y + _scale(3), _scale(6), _scale(6), colours.white);
+		}
 	}
 }
 
@@ -172,6 +175,7 @@ function on_playback_stop(reason) {
 
 function on_playback_time() {
 	text.playback_time();
+	window.RepaintRect(0, bottom_y, panel.w, panel.h - bottom_y);
 }
 
 function on_playlist_items_added() {
@@ -205,8 +209,9 @@ function on_size() {
 
 	seekbar.x = _scale(60);
 	seekbar.y = window.Height - _scale(44);
-	seekbar.w = window.Width - (seekbar.x * 2) - _scale(12);
+	seekbar.w = window.Width - (seekbar.x * 2);
 	seekbar.h  = _scale(6);
 
+	bottom_y = seekbar.y - _scale(4);
 	buttons.update();
 }

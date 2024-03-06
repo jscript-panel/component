@@ -87,9 +87,6 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 						break;
 					};
 
-					if (!is_item_selected)
-						gr.FillRectangle(cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, txt_color & 0x08ffffff);
-
 					if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist && this.track_index == p.list.nowplaying.PlaylistItemIndex) {
 						if (fb.IsPaused) {
 							gr.WriteText(chars.pause, g_font_fluent_20.str, txt_color, cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);

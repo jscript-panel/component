@@ -208,8 +208,8 @@ function on_size() {
 	text.size();
 
 	seekbar.x = _scale(60);
-	seekbar.y = window.Height - _scale(44);
-	seekbar.w = window.Width - (seekbar.x * 2);
+	seekbar.y = panel.h - _scale(44);
+	seekbar.w = panel.w - (seekbar.x * 2);
 	seekbar.h  = _scale(6);
 
 	bottom_y = seekbar.y - _scale(4);

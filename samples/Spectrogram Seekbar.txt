@@ -74,6 +74,6 @@ function on_run_cmd_async_done(task_id) {
 
 function on_size() {
 	panel.size();
-	seekbar.w = window.Width;
-	seekbar.h = window.Height;
+	seekbar.w = panel.w;
+	seekbar.h = panel.h;
 }

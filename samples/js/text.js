@@ -146,7 +146,7 @@ function _text(mode, x, y, w, h) {
 			this.search_base = 'https://www.allmusic.com/search/albums/';
 			this.history = {};
 			this.headers = JSON.stringify({
-				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
+				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
 				'Referer' : 'https://allmusic.com',
 			});
 			break;
@@ -339,7 +339,7 @@ function _text(mode, x, y, w, h) {
 			this.properties.country_tf = new _p('2K3.TEXT.BIO.FLAG.TF', '$country_flag(%country%)');
 			this.properties.flag_map = new _p('2K3.TEXT.BIO.FLAG.MAP', 'korea, republic of|kr');
 			this.headers = JSON.stringify({
-				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0',
+				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
 				'Referer' : 'https://www.last.fm',
 			});
 			break;

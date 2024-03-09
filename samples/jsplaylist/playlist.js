@@ -1080,11 +1080,10 @@ function oList(object_name) {
 		sub.AppendMenuItem(MF_STRING, 8, "Mood");
 		sub.AppendMenuItem(MF_STRING, 9, "Rating");
 		sub.AppendTo(menu, MF_STRING, "Colours");
+		menu.AppendMenuSeparator();
 
 		var items = plman.GetPlaylistSelectedItems(g_active_playlist);
 		if (items.Count > 0) {
-			menu.AppendMenuSeparator();
-
 			if (items.Count == 1) {
 				menu.AppendMenuItem(MF_STRING, 20, "Play");
 				menu.SetDefault(20);
@@ -1101,6 +1100,8 @@ function oList(object_name) {
 			menu.AppendMenuSeparator();
 			context.InitContextPlaylist();
 			context.BuildMenu(menu, 1000);
+		} else {
+			menu.AppendMenuItem(can_paste_flag, 27, "Paste");
 		}
 
 		var idx = menu.TrackPopupMenu(x, y);
@@ -1180,17 +1181,12 @@ function oList(object_name) {
 			items.CopyToClipboard();
 			break;
 		case 26:
-			var count = plman.GetPlaylistItemCount(g_active_playlist);
-			var base = plman.GetPlaylistFocusItemIndex(g_active_playlist);
-			if (base < count) {
-				base++;
-			} else {
-				base = count;
-			}
-			var clipboard_contents = fb.GetClipboardContents();
-			plman.UndoBackup(g_active_playlist);
-			plman.InsertPlaylistItems(g_active_playlist, base, clipboard_contents);
-			clipboard_contents.Dispose();
+			var pos = plman.GetPlaylistFocusItemIndex(g_active_playlist) + 1;
+			this.pasteItems(pos);
+			break;
+		case 27:
+			var pos = plman.GetPlaylistItemCount(g_active_playlist);
+			this.pasteItems(pos);
 			break;
 		default:
 			context.ExecuteByID(idx - 1000);
@@ -1200,6 +1196,13 @@ function oList(object_name) {
 		items.Dispose();
 		context.Dispose();
 		return true;
+	}
+
+	this.pasteItems = function (pos) {
+		var clipboard_contents = fb.GetClipboardContents();
+		plman.UndoBackup(g_active_playlist);
+		plman.InsertPlaylistItems(g_active_playlist, pos, clipboard_contents);
+		clipboard_contents.Dispose();
 	}
 
 	this.objectName = object_name;

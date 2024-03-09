@@ -10,6 +10,7 @@ function on_drag_drop(action, x, y, mask) {
 	} else {
 		if (g_drag_drop_target_id > -1) {
 			if (playlist_can_add_items(g_drag_drop_target_id)) {
+				plman.UndoBackup(g_drag_drop_target_id);
 				action.Playlist = g_drag_drop_target_id;
 				action.Base = plman.GetPlaylistItemCount(g_drag_drop_target_id);
 				action.ToSelect = false;

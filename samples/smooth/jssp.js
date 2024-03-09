@@ -2,13 +2,14 @@ function on_drag_drop(action, x, y, mask) {
 	if (x > brw.scrollbar.x || y < brw.y) {
 		action.Effect = 0;
 	} else {
-		if (playlist_can_add_items(plman.ActivePlaylist)) {
-			plman.ClearPlaylistSelection(plman.ActivePlaylist);
-			action.Playlist = plman.ActivePlaylist;
-			action.Base = plman.GetPlaylistItemCount(plman.ActivePlaylist);
+		if (playlist_can_add_items(g_active_playlist)) {
+			plman.ClearPlaylistSelection(g_active_playlist);
+			plman.UndoBackup(g_active_playlist);
+			action.Playlist = g_active_playlist;
+			action.Base = plman.GetPlaylistItemCount(g_active_playlist);
 			action.ToSelect = true;
 			action.Effect = 1;
-		} else if (plman.PlaylistCount == 0 || plman.ActivePlaylist == -1) {
+		} else if (plman.PlaylistCount == 0 || g_active_playlist == -1) {
 			action.Playlist = plman.CreatePlaylist(plman.PlaylistCount, "Dropped Items");
 			action.Base = 0;
 			action.ToSelect = true;
@@ -23,7 +24,7 @@ function on_drag_over(action, x, y, mask) {
 	if (x > brw.scrollbar.x || y < brw.y) {
 		action.Effect = 0;
 	} else {
-		if (plman.PlaylistCount == 0 || plman.ActivePlaylist == -1 || playlist_can_add_items(plman.ActivePlaylist)) {
+		if (plman.PlaylistCount == 0 || g_active_playlist == -1 || playlist_can_add_items(g_active_playlist)) {
 			action.Effect = 1;
 		} else {
 			action.Effect = 0;
@@ -824,25 +825,6 @@ function oBrowser() {
 					var rowType = this.rows[this.activeRow].type;
 
 					switch (true) {
-					case rowType > 0: // ----------------> group header row
-						if (utils.IsKeyPressed(VK_SHIFT)) {
-							if (g_focus_id != playlistTrackId) {
-								if (this.SHIFT_start_id != null) {
-									this.selectAtoB(this.SHIFT_start_id, playlistTrackId);
-								} else {
-									this.selectAtoB(g_focus_id, playlistTrackId);
-								}
-							}
-						} else if (utils.IsKeyPressed(VK_CONTROL)) {
-							this.selectGroupTracks(this.rows[this.activeRow].albumId);
-							this.SHIFT_start_id = null;
-						} else {
-							plman.ClearPlaylistSelection(g_active_playlist);
-							this.selectGroupTracks(this.rows[this.activeRow].albumId);
-							this.SHIFT_start_id = null;
-						}
-						plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
-						break;
 					case rowType == 0: // ----------------> track row
 						if (utils.IsKeyPressed(VK_SHIFT)) {
 							if (g_focus_id != playlistTrackId) {
@@ -868,6 +850,25 @@ function oBrowser() {
 							}
 							this.SHIFT_start_id = null;
 						}
+						break;
+					default: // ----------------> group header row
+						if (utils.IsKeyPressed(VK_SHIFT)) {
+							if (g_focus_id != playlistTrackId) {
+								if (this.SHIFT_start_id != null) {
+									this.selectAtoB(this.SHIFT_start_id, playlistTrackId);
+								} else {
+									this.selectAtoB(g_focus_id, playlistTrackId);
+								}
+							}
+						} else if (utils.IsKeyPressed(VK_CONTROL)) {
+							this.selectGroupTracks(this.rows[this.activeRow].albumId);
+							this.SHIFT_start_id = null;
+						} else {
+							plman.ClearPlaylistSelection(g_active_playlist);
+							this.selectGroupTracks(this.rows[this.activeRow].albumId);
+							this.SHIFT_start_id = null;
+						}
+						plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
 						break;
 					}
 					this.repaint();
@@ -929,16 +930,6 @@ function oBrowser() {
 			if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
 				var rowType = this.rows[this.activeRow].type;
 				switch (true) {
-				case rowType > 0: // ----------------> group header row
-					var playlistTrackId = this.rows[this.activeRow].playlistTrackId;
-					if (!plman.IsPlaylistItemSelected(g_active_playlist, playlistTrackId)) {
-						plman.ClearPlaylistSelection(g_active_playlist);
-						this.selectGroupTracks(this.rows[this.activeRow].albumId);
-						plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
-						this.SHIFT_start_id = null;
-					}
-					this.context_menu(x, y, this.track_index, this.row_index);
-					break;
 				case rowType == 0: // ----------------> track row
 					var playlistTrackId = this.rows[this.activeRow].playlistTrackId;
 					if (!plman.IsPlaylistItemSelected(g_active_playlist, playlistTrackId)) {
@@ -946,12 +937,22 @@ function oBrowser() {
 						plman.SetPlaylistSelectionSingle(g_active_playlist, playlistTrackId, true);
 						plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
 					}
-					this.context_menu(x, y, playlistTrackId, this.activeRow);
+					this.context_menu(x, y, false);
+					break;
+				default: // ----------------> group header row
+					var playlistTrackId = this.rows[this.activeRow].playlistTrackId;
+					if (!plman.IsPlaylistItemSelected(g_active_playlist, playlistTrackId)) {
+						plman.ClearPlaylistSelection(g_active_playlist);
+						this.selectGroupTracks(this.rows[this.activeRow].albumId);
+						plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
+						this.SHIFT_start_id = null;
+					}
+					this.context_menu(x, y, true);
 					break;
 				}
 				this.repaint();
 			} else {
-				this.settings_context_menu(x, y);
+				this.settings_menu(x, y);
 			}
 			break;
 		}
@@ -998,12 +999,13 @@ function oBrowser() {
 
 	}, ppt.refreshRate);
 
-	this.context_menu = function (x, y, id, row_id) {
+	this.context_menu = function (x, y, is_group_header) {
 		var menu = window.CreatePopupMenu();
 		var add = window.CreatePopupMenu();
 		var context = fb.CreateContextMenuManager();
 
 		var remove_flag = EnableMenuIf(playlist_can_remove_items(g_active_playlist));
+		var paste_flag = EnableMenuIf(!is_group_header && playlist_can_add_items(g_active_playlist) && fb.CheckClipboardContents());
 
 		menu.AppendMenuItem(remove_flag, 1, "Crop");
 		menu.AppendMenuItem(remove_flag, 2, "Remove");
@@ -1011,7 +1013,7 @@ function oBrowser() {
 		menu.AppendMenuSeparator();
 		menu.AppendMenuItem(remove_flag, 4, "Cut");
 		menu.AppendMenuItem(MF_STRING, 5, "Copy");
-		menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(g_active_playlist) && fb.CheckClipboardContents()), 6, "Paste");
+		menu.AppendMenuItem(paste_flag, 6, "Paste");
 		menu.AppendMenuSeparator();
 
 		add.AppendMenuItem(MF_STRING, 10, "New Playlist");
@@ -1054,15 +1056,9 @@ function oBrowser() {
 			selected_items.CopyToClipboard();
 			break;
 		case idx == 6:
-			var base = getFocusId();
-			if (base == -1) {
-				base = plman.GetPlaylistItemCount(g_active_playlist);
-			} else {
-				base++;
-			}
 			var clipboard_contents = fb.GetClipboardContents();
 			plman.UndoBackup(g_active_playlist);
-			plman.InsertPlaylistItems(g_active_playlist, base, clipboard_contents);
+			plman.InsertPlaylistItems(g_active_playlist, getFocusId() + 1, clipboard_contents);
 			clipboard_contents.Dispose();
 			break;
 		case idx == 10:
@@ -1084,7 +1080,7 @@ function oBrowser() {
 		return true;
 	}
 
-	this.settings_context_menu = function (x, y) {
+	this.settings_menu = function (x, y) {
 		var menu = window.CreatePopupMenu();
 		var sub1 = window.CreatePopupMenu();
 		var sub2 = window.CreatePopupMenu();

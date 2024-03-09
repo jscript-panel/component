@@ -4,7 +4,7 @@
 // @import "%fb2k_component_path%helpers.txt"
 // ==/PREPROCESSOR==
 
-var fonts = utils.ListFonts().toArray();
+var installed_fonts = utils.ListFonts().toArray();
 var text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 var layout = null;
 var offset = 0;
@@ -30,7 +30,7 @@ function refresh() {
 			Length : len,
 			// The following are all optional and may be omitted.
 			// Segoe UI/16px will be used if Name/Size are not specified.
-			Name : fonts[Math.floor(Math.random() * fonts.length)],
+			Name : installed_fonts[Math.floor(Math.random() * installed_fonts.length)],
 			Size : 12 + Math.floor(Math.random() * 20),
 			Weight : Math.round(Math.random() * 800) + 100, // values between 100-900
 			Underline : Math.random() < 0.1,

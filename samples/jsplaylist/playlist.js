@@ -15,17 +15,16 @@ function oGroup(index, start, metadb, group_key) {
 	}
 }
 
-function oItem(row_index, type, handle, track_index, group_index, track_index_in_group, heightInRow, groupRowDelta, obj, empty_row_index) {
-	this.type = type; // 0 track, 1 group
+function oItem(row_index, type, metadb, track_index, group_index, track_index_in_group, heightInRow, groupRowDelta, obj) {
 	this.row_index = row_index;
-	this.metadb = handle;
+	this.type = type; // 0 track, 1 group
+	this.metadb = metadb;
 	this.track_index = track_index;
-	this.track_index_in_group = track_index_in_group;
 	this.group_index = group_index;
+	this.track_index_in_group = track_index_in_group;
 	this.heightInRow = heightInRow;
 	this.groupRowDelta = groupRowDelta;
 	this.obj = obj;
-	this.empty_row_index = empty_row_index;
 
 	if (this.type == 1 && this.metadb) {
 		var tfo = get_tfo(p.list.groupby[cGroup.pattern_idx].l1 + "^^" + p.list.groupby[cGroup.pattern_idx].r1 + "^^" + p.list.groupby[cGroup.pattern_idx].l2 + "^^" + p.list.groupby[cGroup.pattern_idx].r2);
@@ -167,12 +166,10 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 		this.h = h;
 
 		if (this.type == 0) { // track
-			if (this.empty_row_index == 0) {
-				if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist && this.track_index == p.list.nowplaying.PlaylistItemIndex) {
-					p.list.nowplaying_y = this.y;
-				}
-				this.drawRowContents(gr);
+			if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist && this.track_index == p.list.nowplaying.PlaylistItemIndex) {
+				p.list.nowplaying_y = this.y;
 			}
+			this.drawRowContents(gr);
 
 			if (!properties.showgroupheaders && this.track_index_in_group == 0) {
 				gr.FillRectangle(this.x, this.y, this.w, 2, g_colour_text & 0x10ffffff);
@@ -253,8 +250,8 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 		var groupDelta = this.groupRowDelta * cRow.playlist_h;
 		this.ishover = (x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h - groupDelta);
 
-		var rating_hover = (this.type == 0 && this.empty_row_index == 0 && x >= columns.rating_x && x <= columns.rating_x + columns.rating_w && y > this.y + 2 && y < this.y + this.h - 2);
-		var mood_hover = (this.type == 0 && this.empty_row_index == 0 && x >= columns.mood_x && x <= columns.mood_x + columns.mood_w - 3 && y > this.y + 2 && y < this.y + this.h - 2);
+		var rating_hover = (this.type == 0 && x >= columns.rating_x && x <= columns.rating_x + columns.rating_w && y > this.y + 2 && y < this.y + this.h - 2);
+		var mood_hover = (this.type == 0 && x >= columns.mood_x && x <= columns.mood_x + columns.mood_w - 3 && y > this.y + 2 && y < this.y + this.h - 2);
 
 		switch (event) {
 		case "lbtn_down":
@@ -336,7 +333,9 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 					p.list.setItems(false);
 					full_repaint();
 				} else { // track
-					if (!rating_hover && !mood_hover) plman.ExecutePlaylistDefaultAction(g_active_playlist, this.track_index);
+					if (!rating_hover && !mood_hover) {
+						plman.ExecutePlaylistDefaultAction(g_active_playlist, this.track_index);
+					}
 				}
 			}
 			break;
@@ -386,20 +385,18 @@ function oItem(row_index, type, handle, track_index, group_index, track_index_in
 			break;
 		case "rbtn_up":
 			if (this.ishover) {
-				if (this.type == 1) { // group header
-					if (!is_item_selected) {
+				if (is_item_selected) {
+					plman.SetPlaylistFocusItem(g_active_playlist, this.track_index);
+				} else {
+					if (this.type == 1) { // group header
 						plman.ClearPlaylistSelection(g_active_playlist);
 						plman.SetPlaylistFocusItem(g_active_playlist, this.track_index);
 						p.list.selectGroupTracks(this.group_index, true);
 						p.list.SHIFT_start_id = null;
-					}
-				} else { // track
-					if (!this.rating_hover && !this.mood_hover) {
-						if (!is_item_selected) {
-							plman.SetPlaylistFocusItem(g_active_playlist, this.track_index);
-							plman.ClearPlaylistSelection(g_active_playlist);
-							plman.SetPlaylistSelectionSingle(g_active_playlist, this.track_index, true);
-						}
+					} else { // track
+						plman.SetPlaylistFocusItem(g_active_playlist, this.track_index);
+						plman.ClearPlaylistSelection(g_active_playlist);
+						plman.SetPlaylistSelectionSingle(g_active_playlist, this.track_index, true);
 					}
 				}
 			}
@@ -737,13 +734,6 @@ function oList(object_name) {
 			} else { // row is a track
 				this.s_groupheader_line_id = -1;
 				this.s_track_id = (a - this.s_group_height) + this.groups[this.s_group_id].start;
-				var track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start;
-				if (track_index_in_group >= this.groups[this.s_group_id].count) {
-					this.s_delta = (track_index_in_group - this.groups[this.s_group_id].count) + 1;
-					this.s_track_id -= this.s_delta;
-				} else {
-					this.s_delta = 0;
-				}
 			}
 			return this.s_track_id;
 		}
@@ -787,12 +777,12 @@ function oList(object_name) {
 				while (i < this.offset + total_rows_to_draw) {
 					this.getTrackId(i);
 					if (this.s_groupheader_line_id >= 0) { // group header
-						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id], 0));
+						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id]));
 						i += this.s_group_height - this.s_groupheader_line_id;
 						row_index += this.s_group_height - this.s_groupheader_line_id;
 					} else { // track row
-						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start + this.s_delta;
-						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null, this.s_delta));
+						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start;
+						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null));
 						i++;
 						row_index++;
 					}
@@ -805,12 +795,12 @@ function oList(object_name) {
 				while (i < this.totalRows) {
 					this.getTrackId(i);
 					if (this.s_groupheader_line_id >= 0) { // group header
-						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id], 0));
+						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id]));
 						i += this.s_group_height - this.s_groupheader_line_id;
 						row_index += this.s_group_height - this.s_groupheader_line_id;
 					} else { // track row
-						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start + this.s_delta;
-						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null, this.s_delta));
+						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start;
+						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null));
 						i++;
 						row_index++;
 					}
@@ -833,12 +823,12 @@ function oList(object_name) {
 				while (i < this.offset + total_rows_to_draw) {
 					this.getTrackId(i);
 					if (this.s_groupheader_line_id >= 0) { // group header
-						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id], 0));
+						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id]));
 						i += this.s_group_height - this.s_groupheader_line_id;
 						row_index += this.s_group_height - this.s_groupheader_line_id;
 					} else { // track row
-						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start + this.s_delta;
-						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null, this.s_delta));
+						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start;
+						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null));
 						i++;
 						row_index++;
 					}
@@ -849,12 +839,12 @@ function oList(object_name) {
 				while (i < this.totalRows) {
 					this.getTrackId(i);
 					if (this.s_groupheader_line_id >= 0) { // group header
-						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id], 0));
+						this.items.push(new oItem(row_index, 1, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, 0, this.s_group_height, this.s_groupheader_line_id, this.groups[this.s_group_id]));
 						i += this.s_group_height - this.s_groupheader_line_id;
 						row_index += this.s_group_height - this.s_groupheader_line_id;
 					} else { // track row
-						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start + this.s_delta;
-						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null, this.s_delta));
+						track_index_in_group = this.s_track_id - this.groups[this.s_group_id].start;
+						this.items.push(new oItem(row_index, 0, this.handleList.GetItem(this.s_track_id), this.s_track_id, this.s_group_id, track_index_in_group, 1, 0, null));
 						i++;
 						row_index++;
 					}
@@ -876,12 +866,8 @@ function oList(object_name) {
 		} else {
 			var fin = this.items.length;
 			for (var i = 0; i < fin; i++) {
-				if (this.items[i].group_index >= 0) {
-					if ((this.items[i].type == 0 && this.items[i].empty_row_index == 0)) {
-						if (this.focusedTrackId == this.items[i].track_index && this.items[i].row_index < this.totalRowVisible) {
-							return true;
-						}
-					}
+				if (this.items[i].group_index >= 0 && this.items[i].type == 0 && this.focusedTrackId == this.items[i].track_index && this.items[i].row_index < this.totalRowVisible) {
+					return true;
 				}
 			}
 		}

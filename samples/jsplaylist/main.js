@@ -30,12 +30,13 @@ function on_drag_drop(action, x, y, mask) {
 			if (p.playlistManager.ishoverHeader) {
 				if (g_drag_drop_internal) {
 					var pl = plman.CreatePlaylist(plman.PlaylistCount, "Dropped Items")
-					plman.InsertPlaylistItems(pl, 0, plman.GetPlaylistSelectedItems(g_active_playlist));
+					plman.InsertPlaylistItems(pl, 0, plman.GetPlaylistSelectedItems(g_active_playlist), true);
+					plman.ActivePlaylist = pl;
 					action.Effect = 0;
 				} else {
 					action.Playlist = plman.CreatePlaylist(plman.PlaylistCount, "Dropped Items");
 					action.Base = 0;
-					action.ToSelect = false;
+					action.ToSelect = true;
 					action.Effect = 1;
 				}
 			} else {
@@ -62,6 +63,7 @@ function on_drag_drop(action, x, y, mask) {
 		}
 	} else {
 		var new_pos = g_drag_drop_bottom ? plman.GetPlaylistItemCount(g_active_playlist) : g_drag_drop_track_id;
+
 		if (g_drag_drop_internal) {
 			plman.UndoBackup(g_active_playlist);
 			plman.MovePlaylistSelectionV2(g_active_playlist, new_pos);
@@ -77,6 +79,7 @@ function on_drag_drop(action, x, y, mask) {
 			action.Effect = 0;
 		}
 	}
+
 	g_drag_drop_playlist_manager_hover = false;
 	g_drag_drop_playlist_id = -1;
 	g_drag_drop_track_id = -1;
@@ -531,20 +534,16 @@ function on_mouse_lbtn_dblclk(x, y, mask) {
 }
 
 function on_mouse_lbtn_down(x, y) {
-	// check settings
 	if (cSettings.visible) {
 		p.settings.on_mouse("lbtn_down", x, y);
 	} else {
-		// check list
 		p.list.check("lbtn_down", x, y);
 
-		// check scrollbar
 		if (!cPlaylistManager.visible) {
 			if (p.playlistManager.woffset == 0 && properties.showscrollbar && p.scrollbar && p.list.totalRows > 0 && (p.list.totalRows > p.list.totalRowVisible)) {
 				p.scrollbar.check("lbtn_down", x, y);
 			}
 
-			// check scrollbar scroll on click above or below the cursor
 			if (p.scrollbar.hover && !p.scrollbar.cursorDrag) {
 				var scrollstep = p.list.totalRowVisible;
 				if (y < p.scrollbar.cursorPos) {
@@ -587,12 +586,13 @@ function on_mouse_lbtn_down(x, y) {
 			p.playlistManager.check("lbtn_down", x, y);
 		}
 
-		// check topbar
-		if (cTopBar.visible)
+		if (cTopBar.visible) {
 			p.topBar.buttonCheck("lbtn_down", x, y);
-		// check headerbar
-		if (p.headerBar.visible)
+		}
+
+		if (p.headerBar.visible) {
 			p.headerBar.on_mouse("lbtn_down", x, y);
+		}
 	}
 }
 
@@ -600,7 +600,6 @@ function on_mouse_lbtn_up(x, y) {
 	if (cSettings.visible) {
 		p.settings.on_mouse("lbtn_up", x, y);
 	} else {
-		// scrollbar scrolls up and down RESET
 		p.list.buttonclicked = false;
 		if (cScrollBar.timeout) {
 			window.ClearTimeout(cScrollBar.timeout);
@@ -611,28 +610,24 @@ function on_mouse_lbtn_up(x, y) {
 			cScrollBar.interval = false;
 		}
 
-		// check list
 		p.list.check("lbtn_up", x, y);
 
-		// playlist manager (if visible)
 		if (p.playlistManager.woffset > 0 || cPlaylistManager.visible) {
 			p.playlistManager.check("lbtn_up", x, y);
 		}
 
-		// check scrollbar
 		if (properties.showscrollbar && p.scrollbar && p.list.totalRows > 0 && (p.list.totalRows > p.list.totalRowVisible)) {
 			p.scrollbar.check("lbtn_up", x, y);
 		}
 
-		// check topbar
-		if (cTopBar.visible)
+		if (cTopBar.visible) {
 			p.topBar.buttonCheck("lbtn_up", x, y);
+		}
 
-		// check headerbar
-		if (p.headerBar.visible)
+		if (p.headerBar.visible) {
 			p.headerBar.on_mouse("lbtn_up", x, y);
+		}
 
-		// repaint on mouse up to refresh covers just loaded
 		full_repaint();
 	}
 }
@@ -654,32 +649,27 @@ function on_mouse_move(x, y) {
 	if (x == mouse_x && y == mouse_y)
 		return;
 
-	// check settings
 	if (cSettings.visible) {
 		p.settings.on_mouse("move", x, y);
 	} else {
-		// playlist manager (if visible)
 		if (p.playlistManager.woffset > 0) {
 			if (!cPlaylistManager.blink_interval) {
 				p.playlistManager.check("move", x, y);
 			}
 		}
 
-		// check list
 		p.list.check("move", x, y);
 
-		// check scrollbar
 		if (!cPlaylistManager.visible) {
 			if (properties.showscrollbar && p.scrollbar && p.list.totalRows > 0 && (p.list.totalRows > p.list.totalRowVisible)) {
 				p.scrollbar.check("move", x, y);
 			}
 		}
 
-		// check headerbar
-		if (p.headerBar.visible)
+		if (p.headerBar.visible) {
 			p.headerBar.on_mouse("move", x, y);
+		}
 
-		// check toolbar for mouse icon dragging mode ***
 		if (cPlaylistManager.drag_moved) {
 			if (p.playlistManager.ishoverItem) {
 				window.SetCursor(IDC_HELP);
@@ -689,7 +679,6 @@ function on_mouse_move(x, y) {
 		}
 	}
 
-	// save coords
 	mouse_x = x;
 	mouse_y = y;
 }

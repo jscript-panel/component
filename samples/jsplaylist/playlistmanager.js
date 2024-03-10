@@ -260,11 +260,11 @@ function oPlaylistManager() {
 			if (this.inputboxID >= 0) {
 				this.inputbox.check("rbtn_up", x, y);
 			} else {
-				if (this.hoverId > -1 && this.inputboxID == -1) {
+				if (this.hoverId > -1) {
 					cPlaylistManager.rightClickedId = this.hoverId;
 					full_repaint();
 					this.contextMenu(x, y, this.playlists[this.hoverId].idx);
-				} else if (this.ishover && this.inputboxID == -1) {
+				} else if (this.ishover) {
 					this.contextMenu(x, y, -1);
 				}
 			}

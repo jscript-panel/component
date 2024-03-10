@@ -9,7 +9,7 @@ function on_drag_drop(action, x, y, mask) {
 			action.Base = plman.GetPlaylistItemCount(g_active_playlist);
 			action.ToSelect = true;
 			action.Effect = 1;
-		} else if (plman.PlaylistCount == 0 || g_active_playlist == -1) {
+		} else if (g_active_playlist == -1) {
 			action.Playlist = plman.CreatePlaylist(plman.PlaylistCount, "Dropped Items");
 			action.Base = 0;
 			action.ToSelect = true;
@@ -24,7 +24,7 @@ function on_drag_over(action, x, y, mask) {
 	if (x > brw.scrollbar.x || y < brw.y) {
 		action.Effect = 0;
 	} else {
-		if (plman.PlaylistCount == 0 || g_active_playlist == -1 || playlist_can_add_items(g_active_playlist)) {
+		if (g_active_playlist == -1 || playlist_can_add_items(g_active_playlist)) {
 			action.Effect = 1;
 		} else {
 			action.Effect = 0;

@@ -126,7 +126,7 @@ function on_paint(gr) {
 
 	if (fb.IsPlaying) {
 		var time_width = seekbar.x - _scale(12);
-		gr.WriteText(tfo.playback_time.Eval(), font, colours.white, 0, bottom_y, time_width, _scale(12), 1, 2); 
+		gr.WriteText(tfo.playback_time.Eval(), font, colours.white, 0, bottom_y, time_width, _scale(12), 1, 2);
 		gr.WriteText(tfo.length.Eval(), font, colours.white, seekbar.x + seekbar.w + _scale(12), bottom_y, time_width, _scale(12), 0, 2);
 
 		if (fb.PlaybackLength > 0) {

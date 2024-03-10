@@ -293,7 +293,7 @@ function _text(mode, x, y, w, h) {
 					var obj = _jsonParseFile(this.filename_extra);
 					_.forEach(obj, function (value, name) {
 						// test versions stored Flag, we ignore it now
-						if (name != 'Flag') { 
+						if (name != 'Flag') {
 							str += name.trim() + ': ' + value.trim() + this.CRLF;
 
 							if (this.flag.empty() && (name == 'Born In' || name == 'Founded In')) {

@@ -556,7 +556,7 @@ function oBrowser() {
 						this.context_menu(x, y, this.activeRow);
 					}
 				} else {
-					this.settings_context_menu(x, y);
+					this.settings_menu(x, y);
 				}
 			}
 			break;
@@ -636,7 +636,6 @@ function oBrowser() {
 
 	this.context_menu = function (x, y, id) {
 		var menu = window.CreatePopupMenu();
-		var newplaylist = window.CreatePopupMenu();
 		var autoplaylist = window.CreatePopupMenu();
 		var restore = window.CreatePopupMenu();
 		var items = window.CreatePopupMenu();
@@ -650,21 +649,25 @@ function oBrowser() {
 			autoplaylist.AppendMenuItem(MF_STRING, 200 + i, autoplaylists[i][0]);
 		}
 
-		menu.AppendMenuItem(MF_STRING, 100, "Load Playlist...");
-		newplaylist.AppendMenuItem(MF_STRING, 101, "New Playlist");
-		newplaylist.AppendMenuItem(MF_STRING, 102, "New Autoplaylist");
-		autoplaylist.AppendTo(newplaylist, MF_STRING, "Preset AutoPlaylists");
-		newplaylist.AppendTo(menu, MF_STRING, "Add");
+		menu.AppendMenuItem(MF_STRING, 100, "Create new playlist");
+		menu.AppendMenuItem(MF_STRING, 101, "Load playlist...");
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 102, "Create new autoplaylist");
+		autoplaylist.AppendTo(menu, MF_STRING, "Preset autoplaylists");
 
 		if (recycler_count > 0) {
+			menu.AppendMenuSeparator();
+
 			for (var i = 0; i < recycler_count; i++) {
 				history.push(i);
 				restore.AppendMenuItem(MF_STRING, 10 + i, plman.GetRecyclerName(i));
 			}
+
 			restore.AppendMenuSeparator();
 			restore.AppendMenuItem(MF_STRING, 99, "Clear history");
 			restore.AppendTo(menu, MF_STRING, "Restore");
 		}
+
 		menu.AppendMenuSeparator();
 		menu.AppendMenuItem(EnableMenuIf(count > 1), 1, "Sort playlists A-Z");
 		menu.AppendMenuItem(EnableMenuIf(count > 1), 2, "Sort playlists Z-A");
@@ -699,64 +702,64 @@ function oBrowser() {
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
 
-		switch (true) {
-		case idx == 0:
+		switch (idx) {
+		case 0:
 			break;
-		case idx == 1:
+		case 1:
 			plman.SortPlaylistsByName(1);
 			break;
-		case idx == 2:
+		case 2:
 			plman.SortPlaylistsByName(-1);
 			break;
-		case idx == 3:
+		case 3:
 			plman.ActivePlaylist = plman.DuplicatePlaylist(id, "Copy of " + plman.GetPlaylistName(id));
 			break;
-		case idx == 4:
+		case 4:
 			this.edit_playlist(id);
 			break;
-		case idx == 5:
+		case 5:
 			plman.RemovePlaylistSwitch(id);
 			break;
-		case idx == 6:
+		case 6:
 			plman.ShowAutoPlaylistUI(id);
 			break;
-		case idx == 7:
+		case 7:
 			plman.ActivePlaylist = plman.DuplicatePlaylist(id, plman.GetPlaylistName(id));
 			plman.RemovePlaylist(id);
 			break;
-		case idx == 8:
+		case 8:
 			plman.ShowPlaylistLockUI(id);
 			break;
-		case idx == 9:
+		case 9:
 			plman.RemovePlaylistLock(id);
 			break;
-		case idx >= 10 && idx <= 98:
-			plman.RecyclerRestore(idx - 10);
-			plman.ActivePlaylist = plman.PlaylistCount - 1;
-			break;
-		case idx == 99:
+		case 99:
 			plman.RecyclerPurge(history);
 			break;
-		case idx == 100:
-			fb.LoadPlaylist();
-			break;
-		case idx == 101:
+		case 100:
 			var p = plman.CreatePlaylist();
 			plman.ActivePlaylist = p;
 			this.edit_playlist(p);
 			break;
-		case idx == 102:
+		case 101:
+			fb.LoadPlaylist();
+			break;
+		case 102:
 			var p = plman.CreateAutoPlaylist(plman.PlaylistCount, "", "enter your query here");
 			plman.ActivePlaylist = p;
 			plman.ShowAutoPlaylistUI(p);
 			this.edit_playlist(p);
 			break;
-		case idx >= 200 && idx < 200 + autoplaylists.length:
-			var item = autoplaylists[idx - 200];
-			plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item[0], item[1], ppt.autoplaylist_sort_pattern);
-			break;
-		case idx >= 1000:
-			context.ExecuteByID(idx - 1000);
+		default:
+			if (idx >= 10 && idx <= 98) {
+				plman.RecyclerRestore(idx - 10);
+				plman.ActivePlaylist = plman.PlaylistCount - 1;
+			} else if (idx >= 200 && idx < 200 + autoplaylists.length) {
+				var item = autoplaylists[idx - 200];
+				plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item[0], item[1], ppt.autoplaylist_sort_pattern);
+			} else if (idx >= 1000) {
+				context.ExecuteByID(idx - 1000);
+			}
 			break;
 		}
 
@@ -765,7 +768,7 @@ function oBrowser() {
 		return true;
 	}
 
-	this.settings_context_menu = function (x, y) {
+	this.settings_menu = function (x, y) {
 		var menu = window.CreatePopupMenu();
 		var sub1 = window.CreatePopupMenu();
 		var sub2 = window.CreatePopupMenu();

@@ -422,13 +422,13 @@ function oPlaylistManager() {
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
 
-		switch (true) {
-		case idx == 0:
+		switch (idx) {
+		case 0:
 			break;
-		case idx == 1:
+		case 1:
 			fb.LoadPlaylist();
 			break;
-		case idx == 2:
+		case 2:
 			var pl = plman.CreatePlaylist();
 			plman.ActivePlaylist = pl;
 			this.inputbox = new oInputbox(this.w - this.border - this.scrollbarWidth - scale(40), cPlaylistManager.rowHeight - 10, plman.GetPlaylistName(pl), "", "renamePlaylist()");
@@ -436,7 +436,7 @@ function oPlaylistManager() {
 			if (cPlaylistManager.inputbox_timeout) window.ClearTimeout(cPlaylistManager.inputbox_timeout);
 			cPlaylistManager.inputbox_timeout = window.SetTimeout(inputboxPlaylistManager_activate, 20);
 			break;
-		case idx == 3:
+		case 3:
 			var pl = plman.CreateAutoPlaylist(plman.PlaylistCount, "", "");
 			plman.ActivePlaylist = pl;
 			plman.ShowAutoPlaylistUI(pl);
@@ -445,44 +445,45 @@ function oPlaylistManager() {
 			if (cPlaylistManager.inputbox_timeout) window.ClearTimeout(cPlaylistManager.inputbox_timeout);
 			cPlaylistManager.inputbox_timeout = window.SetTimeout(inputboxPlaylistManager_activate, 20);
 			break;
-		case idx == 4:
+		case 4:
 			plman.RecyclerPurge(history);
 			break;
-		case idx == 5:
+		case 5:
 			plman.ActivePlaylist = plman.DuplicatePlaylist(id, "Copy of " + plman.GetPlaylistName(id));
 			break;
-		case idx == 6:
+		case 6:
 			this.inputbox = new oInputbox(this.w - this.border - this.scrollbarWidth - scale(40), cPlaylistManager.rowHeight - 10, plman.GetPlaylistName(id), "", "renamePlaylist()");
 			this.inputboxID = id;
 			if (cPlaylistManager.inputbox_timeout) window.ClearTimeout(cPlaylistManager.inputbox_timeout);
 			cPlaylistManager.inputbox_timeout = window.SetTimeout(inputboxPlaylistManager_activate, 20);
 			break;
-		case idx == 7:
+		case 7:
 			plman.RemovePlaylistSwitch(id);
 			if (this.offset > 0 && this.offset >= this.playlists.length - Math.floor((this.h - (cPlaylistManager.showStatusBar ? cPlaylistManager.statusBarHeight : 0)) / cPlaylistManager.rowHeight)) {
 				this.offset--;
 				this.refresh();
 			}
 			break;
-		case idx == 8:
+		case 8:
 			plman.ShowAutoPlaylistUI(id);
 			break;
-		case idx == 9:
+		case 9:
 			plman.ActivePlaylist = plman.DuplicatePlaylist(id, plman.GetPlaylistName(id));
 			plman.RemovePlaylist(id);
 			break;
-		case idx == 10:
+		case 10:
 			plman.ShowPlaylistLockUI(id);
 			break;
-		case idx == 11:
+		case 11:
 			plman.RemovePlaylistLock(id);
 			break;
-		case idx < 99:
-			plman.RecyclerRestore(idx - 20);
-			plman.ActivePlaylist = plman.PlaylistCount - 1;
-			break;
-		case idx >= 1000:
-			context.ExecuteByID(idx - 1000);
+		default:
+			if (idx < 99) {
+				plman.RecyclerRestore(idx - 20);
+				plman.ActivePlaylist = plman.PlaylistCount - 1;
+			} else if (idx >= 1000) {
+				context.ExecuteByID(idx - 1000);
+			}
 			break;
 		}
 		context.Dispose();

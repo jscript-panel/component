@@ -1094,31 +1094,31 @@ function oBrowser() {
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
 
-		switch (true) {
-		case idx == 0:
+		switch (idx) {
+		case 0:
 			break;
-		case idx == 1:
+		case 1:
 			ppt.showHeaderBar = !ppt.showHeaderBar;
 			window.SetProperty("SMOOTH.SHOW.TOP.BAR", ppt.showHeaderBar);
 			get_metrics();
 			this.repaint();
 			break;
-		case idx == 2:
+		case 2:
 			ppt.enableDynamicColours = !ppt.enableDynamicColours;
 			window.SetProperty("SMOOTH.DYNAMIC.COLOURS.ENABLED", ppt.enableDynamicColours);
 			on_colours_changed();
 			break
-		case idx == 3:
+		case 3:
 			ppt.enableCustomColours = !ppt.enableCustomColours;
 			window.SetProperty("SMOOTH.CUSTOM.COLOURS.ENABLED", ppt.enableCustomColours);
 			on_colours_changed();
 			break;
-		case idx == 4:
+		case 4:
 			g_colour_text = utils.ColourPicker(g_colour_text);
 			window.SetProperty("SMOOTH.COLOUR.TEXT", g_colour_text);
 			on_colours_changed();
 			break;
-		case idx == 5:
+		case 5:
 			g_colour_background = utils.ColourPicker(g_colour_background);
 			window.SetProperty("SMOOTH.COLOUR.BACKGROUND.NORMAL", g_colour_background);
 			on_colours_changed();
@@ -1128,15 +1128,15 @@ function oBrowser() {
 			window.SetProperty("SMOOTH.COLOUR.BACKGROUND.SELECTED", g_colour_selection);
 			on_colours_changed();
 			break;
-		case idx == 10:
-		case idx == 11:
-		case idx == 12:
+		case 10:
+		case 11:
+		case 12:
 			ppt.wallpapermode = idx - 10;
 			window.SetProperty("SMOOTH.WALLPAPER.MODE2", ppt.wallpapermode);
 			setWallpaperImg();
 			this.repaint();
 			break;
-		case idx == 13:
+		case 13:
 			var tmp = utils.InputBox("Enter the full path to an image.", window.Name, ppt.wallpaperpath);
 			if (tmp != ppt.wallpaperpath) {
 				ppt.wallpaperpath = tmp;
@@ -1145,89 +1145,90 @@ function oBrowser() {
 				this.repaint();
 			}
 			break;
-		case idx == 14:
+		case 14:
 			ppt.wallpaperblurred = !ppt.wallpaperblurred;
 			window.SetProperty("SMOOTH.WALLPAPER.BLURRED", ppt.wallpaperblurred);
 			setWallpaperImg();
 			this.repaint();
 			break;
-		case idx == 20:
+		case 20:
 			ppt.showGroupHeaders = !ppt.showGroupHeaders;
 			window.SetProperty("SMOOTH.SHOW.GROUP.HEADERS", ppt.showGroupHeaders);
 			get_metrics();
 			this.repaint();
 			break;
-		case idx == 21:
-		case idx == 22:
-		case idx == 23:
+		case 21:
+		case 22:
+		case 23:
 			ppt.groupHeaderRowsNumber = idx - 20;
 			window.SetProperty("SMOOTH.HEADER.ROWS", ppt.groupHeaderRowsNumber);
 			this.populate();
 			break;
-		case idx == 24:
+		case 24:
 			ppt.autoFill = !ppt.autoFill;
 			window.SetProperty("SMOOTH.AUTO.FILL", ppt.autoFill);
 			images.clear();
 			this.populate();
 			break;
-		case idx == 30:
+		case 30:
 			ppt.doubleRowText = !ppt.doubleRowText;
 			window.SetProperty("SMOOTH.DOUBLE.ROW.TEXT", ppt.doubleRowText);
 			get_metrics();
 			this.repaint();
 			break;
-		case idx == 31:
+		case 31:
 			ppt.showArtistAlways = !ppt.showArtistAlways;
 			window.SetProperty("SMOOTH.SHOW.ARTIST.ALWAYS", ppt.showArtistAlways);
 			get_metrics();
 			this.repaint();
 			break;
-		case idx == 32:
+		case 32:
 			ppt.showRating = !ppt.showRating;
 			window.SetProperty("SMOOTH.SHOW.RATING", ppt.showRating);
 			get_metrics();
 			this.repaint();
 			break;
-		case idx == 50:
+		case 50:
 			window.ShowConfigure();
 			break;
-		case idx == 101:
+		case 101:
 			plman.UndoBackup(g_active_playlist);
 			plman.RemovePlaylistSelection(g_active_playlist, true);
 			break;
-		case idx == 102:
+		case 102:
 			plman.UndoBackup(g_active_playlist);
 			plman.RemovePlaylistSelection(g_active_playlist);
 			break;
-		case idx == 103:
+		case 103:
 			plman.InvertSelection(g_active_playlist);
 			break;
-		case idx == 104:
+		case 104:
 			selected_items.CopyToClipboard();
 			plman.UndoBackup(g_active_playlist);
 			plman.RemovePlaylistSelection(g_active_playlist);
 			break;
-		case idx == 105:
+		case 105:
 			selected_items.CopyToClipboard();
 			break;
-		case idx == 106:
+		case 106:
 			this.paste_items(getFocusId() + 1);
 			break;
-		case idx == 107:
+		case 107:
 			this.paste_items(plman.GetPlaylistItemCount(g_active_playlist));
 			break;
-		case idx == 110:
+		case 110:
 			var pl = plman.CreatePlaylist();
 			plman.ActivePlaylist = pl;
 			plman.InsertPlaylistItems(pl, 0, selected_items);
 			break;
-		case idx < 1000:
-			var pl = idx - 200;
-			plman.UndoBackup(pl);
-			plman.InsertPlaylistItems(pl, plman.GetPlaylistItemCount(pl), selected_items);
-			break;
-		case idx >= 1000:
-			context.ExecuteByID(idx - 1000);
+		default:
+			if (idx < 1000) {
+				var pl = idx - 200;
+				plman.UndoBackup(pl);
+				plman.InsertPlaylistItems(pl, plman.GetPlaylistItemCount(pl), selected_items);
+			} else {
+				context.ExecuteByID(idx - 1000);
+			}
 			break;
 		}
 

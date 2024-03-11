@@ -227,10 +227,10 @@ function _help(x, y, flags) {
 	var idx = menu.TrackPopupMenu(x, y, flags);
 	menu.Dispose();
 
-	switch (true) {
-	case idx == 0:
+	switch (idx) {
+	case 0:
 		break;
-	case idx == 1:
+	case 1:
 		window.ShowConfigure();
 		break;
 	default:

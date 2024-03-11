@@ -97,15 +97,17 @@ function _rating(x, y, h, colour) {
 	}
 
 	this.rbtn_up_done = function (idx) {
-		switch (true) {
-		case idx <= 1002:
+		switch (idx) {
+		case 1000:
+		case 1001:
+		case 1002:
 			this.properties.mode.value = idx - 1000;
 			break;
-		case idx == 1004:
+		case 1004:
 			var tmp = utils.InputBox('Enter a custom tag name. Do not use %%. Defaults to "rating" if left blank.', window.Name, this.properties.tag.value);
 			this.properties.tag.value = tmp || this.properties.tag.default_;
 			break;
-		case idx == 1005:
+		case 1005:
 			var tmp = Number(utils.InputBox('Enter a maximum value. Defaults to "5" if left blank.', window.Name, this.properties.max.value));
 			this.properties.max.value = tmp > 0 ? tmp : this.properties.max.default_;
 			break;

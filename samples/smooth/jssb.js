@@ -474,7 +474,7 @@ function oBrowser() {
 			if (this.ishover && this.activeIndex > -1) {
 				this.context_menu(x, y, this.activeIndex);
 			} else if (!this.inputbox.hover) {
-				this.settings_context_menu(x, y);
+				this.settings_menu(x, y);
 			}
 			break;
 		case "wheel":
@@ -571,32 +571,25 @@ function oBrowser() {
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
 
-		switch (true) {
-		case idx == 0:
+		switch (idx) {
+		case 0:
 			break;
-		case idx == 1:
+		case 1:
 			var base = plman.GetPlaylistItemCount(ap);
 			plman.InsertPlaylistItems(ap, base, this.groups[albumIndex].handles);
 			break;
-		case idx == 2:
+		case 2:
 			var name = ppt.tfos[ppt.tagMode].EvalWithMetadb(this.groups[albumIndex].handles.GetItem(0));
 			var p = plman.CreatePlaylist(plman.PlaylistCount, name);
 			plman.ActivePlaylist = p
 			plman.InsertPlaylistItems(p, 0, this.groups[albumIndex].handles);
 			break;
-		case idx < 1000:
-			var target_playlist = idx - 10;
-			plman.UndoBackup(target_playlist);
-			var base = plman.GetPlaylistItemCount(target_playlist);
-			plman.InsertPlaylistItems(target_playlist, base, this.groups[albumIndex].handles);
-			plman.ActivePlaylist = target_playlist;
-			break;
-		case idx == 1000:
-		case idx == 1001:
+		case 1000:
+		case 1001:
 			ppt.sendto_playlist_play = idx == 1000;
 			window.SetProperty("SMOOTH.SENDTO.PLAYLIST.PLAY", ppt.sendto_playlist_play);
 			break;
-		case idx == 1002:
+		case 1002:
 			var tmp = utils.InputBox("Enter default playlist name", window.Name, ppt.sendto_playlist);
 			if (tmp.length && tmp != ppt.sendto_playlist) {
 				ppt.sendto_playlist = tmp;
@@ -604,7 +597,15 @@ function oBrowser() {
 			}
 			break;
 		default:
-			context.ExecuteByID(idx - 10000);
+			if (idx < 1000) {
+				var target_playlist = idx - 10;
+				plman.UndoBackup(target_playlist);
+				var base = plman.GetPlaylistItemCount(target_playlist);
+				plman.InsertPlaylistItems(target_playlist, base, this.groups[albumIndex].handles);
+				plman.ActivePlaylist = target_playlist;
+			} else {
+				context.ExecuteByID(idx - 10000);
+			}
 			break;
 		}
 
@@ -612,7 +613,7 @@ function oBrowser() {
 		return true;
 	}
 
-	this.settings_context_menu = function (x, y) {
+	this.settings_menu = function (x, y) {
 		var menu = window.CreatePopupMenu();
 		var sub = window.CreatePopupMenu();
 

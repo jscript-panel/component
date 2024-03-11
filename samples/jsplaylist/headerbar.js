@@ -543,7 +543,7 @@ function oHeaderBar() {
 		var groups = window.CreatePopupMenu();
 		var columns = window.CreatePopupMenu();
 
-		groups.AppendMenuItem(CheckMenuIf(properties.showgroupheaders), 2, "Enable Groups");
+		groups.AppendMenuItem(CheckMenuIf(properties.showgroupheaders), 1, "Enable Groups");
 
 		if (properties.showgroupheaders) {
 			groups.AppendMenuSeparator();
@@ -568,13 +568,13 @@ function oHeaderBar() {
 		columns.AppendTo(menu, MF_STRING, "Columns");
 		menu.AppendMenuSeparator();
 
-		menu.AppendMenuItem(CheckMenuIf(cList.enableExtraLine), 5, "Double Track Line");
+		menu.AppendMenuItem(CheckMenuIf(cList.enableExtraLine), 2, "Double Track Line");
 
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
 
-		switch (true) {
-		case idx == 2:
+		switch (idx) {
+		case 1:
 			properties.showgroupheaders = !properties.showgroupheaders;
 			window.SetProperty("JSPLAYLIST.Show Group Headers", properties.showgroupheaders);
 
@@ -583,14 +583,7 @@ function oHeaderBar() {
 			p.scrollbar.setCursor(p.list.totalRowVisible, p.list.totalRows, p.list.offset);
 			p.playlistManager.refresh();
 			break;
-		case idx == 3:
-		case idx == 4:
-			resize_panels();
-			p.list.updateHandleList();
-			p.list.setItems(true);
-			p.scrollbar.setCursor(p.list.totalRowVisible, p.list.totalRows, p.list.offset);
-			break;
-		case idx == 5:
+		case 2:
 			cList.enableExtraLine = !cList.enableExtraLine;
 			window.SetProperty("JSPLAYLIST.Enable Extra Line", cList.enableExtraLine);
 			resize_panels();
@@ -598,69 +591,70 @@ function oHeaderBar() {
 			p.list.setItems(true);
 			p.scrollbar.setCursor(p.list.totalRowVisible, p.list.totalRows, p.list.offset);
 			break;
-		case idx >= groupByMenuIdx && idx < 100:
-			cGroup.pattern_idx = idx - groupByMenuIdx;
-			window.SetProperty("JSPLAYLIST.GROUPBY2.INDEX", cGroup.pattern_idx);
-			p.list.updateHandleList();
-			p.list.setItems(true);
-			p.scrollbar.setCursor(p.list.totalRowVisible, p.list.totalRows, p.list.offset);
-			full_repaint();
-			break;
-		case idx >= 100:
-			if (this.columns[idx - 100].percent == 0) {
-				var newColumnSize = 8000;
-				this.columns[idx - 100].percent = newColumnSize;
-				var totalColsToResizeDown = 0;
-				var last_idx = 0;
-				for (var k = 0; k < this.columns.length; k++) {
-					if (k != idx - 100 && this.columns[k].percent > newColumnSize) {
-						totalColsToResizeDown++;
-						last_idx = k;
-					}
-				}
-				var minus_value = Math.floor(newColumnSize / totalColsToResizeDown);
-				var reste = newColumnSize - (minus_value * totalColsToResizeDown);
-				for (var k = 0; k < this.columns.length; k++) {
-					if (k != idx - 100 && this.columns[k].percent > newColumnSize) {
-						this.columns[k].percent = Math.abs(this.columns[k].percent) - minus_value;
-						if (reste > 0 && k == last_idx) {
-							this.columns[k].percent = Math.abs(this.columns[k].percent) - reste;
-						}
-					}
-					this.columns[k].w = Math.abs(this.w * this.columns[k].percent / 100000);
-				}
-				this.saveColumns();
-			} else {
-				// check if it's not the last column visible, otherwise we coundn't hide it!
-				var nbvis = 0;
-				for (var k = 0; k < this.columns.length; k++) {
-					if (this.columns[k].percent > 0) {
-						nbvis++;
-					}
-				}
-				if (nbvis > 1) {
-					var RemovedColumnSize = Math.abs(this.columns[idx - 100].percent);
-					this.columns[idx - 100].percent = 0;
-					var totalColsToResizeUp = 0;
+		default:
+			if (idx >= groupByMenuIdx && idx < 100) {
+				cGroup.pattern_idx = idx - groupByMenuIdx;
+				window.SetProperty("JSPLAYLIST.GROUPBY2.INDEX", cGroup.pattern_idx);
+				p.list.updateHandleList();
+				p.list.setItems(true);
+				p.scrollbar.setCursor(p.list.totalRowVisible, p.list.totalRows, p.list.offset);
+				full_repaint();
+			} else if (idx >= 100) {
+				if (this.columns[idx - 100].percent == 0) {
+					var newColumnSize = 8000;
+					this.columns[idx - 100].percent = newColumnSize;
+					var totalColsToResizeDown = 0;
 					var last_idx = 0;
 					for (var k = 0; k < this.columns.length; k++) {
-						if (k != idx - 100 && this.columns[k].percent > 0) {
-							totalColsToResizeUp++;
+						if (k != idx - 100 && this.columns[k].percent > newColumnSize) {
+							totalColsToResizeDown++;
 							last_idx = k;
 						}
 					}
-					var add_value = Math.floor(RemovedColumnSize / totalColsToResizeUp);
-					var reste = RemovedColumnSize - (add_value * totalColsToResizeUp);
+					var minus_value = Math.floor(newColumnSize / totalColsToResizeDown);
+					var reste = newColumnSize - (minus_value * totalColsToResizeDown);
 					for (var k = 0; k < this.columns.length; k++) {
-						if (k != idx - 100 && this.columns[k].percent > 0) {
-							this.columns[k].percent = Math.abs(this.columns[k].percent) + add_value;
+						if (k != idx - 100 && this.columns[k].percent > newColumnSize) {
+							this.columns[k].percent = Math.abs(this.columns[k].percent) - minus_value;
 							if (reste > 0 && k == last_idx) {
-								this.columns[k].percent = Math.abs(this.columns[k].percent) + reste;
+								this.columns[k].percent = Math.abs(this.columns[k].percent) - reste;
 							}
 						}
 						this.columns[k].w = Math.abs(this.w * this.columns[k].percent / 100000);
 					}
 					this.saveColumns();
+				} else {
+					// check if it's not the last column visible, otherwise we coundn't hide it!
+					var nbvis = 0;
+					for (var k = 0; k < this.columns.length; k++) {
+						if (this.columns[k].percent > 0) {
+							nbvis++;
+						}
+					}
+					if (nbvis > 1) {
+						var RemovedColumnSize = Math.abs(this.columns[idx - 100].percent);
+						this.columns[idx - 100].percent = 0;
+						var totalColsToResizeUp = 0;
+						var last_idx = 0;
+						for (var k = 0; k < this.columns.length; k++) {
+							if (k != idx - 100 && this.columns[k].percent > 0) {
+								totalColsToResizeUp++;
+								last_idx = k;
+							}
+						}
+						var add_value = Math.floor(RemovedColumnSize / totalColsToResizeUp);
+						var reste = RemovedColumnSize - (add_value * totalColsToResizeUp);
+						for (var k = 0; k < this.columns.length; k++) {
+							if (k != idx - 100 && this.columns[k].percent > 0) {
+								this.columns[k].percent = Math.abs(this.columns[k].percent) + add_value;
+								if (reste > 0 && k == last_idx) {
+									this.columns[k].percent = Math.abs(this.columns[k].percent) + reste;
+								}
+							}
+							this.columns[k].w = Math.abs(this.w * this.columns[k].percent / 100000);
+						}
+						this.saveColumns();
+					}
 				}
 			}
 

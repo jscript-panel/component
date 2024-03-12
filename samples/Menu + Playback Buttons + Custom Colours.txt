@@ -13,7 +13,7 @@ var bs = 32;
 
 window.MinHeight = window.MaxHeight = bs;
 var colour_mode = window.GetProperty("2K3.TOP.COLOUR.MODE", 0); // 0 auto, 1 dark, 2 light, 3 custom
-var is_dark = false;
+var is_dark = window.IsDark;
 
 var colours = {
 	buttons : 0,
@@ -38,6 +38,8 @@ buttons.update = function () {
 };
 
 function on_colours_changed() {
+	is_dark = window.IsDark;
+
 	if (colour_mode == 0) {
 		update_colours();
 		buttons.update();
@@ -130,8 +132,6 @@ function on_size() {
 }
 
 function update_colours() {
-	is_dark = window.IsDark;
-
 	if ((colour_mode == 0 && is_dark) || colour_mode == 1) {
 		colours.background = RGB(30, 30, 30);
 	} else if ((colour_mode == 0 && !is_dark) || colour_mode == 2) {

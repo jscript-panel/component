@@ -49,7 +49,7 @@ buttons.update = function () {
 	var x = seekbar.x + ((seekbar.w - bs * 4) / 2);
 	var y = panel.h - _scale(12) - bs;
 
-	this.buttons.stop = new _button(x, y, bs, bs, { char : chars.stop, colour:fb.StopAfterCurrent ? colours.constrast : colours.buttons}, null, function () { fb.Stop(); }, 'Stop');
+	this.buttons.stop = new _button(x, y, bs, bs, { char : chars.stop, colour:fb.StopAfterCurrent ? colours.contrast : colours.buttons}, null, function () { fb.Stop(); }, 'Stop');
 	this.buttons.previous = new _button(x + bs, y, bs, bs, { char : chars.prev, colour:colours.buttons }, null, function () { fb.Prev(); }, 'Previous');
 	this.buttons.play = new _button(x + (bs * 2), y, bs, bs, { char : !fb.IsPlaying || fb.IsPaused ? chars.play : chars.pause, colour:colours.buttons}, null, function () { fb.PlayOrPause(); }, !fb.IsPlaying || fb.IsPaused ? 'Play' : 'Pause');
 	this.buttons.next = new _button(x + (bs * 3), y, bs, bs, { char : chars.next, colour:colours.buttons }, null, function () { fb.Next(); }, 'Next');
@@ -114,21 +114,10 @@ function on_mouse_move(x, y) {
 function on_mouse_rbtn_up(x, y) {
 	if (buttons.buttons.stop.containsXY(x, y)) {
 		fb.StopAfterCurrent = !fb.StopAfterCurrent;
-	} else {
-		var menu = window.CreatePopupMenu();
-		menu.AppendMenuItem(MF_STRING, 1, 'Configure');
-
-		var idx = menu.TrackPopupMenu(x, y);
-		menu.Dispose();
-
-		switch (idx ) {
-		case 1:
-			window.ShowConfigure();
-			break;
-		}
+		return true;
 	}
 
-	return true;
+	return panel.rbtn_up(x, y);
 }
 
 function on_mouse_wheel(s) {

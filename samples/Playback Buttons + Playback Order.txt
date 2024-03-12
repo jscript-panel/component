@@ -49,21 +49,10 @@ function on_mouse_move(x, y) {
 function on_mouse_rbtn_up(x, y) {
 	if (buttons.buttons.stop.containsXY(x, y)) {
 		fb.StopAfterCurrent = !fb.StopAfterCurrent;
-	} else {
-		var menu = window.CreatePopupMenu();
-		menu.AppendMenuItem(MF_STRING, 1, 'Configure');
-
-		var idx = menu.TrackPopupMenu(x, y);
-		menu.Dispose();
-
-		switch (idx ) {
-		case 1:
-			window.ShowConfigure();
-			break;
-		}
+		return true;
 	}
 
-	return true;
+	return panel.rbtn_up(x, y);
 }
 
 function on_paint(gr) {

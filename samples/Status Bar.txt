@@ -23,13 +23,17 @@ var wh = 0;
 var right_text = '';
 var right_text_width = 0;
 var font = CreateFontString('Segoe UI', 12);
+var font_obj = JSON.parse(font);
+var starting = false;
+var stop_reason;
 
 refresh();
 
 function refresh() {
 	var tmp = [];
 	var ap = plman.ActivePlaylist;
-	if (ap >= 0 && ap < plman.PlaylistCount) {
+
+	if (validate_playlist(ap)) {
 		var items = plman.GetPlaylistItems(ap);
 		var count = items.Count;
 		if (properties.name.enabled) {
@@ -48,8 +52,14 @@ function refresh() {
 		}
 		items.Dispose();
 	}
+
 	right_text = tmp.join(' :: ');
+	right_text_width = right_text.calc_width(font_obj);
 	window.Repaint();
+}
+
+function validate_playlist(playlist) {
+	return playlist >= 0 && playlist < plman.PlaylistCount;
 }
 
 function on_mouse_lbtn_dblclk() {
@@ -60,14 +70,15 @@ function on_mouse_rbtn_up(x, y) {
 	var menu = window.CreatePopupMenu();
 	var sub = window.CreatePopupMenu();
 	var colour_menu = window.CreatePopupMenu();
-
 	var context = fb.CreateContextMenuManager();
+
 	if (fb.IsPlaying) {
 		context.InitNowPlaying();
 		context.BuildMenu(sub, 1);
 		sub.AppendTo(menu, MF_STRING, 'Now playing');
 		menu.AppendMenuSeparator();
 	}
+
 	menu.AppendMenuItem(CheckMenuIf(properties.name.enabled), 10000, 'Show playlist name');
 	menu.AppendMenuItem(CheckMenuIf(properties.count.enabled), 10001, 'Show playlist item count');
 	menu.AppendMenuItem(CheckMenuIf(properties.duration.enabled), 10002, 'Show playlist duration');
@@ -122,26 +133,43 @@ function on_mouse_rbtn_up(x, y) {
 }
 
 function on_mouse_wheel(s) {
-	if (s < 0)	fb.VolumeDown();
+	if (s < 0) fb.VolumeDown();
 	else fb.VolumeUp();
 }
 
 function on_paint(gr) {
 	gr.Clear(properties.background.value);
-	if (fb.IsPlaying) {
-		gr.WriteText(tfo.Eval(), font, this.properties.text.value, 5, 0, ww - 200 - utils.CalcTextWidth(right_text, 'Segoe UI', 16), 21, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+
+	var left_text = starting ? 'Starting playback...' : fb.IsPlaying ? tfo.Eval() : '';
+	if (left_text.length) {
+		gr.WriteText(left_text, font, properties.text.value, 5, 0, ww - 200 - right_text_width, 21, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 	}
-	if (plman.ActivePlaylist > -1 && plman.ActivePlaylist < plman.PlaylistCount) {
-		gr.WriteText(right_text, font, this.properties.text.value, 0, 0, ww - 130, 21, DWRITE_TEXT_ALIGNMENT_TRAILING);
+
+	if (right_text.length) {
+		gr.WriteText(right_text, font, properties.text.value, 0, 0, ww - 130, 21, DWRITE_TEXT_ALIGNMENT_TRAILING);
 	}
-	gr.WriteText(fb.Volume.toFixed(2) + ' dB', font, this.properties.text.value, 0, 0, ww - 5, 21, DWRITE_TEXT_ALIGNMENT_TRAILING);
+
+	gr.WriteText(fb.Volume.toFixed(2) + ' dB', font, properties.text.value, 0, 0, ww - 5, 21, DWRITE_TEXT_ALIGNMENT_TRAILING);
 }
 
 function on_playback_new_track() {
 	window.Repaint();
 }
 
-function on_playback_stop() {
+function on_playback_starting() {
+	if (stop_reason == 2) return;
+
+	starting = true;
+	window.Repaint();
+	
+	window.SetTimeout(function () {
+		starting = false;
+		window.Repaint();
+	}, 500);
+}
+
+function on_playback_stop(reason) {
+	stop_reason = reason;
 	window.Repaint();
 }
 

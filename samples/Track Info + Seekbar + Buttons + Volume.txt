@@ -57,7 +57,7 @@ buttons.update = function () {
 	x = panel.w - (bs * 5) - _scale(12);
 
 	var pbo = plman.PlaybackOrder;
-	this.buttons.pbo = new _button(x - 2, y - 2, bs + 4, bs + 4, { char : pbo_chars[pbo], colour: pbo == 0 ? setAlpha(colours.buttons, 60) : colours.contrast }, null, function () { pbo >= pbo_chars.length - 1 ? plman.PlaybackOrder = 0 : plman.PlaybackOrder++ }, "Playback Order: " + pbo_names[pbo]);
+	this.buttons.pbo = new _button(x - 2, y - 2, bs + 4, bs + 4, { char : pbo_chars[pbo], colour: pbo == 0 ? setAlpha(colours.buttons, 60) : colours.contrast }, null, function () { pbo >= pbo_chars.length - 1 ? plman.PlaybackOrder = 0 : plman.PlaybackOrder++ }, 'Playback Order: ' + pbo_names[pbo]);
 	this.buttons.console = new _button(x + (bs * 2), y, bs, bs, {char : chars.list, colour:colours.buttons }, null, function () { fb.ShowConsole(); }, 'Console');
 	this.buttons.search = new _button(x + (bs * 3), y, bs, bs, { char : chars.search, colour:colours.buttons }, null, function () { fb.RunMainMenuCommand('Library/Search'); }, 'Library Search');
 	this.buttons.preferences = new _button(x + (bs * 4), y, bs, bs, { char : chars.preferences, colour:colours.buttons}, null, function () { fb.ShowPreferences(); }, 'Preferences');

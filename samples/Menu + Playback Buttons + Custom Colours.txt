@@ -12,7 +12,7 @@ var buttons = new _buttons();
 var bs = 32;
 
 window.MinHeight = window.MaxHeight = bs;
-var colour_mode = window.GetProperty("2K3.TOP.COLOUR.MODE", 0); // 0 auto, 1 dark, 2 light, 3 custom
+var colour_mode = window.GetProperty('2K3.TOP.COLOUR.MODE', 0); // 0 auto, 1 dark, 2 light, 3 custom
 var is_dark = window.IsDark;
 
 var colours = {
@@ -65,14 +65,14 @@ function on_mouse_rbtn_up(x, y) {
 	} else {
 		var menu = window.CreatePopupMenu();
 		var colour_menu = window.CreatePopupMenu();
-		colour_menu.AppendMenuItem(MF_STRING, 1, "Auto");
-		colour_menu.AppendMenuItem(MF_STRING, 2, "Dark");
-		colour_menu.AppendMenuItem(MF_STRING, 3, "Light");
-		colour_menu.AppendMenuItem(MF_STRING, 4, "Custom");
+		colour_menu.AppendMenuItem(MF_STRING, 1, 'Auto');
+		colour_menu.AppendMenuItem(MF_STRING, 2, 'Dark');
+		colour_menu.AppendMenuItem(MF_STRING, 3, 'Light');
+		colour_menu.AppendMenuItem(MF_STRING, 4, 'Custom');
 		colour_menu.CheckMenuRadioItem(1, 4, colour_mode + 1);
 		colour_menu.AppendMenuSeparator();
-		colour_menu.AppendMenuItem(EnableMenuIf(colour_mode == 3), 5, "Edit...");
-		colour_menu.AppendTo(menu, MF_STRING, "Colours");
+		colour_menu.AppendMenuItem(EnableMenuIf(colour_mode == 3), 5, 'Edit...');
+		colour_menu.AppendTo(menu, MF_STRING, 'Colours');
 		menu.AppendMenuSeparator();
 		menu.AppendMenuItem(MF_STRING, 10, 'Configure');
 
@@ -85,14 +85,14 @@ function on_mouse_rbtn_up(x, y) {
 		case 3:
 		case 4:
 			colour_mode = idx - 1;
-			window.SetProperty("2K3.TOP.COLOUR.MODE", colour_mode);
+			window.SetProperty('2K3.TOP.COLOUR.MODE', colour_mode);
 			update_colours();
 			buttons.update();
 			window.Repaint();
 			break;
 		case 5:
 			var tmp = utils.ColourPicker(colours.background);
-			window.SetProperty("2K3.TOP.COLOUR.BACKGROUND", tmp);
+			window.SetProperty('2K3.TOP.COLOUR.BACKGROUND', tmp);
 			update_colours();
 			buttons.update();
 			window.Repaint();
@@ -137,7 +137,7 @@ function update_colours() {
 	} else if ((colour_mode == 0 && !is_dark) || colour_mode == 2) {
 		colours.background = RGB(240, 240, 240);
 	} else if (colour_mode == 3) {
-		colours.background = window.GetProperty("2K3.TOP.COLOUR.BACKGROUND", RGB(196, 30, 35));
+		colours.background = window.GetProperty('2K3.TOP.COLOUR.BACKGROUND', RGB(196, 30, 35));
 	}
 
 	colours.buttons = DetermineTextColour(colours.background);

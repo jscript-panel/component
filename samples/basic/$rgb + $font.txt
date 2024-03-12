@@ -7,8 +7,8 @@
 
 // See also: https://jscript-panel.github.io/docs/font-rgb/
 
-var tfo = fb.TitleFormat("$font(Segoe UI,24)$rgb(255,0,0)%artist%$font() $font(Segoe UI,32)$rgb(0,255,0)%title%");
-var str = "";
+var tfo = fb.TitleFormat('$font(Segoe UI,24)$rgb(255,0,0)%artist%$font() $font(Segoe UI,32)$rgb(0,255,0)%title%');
+var str = '';
 
 refresh();
 
@@ -17,7 +17,7 @@ function refresh() {
 	if (item) {
 		str = tfo.EvalWithMetadb(item);
 	} else {
-		str = "";
+		str = '';
 	}
 }
 
@@ -33,5 +33,5 @@ function on_playlist_switch() {
 
 function on_paint(gr) {
 	// default_font is an empty string, defaulting to Segoe UI, 16px
-	DrawStyledText(gr, str, "", 0, 0, 0, window.Width, window.Height, 2, 2, 2);
+	DrawStyledText(gr, str, '', 0, 0, 0, window.Width, window.Height, 2, 2, 2);
 }

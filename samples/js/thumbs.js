@@ -145,7 +145,7 @@ function _thumbs() {
 			return total_file_size < size_limit && i <= count_limit;
 		});
 		if (filtered.length < files.length) {
-			console.log(N, "Not all images have been loaded. This is due to excessive total size and/or count.");
+			console.log(N, 'Not all images have been loaded. This is due to excessive total size and/or count.');
 		}
 		return filtered;
 	}

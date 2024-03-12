@@ -31,7 +31,7 @@ buttons.update = function () {
 	this.buttons.next = new _button(x + (bs * 3), y, bs, bs, { char : chars.next, colour:colours.buttons }, null, function () { fb.Next(); }, 'Next');
 
 	var pbo = plman.PlaybackOrder;
-	this.buttons.pbo = new _button(x + (bs * 5) - 2, y - 2, bs + 4, bs + 4, { char : pbo_chars[pbo], colour: pbo == 0 ? setAlpha(colours.buttons, 60) : colours.contrast }, null, function () { pbo >= pbo_chars.length - 1 ? plman.PlaybackOrder = 0 : plman.PlaybackOrder++ }, "Playback Order: " + pbo_names[pbo]);
+	this.buttons.pbo = new _button(x + (bs * 5) - 2, y - 2, bs + 4, bs + 4, { char : pbo_chars[pbo], colour: pbo == 0 ? setAlpha(colours.buttons, 60) : colours.contrast }, null, function () { pbo >= pbo_chars.length - 1 ? plman.PlaybackOrder = 0 : plman.PlaybackOrder++ }, 'Playback Order: ' + pbo_names[pbo]);
 }
 
 function on_mouse_lbtn_up(x, y) {

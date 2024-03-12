@@ -28,7 +28,7 @@ var tfo = {
 	length : fb.TitleFormat('$if2(%length%,LIVE)'),
 };
 
-var font = CreateFontString("Segoe UI", 12);
+var font = CreateFontString('Segoe UI', 12);
 var buttons = new _buttons();
 var bs = _scale(24);
 var bottom_y = 0;

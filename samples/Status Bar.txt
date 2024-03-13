@@ -74,23 +74,23 @@ function on_mouse_rbtn_up(x, y) {
 
 	if (fb.IsPlaying) {
 		context.InitNowPlaying();
-		context.BuildMenu(sub, 1);
+		context.BuildMenu(sub, 1000);
 		sub.AppendTo(menu, MF_STRING, 'Now playing');
 		menu.AppendMenuSeparator();
 	}
 
-	menu.AppendMenuItem(MF_STRING, 9999, 'Title format...');
-	menu.AppendMenuSeparator();
-	menu.AppendMenuItem(CheckMenuIf(properties.name.enabled), 10000, 'Show playlist name');
-	menu.AppendMenuItem(CheckMenuIf(properties.count.enabled), 10001, 'Show playlist item count');
-	menu.AppendMenuItem(CheckMenuIf(properties.duration.enabled), 10002, 'Show playlist duration');
-	menu.AppendMenuItem(CheckMenuIf(properties.size.enabled), 10003, 'Show playlist size');
-	menu.AppendMenuSeparator();
-	colour_menu.AppendMenuItem(MF_STRING, 10004, 'Background...');
-	colour_menu.AppendMenuItem(MF_STRING, 10005, 'Text...');
+	colour_menu.AppendMenuItem(MF_STRING, 1, 'Background...');
+	colour_menu.AppendMenuItem(MF_STRING, 2, 'Text...');
 	colour_menu.AppendTo(menu, MF_STRING, 'Colours');
 	menu.AppendMenuSeparator();
-	menu.AppendMenuItem(MF_STRING, 10010, 'Configure...');
+	menu.AppendMenuItem(MF_STRING, 3, 'Title format...');
+	menu.AppendMenuSeparator();
+	menu.AppendMenuItem(CheckMenuIf(properties.name.enabled), 10, 'Show playlist name');
+	menu.AppendMenuItem(CheckMenuIf(properties.count.enabled), 11, 'Show playlist item count');
+	menu.AppendMenuItem(CheckMenuIf(properties.duration.enabled), 12, 'Show playlist duration');
+	menu.AppendMenuItem(CheckMenuIf(properties.size.enabled), 13, 'Show playlist size');
+	menu.AppendMenuSeparator();
+	menu.AppendMenuItem(MF_STRING, 20, 'Configure...');
 
 	var idx = menu.TrackPopupMenu(x, y);
 	menu.Dispose();
@@ -98,7 +98,15 @@ function on_mouse_rbtn_up(x, y) {
 	switch (idx) {
 	case 0:
 		break;
-	case 9999:
+	case 1:
+		properties.background.value = utils.ColourPicker(properties.background.value);
+		window.Repaint();
+		break;
+	case 2:
+		properties.text.value = utils.ColourPicker(properties.text.value);
+		window.Repaint();
+		break;
+	case 3:
 		try {
 			var tmp = utils.TextBox('Enter title format pattern. $rgb is supported.', window.Name, properties.tf.value).trim();
 			if (tmp.length && tmp != properties.tf.value) {
@@ -109,35 +117,27 @@ function on_mouse_rbtn_up(x, y) {
 			}
 		} catch (e) {}
 		break;
-	case 10000:
+	case 10:
 		properties.name.toggle();
 		refresh();
 		break;
-	case 10001:
+	case 11:
 		properties.count.toggle();
 		refresh();
 		break;
-	case 10002:
+	case 12:
 		properties.duration.toggle();
 		refresh();
 		break;
-	case 10003:
+	case 13:
 		properties.size.toggle();
 		refresh();
 		break;
-	case 10004:
-		properties.background.value = utils.ColourPicker(properties.background.value);
-		window.Repaint();
-		break;
-	case 10005:
-		properties.text.value = utils.ColourPicker(properties.text.value);
-		window.Repaint();
-		break;
-	case 10010:
+	case 20:
 		window.ShowConfigure();
 		break;
 	default:
-		context.ExecuteByID(idx - 1);
+		context.ExecuteByID(idx - 1000);
 		break;
 	}
 

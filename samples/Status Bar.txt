@@ -7,9 +7,8 @@
 // @import "%fb2k_component_path%samples\js\volume.js"
 // ==/PREPROCESSOR==
 
-var tfo = fb.TitleFormat('%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype% ]');
-
 var properties = {
+	tf : new _p('2K3.STATUS.TF', '%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype%]'),
 	name : new _p('2K3.STATUS.SHOW.NAME', true),
 	count : new _p('2K3.STATUS.SHOW.COUNT', true),
 	duration : new _p('2K3.STATUS.SHOW.DURATION', true),
@@ -26,6 +25,7 @@ var font = CreateFontString('Segoe UI', 12);
 var font_obj = JSON.parse(font);
 var starting = false;
 var stop_reason;
+var tfo = fb.TitleFormat(properties.tf.value);
 
 refresh();
 
@@ -79,6 +79,8 @@ function on_mouse_rbtn_up(x, y) {
 		menu.AppendMenuSeparator();
 	}
 
+	menu.AppendMenuItem(MF_STRING, 9999, 'Title format...');
+	menu.AppendMenuSeparator();
 	menu.AppendMenuItem(CheckMenuIf(properties.name.enabled), 10000, 'Show playlist name');
 	menu.AppendMenuItem(CheckMenuIf(properties.count.enabled), 10001, 'Show playlist item count');
 	menu.AppendMenuItem(CheckMenuIf(properties.duration.enabled), 10002, 'Show playlist duration');
@@ -95,6 +97,17 @@ function on_mouse_rbtn_up(x, y) {
 
 	switch (idx) {
 	case 0:
+		break;
+	case 9999:
+		try {
+			var tmp = utils.TextBox('Enter title format pattern. $rgb is supported.', window.Name, properties.tf.value).trim();
+			if (tmp.length && tmp != properties.tf.value) {
+				properties.tf.value = tmp;
+				tfo.Dispose();
+				tfo = fb.TitleFormat(properties.tf.value);
+				window.Repaint();
+			}
+		} catch (e) {}
 		break;
 	case 10000:
 		properties.name.toggle();
@@ -142,7 +155,7 @@ function on_paint(gr) {
 
 	var left_text = starting ? 'Starting playback...' : fb.IsPlaying ? tfo.Eval() : '';
 	if (left_text.length) {
-		gr.WriteText(left_text, font, properties.text.value, 5, 0, ww - 200 - right_text_width, 21, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+		DrawColouredText(gr, left_text, font, properties.text.value, 5, 0, ww - 200 - right_text_width, 21, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 	}
 
 	if (right_text.length) {

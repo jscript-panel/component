@@ -27,7 +27,7 @@ function _text(mode, x, y, w, h) {
 			return 'Console';
 		case 'lastfm_bio':
 			if (this.flag_font && this.flag.length) {
-				return panel.tf('$font(Twemoji Mozilla,' + _scale(panel.fonts.size.value - 2) + ')' + this.flag + '$font() ') + this.artist;
+				return panel.tf('$font(Twemoji Mozilla,' + _scale(panel.fonts.size.value - 3) + ')' + this.flag + '$font() ') + this.artist;
 			}
 			return this.artist;
 		case 'text_reader2':

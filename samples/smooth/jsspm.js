@@ -638,7 +638,7 @@ function oBrowser() {
 		var menu = window.CreatePopupMenu();
 		var autoplaylist = window.CreatePopupMenu();
 		var restore = window.CreatePopupMenu();
-		var items = window.CreatePopupMenu();
+		var context_popup = window.CreatePopupMenu();
 		var context = fb.CreateContextMenuManager();
 
 		var count = plman.PlaylistCount;
@@ -694,8 +694,8 @@ function oBrowser() {
 			if (playlist_items.Count > 0) {
 				menu.AppendMenuSeparator();
 				context.InitContext(playlist_items);
-				context.BuildMenu(items, 1000);
-				items.AppendTo(menu, MF_STRING, 'Items');
+				context.BuildMenu(context_popup, 1000);
+				context_popup.AppendTo(menu, MF_STRING, 'Items');
 			}
 		}
 

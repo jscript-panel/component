@@ -11,7 +11,7 @@ var ww = 0;
 var wh = 0;
 var right_text = '';
 var right_text_width = 0;
-var font = CreateFontString('Segoe UI', 12);
+var font = CreateFontString('Segoe UI', 10);
 var font_obj = JSON.parse(font);
 var starting = false;
 var stop_reason;
@@ -69,14 +69,14 @@ function on_mouse_lbtn_dblclk() {
 
 function on_mouse_rbtn_up(x, y) {
 	var menu = window.CreatePopupMenu();
-	var sub = window.CreatePopupMenu();
 	var colour_menu = window.CreatePopupMenu();
+	var context_popup = window.CreatePopupMenu();
 	var context = fb.CreateContextMenuManager();
 
 	if (fb.IsPlaying) {
 		context.InitNowPlaying();
-		context.BuildMenu(sub, 1000);
-		sub.AppendTo(menu, MF_STRING, 'Now playing');
+		context.BuildMenu(context_popup, 1000);
+		context_popup.AppendTo(menu, MF_STRING, 'Now playing');
 		menu.AppendMenuSeparator();
 	}
 

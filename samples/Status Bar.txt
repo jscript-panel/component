@@ -7,6 +7,15 @@
 // @import "%fb2k_component_path%samples\js\volume.js"
 // ==/PREPROCESSOR==
 
+var ww = 0;
+var wh = 0;
+var right_text = '';
+var right_text_width = 0;
+var font = CreateFontString('Segoe UI', 12);
+var font_obj = JSON.parse(font);
+var starting = false;
+var stop_reason;
+
 var properties = {
 	tf : new _p('2K3.STATUS.TF', '%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype%]'),
 	name : new _p('2K3.STATUS.SHOW.NAME', true),
@@ -17,14 +26,6 @@ var properties = {
 	text : new _p('2K3.STATUS.TEXT', RGB(0, 0, 0))
 };
 
-var ww = 0;
-var wh = 0;
-var right_text = '';
-var right_text_width = 0;
-var font = CreateFontString('Segoe UI', 12);
-var font_obj = JSON.parse(font);
-var starting = false;
-var stop_reason;
 var tfo = fb.TitleFormat(properties.tf.value);
 
 refresh();

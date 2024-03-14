@@ -12,7 +12,7 @@ var buttons = new _buttons();
 var bs = 32;
 
 window.MinHeight = window.MaxHeight = bs;
-var colour_mode = window.GetProperty('2K3.TOP.COLOUR.MODE', 0); // 0 auto, 1 dark, 2 light, 3 custom
+var colour_mode = new _p('2K3.TOP.COLOUR.MODE', 0); // 0 auto, 1 dark, 2 light, 3 custom
 var is_dark = window.IsDark;
 
 var colours = {
@@ -40,7 +40,7 @@ buttons.update = function () {
 function on_colours_changed() {
 	is_dark = window.IsDark;
 
-	if (colour_mode == 0) {
+	if (colour_mode.value == 0) {
 		update_colours();
 		buttons.update();
 		window.Repaint();
@@ -69,9 +69,9 @@ function on_mouse_rbtn_up(x, y) {
 		colour_menu.AppendMenuItem(MF_STRING, 2, 'Dark');
 		colour_menu.AppendMenuItem(MF_STRING, 3, 'Light');
 		colour_menu.AppendMenuItem(MF_STRING, 4, 'Custom');
-		colour_menu.CheckMenuRadioItem(1, 4, colour_mode + 1);
+		colour_menu.CheckMenuRadioItem(1, 4, colour_mode.value + 1);
 		colour_menu.AppendMenuSeparator();
-		colour_menu.AppendMenuItem(EnableMenuIf(colour_mode == 3), 5, 'Edit...');
+		colour_menu.AppendMenuItem(EnableMenuIf(colour_mode.value == 3), 5, 'Edit...');
 		colour_menu.AppendTo(menu, MF_STRING, 'Colours');
 		menu.AppendMenuSeparator();
 		menu.AppendMenuItem(MF_STRING, 10, 'Configure');
@@ -84,8 +84,7 @@ function on_mouse_rbtn_up(x, y) {
 		case 2:
 		case 3:
 		case 4:
-			colour_mode = idx - 1;
-			window.SetProperty('2K3.TOP.COLOUR.MODE', colour_mode);
+			colour_mode.value = idx - 1;
 			update_colours();
 			buttons.update();
 			window.Repaint();
@@ -132,11 +131,11 @@ function on_size() {
 }
 
 function update_colours() {
-	if ((colour_mode == 0 && is_dark) || colour_mode == 1) {
+	if ((colour_mode.value == 0 && is_dark) || colour_mode.value == 1) {
 		colours.background = RGB(30, 30, 30);
-	} else if ((colour_mode == 0 && !is_dark) || colour_mode == 2) {
+	} else if ((colour_mode.value == 0 && !is_dark) || colour_mode.value == 2) {
 		colours.background = RGB(240, 240, 240);
-	} else if (colour_mode == 3) {
+	} else if (colour_mode.value == 3) {
 		colours.background = window.GetProperty('2K3.TOP.COLOUR.BACKGROUND', RGB(196, 30, 35));
 	}
 

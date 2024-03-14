@@ -846,7 +846,7 @@ ppt.default_lineHeightMin = window.GetProperty("SMOOTH.LINE.MIN.HEIGHT", 120);
 ppt.lineHeightMin = ppt.default_lineHeightMin;
 
 var tfo = {
-	groupkey_album : fb.TitleFormat("$if2(%album artist%,Unknown Artist) ^^ $if2(%album%,'('Singles')') ^^ [$year(%date%)] ^^ $crc32(%path%)"),
+	groupkey_album : fb.TitleFormat("$if2(%album artist%,Unknown Artist) ^^ $if2(%album%,'('Singles')') ^^ [%date%] ^^ $crc32(%path%)"),
 	groupkey_artist : fb.TitleFormat("$if2($meta(artist,0),Unknown Artist) ^^ $crc32(artists$meta(artist,0))"),
 	groupkey_album_artist : fb.TitleFormat("%album artist% ^^ $crc32(artists%album artist%)"),
 };

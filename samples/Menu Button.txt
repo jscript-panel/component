@@ -14,7 +14,9 @@ var colours = {
 
 var panel = new _panel();
 var buttons = new _buttons();
-buttons.buttons.menu = new _button(0, 0, 36, 36, { char : chars.menu, colour : colours.buttons }, null, function () { _menu(0, 36); }, 'Menu');
+var bs = _scale(24);
+
+buttons.buttons.menu = new _button(0, 0, bs, bs, { char : chars.menu, colour : colours.buttons }, null, function () { _menu(0, bs); }, 'Menu');
 
 function on_mouse_lbtn_up(x, y, mask) {
 	buttons.lbtn_up(x, y, mask);
@@ -30,7 +32,7 @@ function on_mouse_move(x, y) {
 
 function on_mouse_rbtn_up(x, y) {
 	if (buttons.buttons.menu.containsXY(x, y)) {
-		_help(0, 36);
+		_help(0, bs);
 		return true;
 	}
 	return panel.rbtn_up(x, y);

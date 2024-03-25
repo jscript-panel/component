@@ -202,27 +202,19 @@ function oBrowser() {
 		this.list = fb.GetLibraryItems(g_filter_text);
 
 		if (this.list.Count > 0) {
-			var track_tfs = [];
-			if (ppt.tagMode == 0) { //album
-				this.list.SortByFormat(ppt.sort_album_tf, 1);
-				track_tfs = tfo.groupkey_album.EvalWithMetadbs(this.list).toArray();
-			} else if (ppt.tagMode == 1) { // artist
-				this.list.SortByFormat(ppt.sort_artist_tf, 1);
-				track_tfs = tfo.groupkey_artist.EvalWithMetadbs(this.list).toArray();
-			} else if (ppt.tagMode == 2) { // album artist
-				this.list.SortByFormat(ppt.sort_album_artist_tf, 1);
-				track_tfs = tfo.groupkey_album_artist.EvalWithMetadbs(this.list).toArray();
-			}
+			var obj = group_objects[ppt.tagMode];
+			this.list.SortByFormat(obj.sort_tf, 1);
 
+			var track_tfs = obj.group_tfo.EvalWithMetadbs(this.list).toArray();
 			var previous = "";
 			var g = 0;
 			var handles = fb.CreateHandleList();
 
 			track_tfs.forEach((function (track_tf, i) {
 				var handle = this.list.GetItem(i);
-				var pos = track_tf.lastIndexOf(" ^^ ");
-				var cachekey = track_tf.substr(pos + 4);
-				var meta = track_tf.substr(0, pos);
+				var pos = track_tf.indexOf(" ^^ ");
+				var cachekey = track_tf.substr(0, pos);
+				var meta = track_tf.substr(pos + 4);
 				var current = meta.toLowerCase();
 
 				if (current != previous) {
@@ -243,7 +235,7 @@ function oBrowser() {
 				if (g > 1 && ppt.showAllItem) {
 					var meta = "All items";
 					if (ppt.tagMode == 0) {
-						var all_items = "(" + this.groups.length + " " + ppt.tagText[ppt.tagMode] + "s)"
+						var all_items = "(" + this.groups.length + " " + obj.name + "s)"
 						meta += " ^^ " + all_items;
 					}
 					this.groups.unshift(new oGroup(0, 0, null, meta, 0));
@@ -428,7 +420,7 @@ function oBrowser() {
 		if (ppt.showHeaderBar) {
 			var total = this.groups.length;
 			var nb_groups = (ppt.showAllItem && total > 1 ? total - 1 : total);
-			var boxText = nb_groups + " " + ppt.tagText[ppt.tagMode];
+			var boxText = nb_groups + " " + group_objects[ppt.tagMode].name;
 			if (nb_groups != 1) boxText += "s";
 			draw_header_bar(gr, boxText, this)
 		}
@@ -579,7 +571,7 @@ function oBrowser() {
 			plman.InsertPlaylistItems(ap, base, this.groups[albumIndex].handles);
 			break;
 		case 2:
-			var name = ppt.tfos[ppt.tagMode].EvalWithMetadb(this.groups[albumIndex].handles.GetItem(0));
+			var name = group_objects[ppt.tagMode].playlist_tfo.EvalWithMetadb(this.groups[albumIndex].handles.GetItem(0));
 			var p = plman.CreatePlaylist(plman.PlaylistCount, name);
 			plman.ActivePlaylist = p
 			plman.InsertPlaylistItems(p, 0, this.groups[albumIndex].handles);
@@ -694,31 +686,12 @@ function oBrowser() {
 			this.populate();
 			break;
 		case 23:
-			switch (ppt.tagMode) {
-			case 0:
-				var tmp = utils.InputBox('Enter sort pattern for "Album"', window.Name, ppt.sort_album_tf);
-				if (tmp != ppt.sort_album_tf) {
-					ppt.sort_album_tf = tmp;
-					window.SetProperty("SMOOTH.SORT.ALBUM", ppt.sort_album_tf);
-					this.populate();
-				}
-				break;
-			case 1:
-				var tmp = utils.InputBox('Enter sort pattern for "Artist"', window.Name, ppt.sort_artist_tf);
-				if (tmp != ppt.sort_artist_tf) {
-					ppt.sort_artist_tf = tmp;
-					window.SetProperty("SMOOTH.SORT.ARTIST", ppt.sort_artist_tf);
-					this.populate();
-				}
-				break;
-			case 2:
-				var tmp = utils.InputBox('Enter sort pattern for "Album Artist"', window.Name, ppt.sort_album_artist_tf);
-				if (tmp != ppt.sort_album_artist_tf) {
-					ppt.sort_album_artist_tf = tmp;
-					window.SetProperty("SMOOTH.SORT.ALBUM.ARTIST", ppt.sort_album_artist_tf);
-					this.populate();
-				}
-				break;
+			var obj = group_objects[ppt.tagMode];
+			var tmp = utils.InputBox('Enter sort pattern for "' + obj.name + '"', window.Name, obj.sort_tf);
+			if (tmp != obj.sort_tf) {
+				obj.sort_tf = tmp;
+				window.SetProperty(obj.sort_property, obj.sort_tf);
+				this.populate();
 			}
 			break;
 		case 30:
@@ -824,32 +797,54 @@ function g_sendResponse() {
 	brw.populate();
 }
 
-ppt.sort_album_tf = window.GetProperty("SMOOTH.SORT.ALBUM", "%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%");
-ppt.sort_artist_tf = window.GetProperty("SMOOTH.SORT.ARTIST", "$meta(artist,0) | %date% | %album% | %discnumber% | %tracknumber% | %title%");
-ppt.sort_album_artist_tf = window.GetProperty("SMOOTH.SORT.ALBUM.ARTIST", "%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%");
+function group_object(name, group, group_hash, sort_property, default_sort, playlist) {
+	this.name = name;
+	this.sort_property = sort_property;
+	this.sort_tf = window.GetProperty(sort_property, default_sort);
+
+	this.group_tfo = fb.TitleFormat(group_hash + " ^^ " + group);
+	this.playlist_tfo = fb.TitleFormat(playlist);
+}
+
+var album_obj = new group_object(
+	"album",
+	"$if2(%album artist%,Unknown Artist) ^^ $if2(%album%,'('Singles')') ^^ [%date%]",
+	"$crc32(%path%)",
+	"SMOOTH.SORT.ALBUM",
+	"%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%",
+	"%album artist% - %album%"
+);
+
+var artist_obj = new group_object(
+	"artist",
+	"$if2($meta(artist,0),Unknown Artist)",
+	"$crc32(artists$meta(artist,0))",
+	"SMOOTH.SORT.ARTIST",
+	"$meta(artist,0) | %date% | %album% | %discnumber% | %tracknumber% | %title%",
+	"%artist%"
+);
+
+var album_artist_obj = new group_object(
+	"album artist",
+	"%album artist%",
+	"$crc32(artists%album artist%)",
+	"SMOOTH.SORT.ALBUM.ARTIST",
+	"%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%",
+	"%album artist%"
+);
+
+var group_objects = [album_obj, artist_obj, album_artist_obj];
 
 ppt.panelMode = window.GetProperty("SMOOTH.DISPLAY.MODE", 2); // 0 = column, 1 = column + art, 2 = album art grid, 3 - album art grid + overlay text
 ppt.sendto_playlist = window.GetProperty("SMOOTH.SENDTO.PLAYLIST", "Library selection");
 ppt.sendto_playlist_play = window.GetProperty("SMOOTH.SENDTO.PLAYLIST.PLAY", true);
 ppt.showAllItem = window.GetProperty("SMOOTH.SHOW.ALL.ITEMS", true);
 ppt.tagMode = window.GetProperty("SMOOTH.TAG.MODE", 0); // 0 = album, 1 = artist, 2 = album artist
-ppt.tagText = ["album", "artist", "album artist"];
-ppt.tfos = [
-	fb.TitleFormat("%album artist% - %album%"),
-	fb.TitleFormat("%artist%"),
-	fb.TitleFormat("%album artist%")
-]
 
 ppt.default_thumbnailWidthMin = window.GetProperty("SMOOTH.THUMB.MIN.WIDTH", 130);
 ppt.thumbnailWidthMin = ppt.default_thumbnailWidthMin;
 ppt.default_lineHeightMin = window.GetProperty("SMOOTH.LINE.MIN.HEIGHT", 120);
 ppt.lineHeightMin = ppt.default_lineHeightMin;
-
-var tfo = {
-	groupkey_album : fb.TitleFormat("$if2(%album artist%,Unknown Artist) ^^ $if2(%album%,'('Singles')') ^^ [%date%] ^^ $crc32(%path%)"),
-	groupkey_artist : fb.TitleFormat("$if2($meta(artist,0),Unknown Artist) ^^ $crc32(artists$meta(artist,0))"),
-	groupkey_album_artist : fb.TitleFormat("%album artist% ^^ $crc32(artists%album artist%)"),
-};
 
 var g_drag_drop = false;
 var g_filter_text = "";

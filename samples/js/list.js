@@ -373,6 +373,7 @@ function _list(mode, x, y, w, h) {
 			break;
 		case !panel.metadb:
 			this.artist = '';
+			this.filename = '';
 			this.data = [];
 			this.count = 0;
 			window.Repaint();

@@ -808,10 +808,10 @@ function group_object(name, group, group_hash, sort_property, default_sort, play
 
 var album_obj = new group_object(
 	"album",
-	"$if2(%album artist%,Unknown Artist) ^^ $if2(%album%,'('Singles')') ^^ [%date%]",
+	"$if(%album%,$if2(%album artist%,Unknown Artist),%directory%) ^^ $if2(%album%,'('Singles')') ^^ [%date%]",
 	"$crc32(%path%)",
-	"SMOOTH.SORT.ALBUM",
-	"%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%",
+	"SMOOTH.SORT.ALBUM2",
+	"$if(%album%,%album% | %album artist% | %date% | %discnumber% | %tracknumber% | %title%,zzz%path_sort%)",
 	"%album artist% - %album%"
 );
 

@@ -22,19 +22,26 @@ var colours = {
 
 update_colours();
 
+var pbo_chars = [chars.repeat_off, chars.repeat_all, chars.repeat_one, chars.random, chars.shuffle, chars.album, chars.folder];
+var pbo_names = plman.GetPlaybackOrders().toArray();
+
 buttons.update = function () {
 	this.buttons.menu = new _button(0, 0, bs, bs, { char : chars.menu, colour : colours.buttons }, null, function () { _menu(0, bs); }, 'Menu');
 	this.buttons.album_list = new _button(bs * 2, 0, bs, bs, { char : chars.music, colour : colours.buttons }, null, function () { fb.RunMainMenuCommand('Library/Album List'); }, 'Album List');
 	this.buttons.search = new _button(bs * 3, 0, bs, bs, { char : chars.search, colour : colours.buttons }, null, function () { fb.RunMainMenuCommand('Library/Search'); }, 'Library Search');
 
-	var x = panel.w - (bs * 7);
-	this.buttons.stop = new _button(x, 0, bs, bs, { char : chars.stop, colour : colours.buttons }, null, function () { fb.Stop(); }, 'Stop');
-	this.buttons.previous = new _button(x + bs, 0, bs, bs, { char : chars.prev, colour : colours.buttons }, null, function () { fb.Prev(); }, 'Previous');
-	this.buttons.play = new _button(x + (bs * 2), 0, bs, bs, { char : !fb.IsPlaying || fb.IsPaused ? chars.play : chars.pause, colour : colours.buttons}, null, function () { fb.PlayOrPause(); }, !fb.IsPlaying || fb.IsPaused ? 'Play' : 'Pause');
-	this.buttons.next = new _button(x + (bs * 3), 0, bs, bs, { char : chars.next, colour : colours.buttons }, null, function () { fb.Next(); }, 'Next');
+	var x = panel.w - (bs * 9);
+	
+	var pbo = plman.PlaybackOrder;
+	this.buttons.repeat = new _button(x, 0, bs, bs, { char : pbo_chars[pbo], colour: colours.buttons }, null, function () { pbo == pbo_chars.length - 1 ? plman.PlaybackOrder = 0 : plman.PlaybackOrder++ }, pbo_names[pbo]);
+	
+	this.buttons.stop = new _button(x + (bs * 2), 0, bs, bs, { char : chars.stop, colour : colours.buttons }, null, function () { fb.Stop(); }, 'Stop');
+	this.buttons.previous = new _button(x + (bs * 3), 0, bs, bs, { char : chars.prev, colour : colours.buttons }, null, function () { fb.Prev(); }, 'Previous');
+	this.buttons.play = new _button(x + (bs * 4), 0, bs, bs, { char : !fb.IsPlaying || fb.IsPaused ? chars.play : chars.pause, colour : colours.buttons}, null, function () { fb.PlayOrPause(); }, !fb.IsPlaying || fb.IsPaused ? 'Play' : 'Pause');
+	this.buttons.next = new _button(x + (bs * 5), 0, bs, bs, { char : chars.next, colour : colours.buttons }, null, function () { fb.Next(); }, 'Next');
 
-	this.buttons.console = new _button(x + (bs * 5), 0, bs, bs, {char : chars.list, colour:colours.buttons }, null, function () { fb.ShowConsole(); }, 'Console');
-	this.buttons.preferences = new _button(x + (bs * 6), 0, bs, bs, { char : chars.preferences, colour : colours.buttons }, null, function () { fb.ShowPreferences(); }, 'Preferences');
+	this.buttons.console = new _button(x + (bs * 7), 0, bs, bs, {char : chars.list, colour:colours.buttons }, null, function () { fb.ShowConsole(); }, 'Console');
+	this.buttons.preferences = new _button(x + (bs * 8), 0, bs, bs, { char : chars.preferences, colour : colours.buttons }, null, function () { fb.ShowPreferences(); }, 'Preferences');
 };
 
 function on_colours_changed() {
@@ -108,6 +115,11 @@ function on_mouse_rbtn_up(x, y) {
 function on_paint(gr) {
 	gr.Clear(colours.background);
 	buttons.paint(gr);
+}
+
+function on_playback_order_changed() {
+	buttons.update();
+	window.Repaint();
 }
 
 function on_playback_pause() {

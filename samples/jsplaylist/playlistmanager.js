@@ -11,7 +11,7 @@ function oPlaylistManager() {
 	this.playlists = [];
 	this.offset = 0;
 	this.totalRows = Math.floor(this.area_h / cPlaylistManager.rowHeight);
-	this.scrollbar = new oScrollBar("p.playlistManager", 0, 0, cScrollBar.width, 0, 0, cPlaylistManager.rowHeight);
+	this.scrollbar = new ScrollBar("p.playlistManager", 0, 0, cScrollBar.width, 0, 0, cPlaylistManager.rowHeight);
 	this.scrollbarWidth = 0;
 	this.inputbox = null;
 	this.inputboxID = -1;

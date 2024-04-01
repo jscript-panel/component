@@ -251,8 +251,8 @@ function PlaylistScrollBar() {
 	}
 }
 
-function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
-	this.parentObject = parentObject;
+function ScrollBar(parent, x, y, w, h, total_items, item_height) {
+	this.parent = parent;
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -383,7 +383,7 @@ function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
 		case "lbtn_up":
 			this.buttons[cScrollBar.buttonType.cursor].checkstate(event, x, y);
 			if (this.cursorDrag) {
-				eval(this.parentObject).offset = this.getOffsetFromCursorPos();
+				eval(this.parent).offset = this.getOffsetFromCursorPos();
 				full_repaint();
 			}
 			this.cursorClickX = 0;
@@ -401,7 +401,7 @@ function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
 					this.cursorY = this.cursorAreaY;
 				}
 				this.offset = this.getOffsetFromCursorPos();
-				eval(this.parentObject).offset = this.offset;
+				eval(this.parent).offset = this.offset;
 
 				if (!cScrollBar.repaint_timeout) {
 					cScrollBar.repaint_timeout = window.SetTimeout(function () {
@@ -436,14 +436,14 @@ function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
 							this.buttonClick = true;
 							this.offset = this.offset > 0 ? this.offset - 1 : 0;
 							this.updateCursorPos(this.offset);
-							eval(this.parentObject).offset = this.offset;
+							eval(this.parent).offset = this.offset;
 							full_repaint();
 							if (!cScrollBar.timerID) {
 								cScrollBar.timerID = window.SetInterval((function () {
 									if (cScrollBar.timer_counter > 7) {
 										if (this.offset > 0) this.offset--;
 										this.updateCursorPos(this.offset);
-										eval(this.parentObject).offset = this.offset;
+										eval(this.parent).offset = this.offset;
 										full_repaint();
 									} else {
 										cScrollBar.timer_counter++;
@@ -458,7 +458,7 @@ function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
 							var max_offset = this.total - this.totalRowsFull;
 							this.offset = (this.offset + 1 >= max_offset ? max_offset : this.offset + 1);
 							this.updateCursorPos(this.offset);
-							eval(this.parentObject).offset = this.offset;
+							eval(this.parent).offset = this.offset;
 							full_repaint();
 							if (!cScrollBar.timerID) {
 								cScrollBar.timerID = window.SetInterval((function () {
@@ -466,7 +466,7 @@ function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
 										var max_offset = this.total - this.totalRowsFull;
 										this.offset = (this.offset + 1 >= max_offset ? max_offset : this.offset + 1);
 										this.updateCursorPos(this.offset);
-										eval(this.parentObject).offset = this.offset;
+										eval(this.parent).offset = this.offset;
 										full_repaint();
 									} else {
 										cScrollBar.timer_counter++;
@@ -543,7 +543,7 @@ function oScrollBar(parentObject, x, y, w, h, total_items, item_height) {
 				} else {
 					this.offset = (this.offset < (this.total - this.totalRowsFull - this.scrollStep) ? (this.offset + this.scrollStep) : (this.total - this.totalRowsFull));
 				}
-				eval(this.parentObject).offset = this.offset;
+				eval(this.parent).offset = this.offset;
 				this.reSet(this.total, this.itemHeight, this.offset);
 				full_repaint();
 			}

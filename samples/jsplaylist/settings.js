@@ -682,7 +682,7 @@ function oListBox(id, objectName, x, y, w, h, row_height, label, arr, selectedId
 	this.total = this.arr.length;
 	this.selectedId = selectedId;
 	this.func = "settings_listboxes_action";
-	this.scrollbar = new oScrollBar(objectName, this.x + this.w - cScrollBar.width, this.ly, cScrollBar.width, this.h, this.arr.length, this.rowHeight);
+	this.scrollbar = new ScrollBar(objectName, this.x + this.w - cScrollBar.width, this.ly, cScrollBar.width, this.h, this.arr.length, this.rowHeight);
 	this.scrollbarWidth = 0;
 
 	this.showSelected = function (rowId) {
@@ -852,7 +852,7 @@ function oPage(id, objectName, label, nbrows) {
 	this.h = p.settings.h - cSettings.topBarHeight;
 	this.totalRowsVis = Math.floor((this.h - cHeaderBar.height) / cSettings.rowHeight);
 	// scrollbar instance
-	this.scrollbar = new oScrollBar(objectName, p.settings.x + p.settings.w - cScrollBar.width, p.settings.y + cSettings.topBarHeight + cHeaderBar.height, cScrollBar.width, p.settings.h - cSettings.topBarHeight - cHeaderBar.height, this.total_rows, cSettings.rowHeight);
+	this.scrollbar = new ScrollBar(objectName, p.settings.x + p.settings.w - cScrollBar.width, p.settings.y + cSettings.topBarHeight + cHeaderBar.height, cScrollBar.width, p.settings.h - cSettings.topBarHeight - cHeaderBar.height, this.total_rows, cSettings.rowHeight);
 	this.scrollbarWidth = 0;
 
 	this.init = function () {

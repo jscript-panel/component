@@ -220,6 +220,7 @@ function _text(mode, x, y, w, h) {
 				doc.open();
 
 				var obj = {};
+				var tags = [];
 				var div = doc.createElement('div');
 				div.innerHTML = response_text;
 
@@ -227,7 +228,6 @@ function _text(mode, x, y, w, h) {
 					.filter({ className : 'tag' })
 					.value();
 
-				var tags = [];
 				for (var i = 0; i < lis.length; i++) {
 					var li = lis[i];
 					var a = _firstElement(li, 'a');

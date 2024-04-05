@@ -1046,6 +1046,7 @@ function oBrowser() {
 		sub3.CheckMenuRadioItem(21, 23, ppt.groupHeaderRowsNumber + 20);
 		sub3.AppendMenuSeparator();
 		sub3.AppendMenuItem(GetMenuFlags(ppt.showGroupHeaders && ppt.groupHeaderRowsNumber > 1, ppt.autoFill), 24, "Album Art: Auto-fill");
+		sub3.AppendMenuItem(MF_STRING, 25, "Clear Album Art cache");
 		sub3.AppendTo(menu, MF_STRING, "Group Headers");
 
 		sub4.AppendMenuItem(CheckMenuIf(ppt.doubleRowText), 30, "Double Track Line");
@@ -1167,6 +1168,11 @@ function oBrowser() {
 		case 24:
 			ppt.autoFill = !ppt.autoFill;
 			window.SetProperty("SMOOTH.AUTO.FILL", ppt.autoFill);
+			images.clear();
+			this.populate();
+			break;
+		case 25:
+			utils.RemoveFolderRecursive(CACHE_FOLDER, 1);
 			images.clear();
 			this.populate();
 			break;

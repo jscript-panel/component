@@ -639,6 +639,7 @@ function oBrowser() {
 
 		menu.AppendMenuItem(CheckMenuIf(ppt.showAllItem), 40, "Show all items");
 		menu.AppendMenuItem(GetMenuFlags(ppt.panelMode == 1 || ppt.panelMode == 2, ppt.autoFill), 41, "Album Art: Auto-fill");
+		menu.AppendMenuItem(MF_STRING, 42, "Clear Album Art cache");
 		menu.AppendMenuSeparator();
 
 		menu.AppendMenuItem(MF_STRING, 50, "Configure...");
@@ -711,6 +712,11 @@ function oBrowser() {
 		case 41:
 			ppt.autoFill = !ppt.autoFill;
 			window.SetProperty("SMOOTH.AUTO.FILL", ppt.autoFill);
+			images.clear();
+			this.populate();
+			break;
+		case 42:
+			utils.RemoveFolderRecursive(CACHE_FOLDER, 1);
 			images.clear();
 			this.populate();
 			break;

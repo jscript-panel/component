@@ -383,7 +383,7 @@ function oBrowser() {
 					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + text_left, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
 					gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
 				} else {
-					gr.WriteText(group.artist, g_font_bold.str, normal_text, ax + text_left, ay + cover_size + text_left, cover_size, fh * 3, 2, 2);
+					gr.WriteText(group.artist, g_font_bold.str, normal_text, ax + text_left, ay + cover_size + text_left, cover_size, fh * 3, 2, 2, 3, 1);
 				}
 
 				break;

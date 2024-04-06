@@ -114,7 +114,7 @@ function DrawStyledText(gr, text, default_font, default_colour, x, y, w, h, text
 	}
 
 	// gr.WriteText accepts an empty string but GetFontStyles needs a valid font
-	if (default_font.length == 0) {
+	if (default_font.empty()) {
 		default_font = CreateFontString('Segoe UI', 16);
 	}
 

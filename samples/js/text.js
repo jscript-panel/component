@@ -13,6 +13,8 @@ function _text(mode, x, y, w, h) {
 	this.font_changed = function () {
 		if (this.mode == 'console') {
 			this.console_refresh();
+		} else if (this.mode == 'play_log') {
+			this.create_layout();
 		} else {
 			this.reset();
 			this.metadb_changed();
@@ -353,6 +355,7 @@ function _text(mode, x, y, w, h) {
 					this.text_layout = utils.CreateTextLayout(this.text, panel.fonts.name, _scale(panel.fonts.size.value));
 				}
 
+				this.update();
 				window.Repaint();
 			}
 			

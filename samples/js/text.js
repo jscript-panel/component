@@ -367,11 +367,6 @@ function _text(mode, x, y, w, h) {
 				return lines;
 			}
 
-			this.init = function () {
-				this.read_file();
-				this.create_layout();
-			}
-
 			this.log = function () {
 				var current = this.tfo.Eval();
 
@@ -400,7 +395,8 @@ function _text(mode, x, y, w, h) {
 			this.properties.tf = new _p('2K3.TEXT.LOG.TF', '[%artist% - ]%title%');
 			this.tfo = panel.get_tfo(this.properties.tf.value);
 			this.filename = folders.data + 'play_log.txt';
-			this.init();
+			this.read_file();
+			this.create_layout();
 			break;
 		case 'text_reader2':
 			this.properties.title_tf = new _p('2K3.TEXT.TITLE.TF', '%album artist% - $if2(%album%,%title%)');

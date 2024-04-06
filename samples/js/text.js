@@ -30,6 +30,8 @@ function _text(mode, x, y, w, h) {
 				return panel.tf('$font(Twemoji Mozilla,' + _scale(panel.fonts.size.value - 3) + ')' + this.flag + '$font() ') + this.artist;
 			}
 			return this.artist;
+		case 'play_log':
+			return 'Play Log';
 		case 'text_reader2':
 			return panel.tf(this.properties.title_tf.value);
 		}
@@ -343,6 +345,60 @@ function _text(mode, x, y, w, h) {
 				'Referer' : 'https://www.last.fm',
 			});
 			break;
+		case 'play_log':
+			this.create_layout = function () {
+				this.clear_layout();
+
+				if (this.text.length) {
+					this.text_layout = utils.CreateTextLayout(this.text, panel.fonts.name, _scale(panel.fonts.size.value));
+				}
+
+				window.Repaint();
+			}
+			
+			this.get_lines = function () {
+				var lines = _stringToArray(this.text, this.CRLF);
+				if (this.properties.limit.value > 0) {
+					lines = _.take(lines, this.properties.limit.value);
+				}
+				return lines;
+			}
+
+			this.init = function () {
+				this.read_file();
+				this.create_layout();
+			}
+
+			this.log = function () {
+				var current = this.tfo.Eval();
+
+				if (current != this.last) {
+					this.last = current;
+					var str = utils.TimestampToDateString(utils.Now()) + ' ' + current;
+
+					var lines = this.get_lines();
+					if (lines.length == this.properties.limit.value) lines.pop();
+					lines.unshift(str);
+
+					this.text = lines.join(this.CRLF);
+					_save(this.filename, this.text);
+
+					this.create_layout();
+				}
+			}
+
+			this.read_file = function () {
+				this.text = utils.ReadUTF8(this.filename);
+			}
+
+			utils.CreateFolder(folders.data);
+			this.last = '';
+			this.properties.limit = new _p('2K3.TEXT.LOG.LIMIT', 100);
+			this.properties.tf = new _p('2K3.TEXT.LOG.TF', '[%artist% - ]%title%');
+			this.tfo = panel.get_tfo(this.properties.tf.value);
+			this.filename = folders.data + 'play_log.txt';
+			this.init();
+			break;
 		case 'text_reader2':
 			this.properties.title_tf = new _p('2K3.TEXT.TITLE.TF', '%album artist% - $if2(%album%,%title%)');
 			this.properties.filename_tf = new _p('2K3.TEXT.FILENAME.TF', '$directory_path(%path%)');
@@ -376,7 +432,7 @@ function _text(mode, x, y, w, h) {
 	}
 
 	this.metadb_changed = function () {
-		if (this.mode == 'console') return;
+		if (this.mode == 'console' || this.mode == 'play_log') return;
 
 		if (panel.metadb) {
 			var str = '';
@@ -508,6 +564,12 @@ function _text(mode, x, y, w, h) {
 			panel.m.AppendMenuItem(CheckMenuIf(this.properties.extra.enabled), 1140, 'Show extra info');
 			panel.m.AppendMenuSeparator();
 			break;
+		case 'play_log':
+			panel.m.AppendMenuItem(MF_STRING, 1200, 'Title format...');
+			panel.m.AppendMenuItem(MF_STRING, 1201, 'Limit');
+			panel.m.AppendMenuItem(MF_STRING, 1202, 'Clear');
+			panel.m.AppendMenuSeparator();
+			break;
 		case 'text_reader2':
 			panel.m.AppendMenuItem(MF_STRING, 1300, 'Refresh');
 			panel.m.AppendMenuSeparator();
@@ -521,7 +583,6 @@ function _text(mode, x, y, w, h) {
 			panel.s10.AppendMenuItem(MF_STRING, 1311, 'Auto-detect');
 			panel.s10.CheckMenuRadioItem(1310, 1311, this.properties.utf8.enabled ? 1310 : 1311);
 			panel.s10.AppendTo(panel.m, MF_STRING, 'Encoding');
-			panel.s10.App
 			panel.m.AppendMenuSeparator();
 			break;
 		}
@@ -582,6 +643,27 @@ function _text(mode, x, y, w, h) {
 			this.properties.extra.toggle();
 			this.reset();
 			this.metadb_changed();
+			break;
+		case 1200:
+			var tmp = utils.InputBox('Enter title format pattern.', window.Name, this.properties.tf.value);
+			if (tmp.empty()) tmp = this.properties.tf.default_;
+			if (tmp != this.properties.tf.value) {
+				this.properties.tf.value = tmp;
+				this.tfo = panel.get_tfo(this.properties.tf.value);
+			}
+			break;
+		case 1201:
+			var tmp = Number(utils.InputBox('Enter limit (0 = unlimited)', window.Name, this.properties.limit.value));
+			this.properties.limit.value =  tmp >= 0 ? tmp : this.properties.limit.default_;
+			this.text = this.get_lines().join(this.CRLF);
+			_save(this.filename, this.text);
+			this.create_layout();
+			break;
+		case 1202:
+			this.text = '';
+			_save(this.filename, this.text);
+			this.clear_layout();
+			window.Repaint();
 			break;
 		case 1300:
 			this.clear_layout();

@@ -175,7 +175,7 @@ function on_playback_starting() {
 
 	starting = true;
 	window.Repaint();
-	
+
 	window.SetTimeout(function () {
 		starting = false;
 		window.Repaint();

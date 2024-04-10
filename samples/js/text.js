@@ -358,7 +358,7 @@ function _text(mode, x, y, w, h) {
 				this.update();
 				window.Repaint();
 			}
-			
+
 			this.get_lines = function () {
 				var lines = _stringToArray(this.text, this.CRLF);
 				if (this.properties.limit.value > 0) {

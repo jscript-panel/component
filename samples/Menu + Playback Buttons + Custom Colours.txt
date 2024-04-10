@@ -31,10 +31,10 @@ buttons.update = function () {
 	this.buttons.search = new _button(bs * 3, 0, bs, bs, { char : chars.search, colour : colours.buttons }, null, function () { fb.RunMainMenuCommand('Library/Search'); }, 'Library Search');
 
 	var x = panel.w - (bs * 9);
-	
+
 	var pbo = plman.PlaybackOrder;
 	this.buttons.repeat = new _button(x, 0, bs, bs, { char : pbo_chars[pbo], colour: colours.buttons }, null, function () { pbo == pbo_chars.length - 1 ? plman.PlaybackOrder = 0 : plman.PlaybackOrder++ }, pbo_names[pbo]);
-	
+
 	this.buttons.stop = new _button(x + (bs * 2), 0, bs, bs, { char : chars.stop, colour : colours.buttons }, null, function () { fb.Stop(); }, 'Stop');
 	this.buttons.previous = new _button(x + (bs * 3), 0, bs, bs, { char : chars.prev, colour : colours.buttons }, null, function () { fb.Prev(); }, 'Previous');
 	this.buttons.play = new _button(x + (bs * 4), 0, bs, bs, { char : !fb.IsPlaying || fb.IsPaused ? chars.play : chars.pause, colour : colours.buttons}, null, function () { fb.PlayOrPause(); }, !fb.IsPlaying || fb.IsPaused ? 'Play' : 'Pause');

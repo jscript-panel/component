@@ -372,21 +372,21 @@ function on_playlist_item_ensure_visible(playlist, index) {
 	on_item_focus_change(playlist, 0, index);
 }
 
-function on_playlist_items_added(playlist_idx) {
-	if (playlist_idx == g_active_playlist) {
+function on_playlist_items_added(playlistIndex) {
+	if (playlistIndex == g_active_playlist) {
 		g_focus_id = getFocusId();
 		brw.populate();
 	}
 }
 
-function on_playlist_items_changed(playlist_idx) {
-	if (playlist_idx == g_active_playlist) {
+function on_playlist_items_changed(playlistIndex) {
+	if (playlistIndex == g_active_playlist) {
 		brw.populate();
 	}
 }
 
-function on_playlist_items_removed(playlist_idx, new_count) {
-	if (playlist_idx == g_active_playlist) {
+function on_playlist_items_removed(playlistIndex, new_count) {
+	if (playlistIndex == g_active_playlist) {
 		if (new_count == 0) {
 			scroll = scroll_ = 0;
 		}
@@ -395,15 +395,15 @@ function on_playlist_items_removed(playlist_idx, new_count) {
 	}
 }
 
-function on_playlist_items_reordered(playlist_idx) {
-	if (playlist_idx == g_active_playlist) {
+function on_playlist_items_reordered(playlistIndex) {
+	if (playlistIndex == g_active_playlist) {
 		g_focus_id = getFocusId();
 		brw.populate();
 	}
 }
 
-function on_playlist_items_replaced(playlist_idx) {
-	if (playlist_idx == g_active_playlist) {
+function on_playlist_items_replaced(playlistIndex) {
+	if (playlistIndex == g_active_playlist) {
 		brw.populate();
 	}
 }

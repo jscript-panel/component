@@ -1,5 +1,5 @@
 function on_char(code) {
-	if (ppt.showHeaderBar && brw.inputbox.edit) {
+	if (ppt.library && ppt.showHeaderBar && brw.inputbox.edit) {
 		brw.inputbox.on_char(code);
 	}
 }
@@ -44,17 +44,21 @@ function on_key_up(vkey) {
 }
 
 function on_library_items_added() {
-	brw.populate();
+	if (ppt.library) {
+		brw.populate();
+	}
 }
 
 function on_library_items_changed(handles, fromhook) {
-	if (!fromhook) {
+	if (ppt.library && !fromhook) {
 		brw.populate();
 	}
 }
 
 function on_library_items_removed() {
-	brw.populate();
+	if (ppt.library) {
+		brw.populate();
+	}
 }
 
 function on_mouse_lbtn_dblclk(x, y, mask) {
@@ -108,7 +112,7 @@ function on_paint(gr) {
 	gr.Clear(g_colour_background);
 	brw.draw(gr);
 
-	if (ppt.showHeaderBar) {
+	if (ppt.library && ppt.showHeaderBar) {
 		var size = ppt.headerBarHeight;
 
 		if (brw.inputbox.text.length > 0) {
@@ -140,6 +144,52 @@ function on_playback_stop(reason) {
 	if (reason != 2 && ppt.enableDynamicColours) {
 		on_colours_changed();
 		brw.repaint();
+	}
+}
+
+function on_playlist_items_added(playlistIndex) {
+	if (!ppt.library && playlistIndex == g_active_playlist) {
+		brw.populate();
+	}
+}
+
+function on_playlist_items_changed(playlistIndex) {
+	if (!ppt.library && playlistIndex == g_active_playlist) {
+		brw.populate();
+	}
+}
+
+function on_playlist_items_removed(playlistIndex, new_count) {
+	if (!ppt.library && playlistIndex == g_active_playlist) {
+		brw.populate();
+	}
+}
+
+function on_playlist_items_reordered(playlistIndex) {
+	if (!ppt.library && playlistIndex == g_active_playlist) {
+		brw.populate();
+	}
+}
+
+function on_playlist_items_replaced(playlistIndex) {
+	if (!ppt.library && playlistIndex == g_active_playlist) {
+		brw.populate();
+	}
+}
+
+function on_playlist_switch() {
+	g_active_playlist = plman.ActivePlaylist;
+
+	if (!ppt.library) {
+		brw.populate();
+	}
+}
+
+function on_playlists_changed() {
+	g_active_playlist = plman.ActivePlaylist;
+
+	if (!ppt.library) {
+		brw.populate();
 	}
 }
 
@@ -199,11 +249,21 @@ function oBrowser() {
 
 	this.populate = function () {
 		this.groups = [];
-		this.list = fb.GetLibraryItems(g_filter_text);
+
+		if (ppt.library) {
+			this.list = fb.GetLibraryItems(g_filter_text);
+		} else {
+			this.list = plman.GetPlaylistItems(g_active_playlist);
+		}
 
 		if (this.list.Count > 0) {
-			var obj = group_objects[ppt.tagMode];
-			this.list.SortByFormat(obj.sort_tf, 1);
+			if (ppt.library) {
+				var obj = group_objects[ppt.tagMode];
+				this.list.SortByFormat(obj.sort_tf, 1);
+			} else {
+				ppt.tagMode = 0;
+				var obj = group_objects[ppt.tagMode];
+			}
 
 			var track_tfs = obj.group_tfo.EvalWithMetadbs(this.list).toArray();
 			var previous = "";
@@ -232,10 +292,12 @@ function oBrowser() {
 			if (g > 0) {
 				this.groups[g - 1].finalise(handles);
 
-				if (g > 1 && ppt.showAllItem) {
+				if (ppt.showAllItem) {
 					var meta = "All items";
 					if (ppt.tagMode == 0) {
-						var all_items = "(" + this.groups.length + " " + obj.name + "s)"
+						var name = obj.name;
+						if (this.groups.length > 1) name += "s";
+						var all_items = "(" + this.groups.length + " " + name + ")"
 						meta += " ^^ " + all_items;
 					}
 					this.groups.unshift(new oGroup(0, 0, null, meta, 0));
@@ -247,12 +309,6 @@ function oBrowser() {
 
 		get_metrics();
 		this.repaint();
-	}
-
-	this.activateItem = function (index) {
-		if (this.groups.length == 0)
-			return;
-		this.selectedIndex = index;
 	}
 
 	this.sendItemsToPlaylist = function (index) {
@@ -451,15 +507,39 @@ function oBrowser() {
 			break;
 		case "lbtn_down":
 		case "rbtn_down":
-			if (this.ishover && this.activeIndex > -1 && this.activeIndex != this.selectedIndex) {
-				this.activateItem(this.activeIndex)
+			if (this.ishover && this.activeIndex > -1) {
+				this.selectedIndex = this.activeIndex;
 				window.SetSelection(this.groups[this.activeIndex].handles, 6);
-				this.repaint();
+
+				if (!ppt.library) {
+					plman.ClearPlaylistSelection(g_active_playlist);
+					var start = this.groups[this.activeIndex].start;
+					var count = this.groups[this.activeIndex].count;
+					var arr = [];
+					for (var i = start; i < start + count; i++) {
+						arr.push(i);
+					}
+					plman.SetPlaylistSelection(g_active_playlist, arr, true);
+					plman.SetPlaylistFocusItem(g_active_playlist, start);
+				}
+			} else {
+				this.selectedIndex = -1;
+				window.SetSelection(fb.CreateHandleList(), 6);
+
+				if (!ppt.library) {
+					plman.ClearPlaylistSelection(g_active_playlist);
+				}
 			}
+
+			this.repaint();
 			break;
 		case "lbtn_dblclk":
 			if (this.ishover && this.activeIndex > -1) {
-				this.sendItemsToPlaylist(this.activeIndex);
+				if (ppt.library) {
+					this.sendItemsToPlaylist(this.activeIndex);
+				} else {
+					plman.ExecutePlaylistDefaultAction(g_active_playlist, this.groups[this.activeIndex].start);
+				}
 			}
 			break;
 		case "rbtn_up":
@@ -476,7 +556,7 @@ function oBrowser() {
 			break;
 		}
 
-		if (ppt.showHeaderBar) {
+		if (ppt.library && ppt.showHeaderBar) {
 			this.inputbox.check(event, x, y);
 
 			if (this.inputbox.text.length > 0) {
@@ -536,10 +616,14 @@ function oBrowser() {
 		var menu = window.CreatePopupMenu();
 		var sub = window.CreatePopupMenu();
 		var add = window.CreatePopupMenu()
-		var context = fb.CreateContextMenuManager();;
+		var context = fb.CreateContextMenuManager();
+		var handles = this.groups[albumIndex].handles;
 		var ap = plman.ActivePlaylist;
 
-		menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(ap)), 1, "Add to current playlist");
+		if (ppt.library) {
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(ap)), 1, "Add to current playlist");
+		}
+
 		menu.AppendMenuItem(MF_STRING, 2, "Add to new playlist");
 
 		for (var i = 0; i < plman.PlaylistCount; i++) {
@@ -548,16 +632,19 @@ function oBrowser() {
 		add.AppendTo(menu, MF_STRING, "Add to other playlist");
 		menu.AppendMenuSeparator();
 
-		sub.AppendMenuItem(MF_STRING, 1000, "Send to default playlist and play");
-		sub.AppendMenuItem(MF_STRING, 1001, "Send to default playlist");
-		sub.CheckMenuRadioItem(1000, 1001, ppt.sendto_playlist_play ? 1000 : 1001);
-		sub.AppendMenuSeparator();
+		if (ppt.library) {
+			sub.AppendMenuItem(MF_STRING, 1000, "Send to default playlist and play");
+			sub.AppendMenuItem(MF_STRING, 1001, "Send to default playlist");
+			sub.CheckMenuRadioItem(1000, 1001, ppt.sendto_playlist_play ? 1000 : 1001);
+			sub.AppendMenuSeparator();
 
-		sub.AppendMenuItem(MF_STRING, 1002, "Default playlist name")
-		sub.AppendTo(menu, MF_STRING, "Double click");
+			sub.AppendMenuItem(MF_STRING, 1002, "Default playlist name")
+			sub.AppendTo(menu, MF_STRING, "Double click");
 
-		menu.AppendMenuSeparator();
-		context.InitContext(this.groups[albumIndex].handles);
+			menu.AppendMenuSeparator();
+		}
+
+		context.InitContext(handles);
 		context.BuildMenu(menu, 10000);
 
 		var idx = menu.TrackPopupMenu(x, y);
@@ -568,13 +655,13 @@ function oBrowser() {
 			break;
 		case 1:
 			var base = plman.GetPlaylistItemCount(ap);
-			plman.InsertPlaylistItems(ap, base, this.groups[albumIndex].handles);
+			plman.InsertPlaylistItems(ap, base, handles);
 			break;
 		case 2:
-			var name = group_objects[ppt.tagMode].playlist_tfo.EvalWithMetadb(this.groups[albumIndex].handles.GetItem(0));
+			var name = group_objects[ppt.tagMode].playlist_tfo.EvalWithMetadb(handles.GetItem(0));
 			var p = plman.CreatePlaylist(plman.PlaylistCount, name);
 			plman.ActivePlaylist = p
-			plman.InsertPlaylistItems(p, 0, this.groups[albumIndex].handles);
+			plman.InsertPlaylistItems(p, 0, handles);
 			break;
 		case 1000:
 		case 1001:
@@ -593,7 +680,7 @@ function oBrowser() {
 				var target_playlist = idx - 10;
 				plman.UndoBackup(target_playlist);
 				var base = plman.GetPlaylistItemCount(target_playlist);
-				plman.InsertPlaylistItems(target_playlist, base, this.groups[albumIndex].handles);
+				plman.InsertPlaylistItems(target_playlist, base, handles);
 				plman.ActivePlaylist = target_playlist;
 			} else {
 				context.ExecuteByID(idx - 10000);
@@ -622,13 +709,21 @@ function oBrowser() {
 		sub.AppendTo(menu, MF_STRING, "Colours");
 		menu.AppendMenuSeparator();
 
-		menu.AppendMenuItem(MF_STRING, 20, "Album");
-		menu.AppendMenuItem(MF_STRING, 21, "Artist");
-		menu.AppendMenuItem(MF_STRING, 22, "Album Artist");
-		menu.CheckMenuRadioItem(20, 22, 20 + ppt.tagMode);
+		menu.AppendMenuItem(MF_STRING, 10, "Library");
+		menu.AppendMenuItem(MF_STRING, 11, "Playlist");
+		menu.CheckMenuRadioItem(10, 11, ppt.library ? 10 : 11);
 		menu.AppendMenuSeparator();
-		menu.AppendMenuItem(MF_STRING, 23, "Sort pattern...");
-		menu.AppendMenuSeparator();
+
+		if (ppt.library) {
+			menu.AppendMenuItem(MF_STRING, 20, "Album");
+			menu.AppendMenuItem(MF_STRING, 21, "Artist");
+			menu.AppendMenuItem(MF_STRING, 22, "Album Artist");
+			menu.CheckMenuRadioItem(20, 22, 20 + ppt.tagMode);
+			menu.AppendMenuSeparator();
+
+			menu.AppendMenuItem(MF_STRING, 23, "Sort pattern...");
+			menu.AppendMenuSeparator();
+		}
 
 		menu.AppendMenuItem(MF_STRING, 30, "Column");
 		menu.AppendMenuItem(MF_STRING, 31, "Column + Album Art");
@@ -678,6 +773,12 @@ function oBrowser() {
 			g_colour_selection = utils.ColourPicker(g_colour_selection);
 			window.SetProperty("SMOOTH.COLOUR.BACKGROUND.SELECTED", g_colour_selection);
 			on_colours_changed();
+			break;
+		case 10:
+		case 11:
+			ppt.library = idx == 10;
+			window.SetProperty("SMOOTH.LIBRARY", ppt.library);
+			this.populate();
 			break;
 		case 20:
 		case 21:
@@ -841,6 +942,7 @@ var album_artist_obj = new group_object(
 
 var group_objects = [album_obj, artist_obj, album_artist_obj];
 
+ppt.library = window.GetProperty("SMOOTH.LIBRARY", true); // false = active playlist
 ppt.panelMode = window.GetProperty("SMOOTH.DISPLAY.MODE", 2); // 0 = column, 1 = column + art, 2 = album art grid, 3 - album art grid + overlay text
 ppt.sendto_playlist = window.GetProperty("SMOOTH.SENDTO.PLAYLIST", "Library selection");
 ppt.sendto_playlist_play = window.GetProperty("SMOOTH.SENDTO.PLAYLIST.PLAY", true);
@@ -852,6 +954,7 @@ ppt.thumbnailWidthMin = ppt.default_thumbnailWidthMin;
 ppt.default_lineHeightMin = window.GetProperty("SMOOTH.LINE.MIN.HEIGHT", 120);
 ppt.lineHeightMin = ppt.default_lineHeightMin;
 
+var g_active_playlist = plman.ActivePlaylist;
 var g_drag_drop = false;
 var g_filter_text = "";
 var brw = new oBrowser();

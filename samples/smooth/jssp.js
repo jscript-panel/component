@@ -81,7 +81,7 @@ function on_key_down(vkey) {
 	if (mask == KMask.none) {
 		switch (vkey) {
 		case VK_F3:
-			if (g_search_indexes.length) {
+			if (g_search_indexes.length > 1) {
 				g_search_index++;
 				if (g_search_index == g_search_indexes.length) {
 					g_search_index = 0;

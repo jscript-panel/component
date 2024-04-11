@@ -1,3 +1,9 @@
+function on_char(code) {
+	if (ppt.showHeaderBar && brw.inputbox.edit) {
+		brw.inputbox.on_char(code);
+	}
+}
+
 function on_drag_drop(action, x, y, mask) {
 	if (x > brw.scrollbar.x || y < brw.y) {
 		action.Effect = 0;
@@ -66,10 +72,23 @@ function on_item_focus_change(playlist, from, to) {
 }
 
 function on_key_down(vkey) {
+	if (ppt.showHeaderBar) {
+		brw.inputbox.on_key_down(vkey);
+	}
+
 	var mask = GetKeyboardMask();
 
 	if (mask == KMask.none) {
 		switch (vkey) {
+		case VK_F3:
+			if (g_search_indexes.length) {
+				g_search_index++;
+				if (g_search_index == g_search_indexes.length) {
+					g_search_index = 0;
+				}
+				plman.SetPlaylistFocusItem(g_active_playlist, g_search_indexes[g_search_index]);
+			}
+			break;
 		case VK_UP:
 			if (brw.rows.length > 0 && !brw.keypressed && !cScrollBar.timerID) {
 				brw.keypressed = true;
@@ -308,10 +327,23 @@ function on_mouse_wheel(step) {
 
 function on_paint(gr) {
 	gr.Clear(g_colour_background);
+
 	if (ppt.wallpapermode && g_wallpaperImg) {
 		drawImage(gr, g_wallpaperImg, brw.x, brw.y, brw.w, brw.h, true, null, ppt.wallpaperopacity);
 	}
 	brw.draw(gr);
+
+	if (ppt.showHeaderBar) {
+		var size = ppt.headerBarHeight;
+
+		if (brw.inputbox.text.length > 0) {
+			brw.reset_bt.draw(gr, 0, 0);
+		} else {
+			gr.WriteText(chars.search, g_font_fluent_20.str, g_colour_text, 0, -2, size, size, 2, 2);
+		}
+
+		brw.inputbox.draw(gr, size + 4, 2);
+	}
 }
 
 function on_playback_dynamic_info_track(type) {
@@ -437,6 +469,8 @@ function oBrowser() {
 		this.totalRows = Math.ceil(this.h / ppt.rowHeight);
 		this.totalRowsVis = Math.floor(this.h / ppt.rowHeight);
 
+		this.reset_bt = new button(images.reset, images.reset_hover, images.reset_hover);
+		this.inputbox.setSize(ww * 0.4, scale(20));
 		this.scrollbar.setSize();
 
 		scroll = Math.round(scroll / ppt.rowHeight) * ppt.rowHeight;
@@ -959,6 +993,23 @@ function oBrowser() {
 			this.context_menu(x, y, is_group_header);
 			break;
 		}
+
+		if (ppt.showHeaderBar) {
+			this.inputbox.check(event, x, y);
+
+			if (this.inputbox.text.length > 0) {
+				if (event == "lbtn_down" || event == "move") {
+					this.reset_bt.checkstate(event, x, y);
+				} else if (event == "lbtn_up") {
+					if (this.reset_bt.checkstate("lbtn_up", x, y) == ButtonStates.hover) {
+						this.inputbox.text = "";
+						this.inputbox.offset = 0;
+						g_sendResponse();
+					}
+				}
+			}
+		}
+
 		if (cScrollBar.visible) {
 			this.scrollbar.on_mouse(event, x, y);
 		}
@@ -1264,6 +1315,7 @@ function oBrowser() {
 	this.playlist_info = "";
 	this.list = fb.CreateHandleList();
 	this.track_tf_arr = [];
+	this.inputbox = new oInputbox(300, scale(20), true, "", "Search", g_sendResponse);
 }
 
 function oGroup(index, start, handle, groupkey, cachekey) {
@@ -1284,6 +1336,19 @@ function oGroup(index, start, handle, groupkey, cachekey) {
 
 	this.finalise = function (count) {
 		this.count = count;
+	}
+}
+
+function g_sendResponse() {
+	g_search_text = brw.inputbox.text;
+	g_search_index = 0;
+
+	if (g_search_text.empty()) {
+		plman.ClearPlaylistSelection(g_active_playlist);
+		g_search_indexes = [];
+	} else {
+		plman.SelectQueryItems(g_active_playlist, g_search_text);
+		g_search_indexes = plman.GetPlaylistSelectedIndexes(g_active_playlist).toArray();
 	}
 }
 
@@ -1460,6 +1525,9 @@ var g_focus_row = 0;
 var g_focus_album_id = -1;
 var g_seconds = 0;
 var g_time = "";
+var g_search_text = "";
+var g_search_index = 0;
+var g_search_indexes = [];
 
 var brw = new oBrowser();
 

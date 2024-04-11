@@ -1347,8 +1347,7 @@ function g_sendResponse() {
 		plman.ClearPlaylistSelection(g_active_playlist);
 		g_search_indexes = [];
 	} else {
-		plman.SelectQueryItems(g_active_playlist, g_search_text);
-		g_search_indexes = plman.GetPlaylistSelectedIndexes(g_active_playlist).toArray();
+		g_search_indexes = plman.SelectQueryItems(g_active_playlist, g_search_text).toArray();
 	}
 }
 

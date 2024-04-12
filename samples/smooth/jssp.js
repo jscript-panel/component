@@ -310,6 +310,10 @@ function on_mouse_move(x, y) {
 	m_y = y;
 }
 
+function on_mouse_rbtn_down(x, y) {
+	brw.on_mouse("rbtn_down", x, y);
+}
+
 function on_mouse_rbtn_up(x, y) {
 	brw.on_mouse("rbtn_up", x, y);
 	return true;
@@ -851,7 +855,9 @@ function oBrowser() {
 
 		switch (event) {
 		case "lbtn_down":
+		case "rbtn_down":
 			if (y > this.y && !rating_hover && Math.abs(scroll - scroll_) < 2) {
+				clear_search();
 				if (this.activeRow == -1) {
 					plman.ClearPlaylistSelection(g_active_playlist);
 				} else {
@@ -946,7 +952,6 @@ function oBrowser() {
 							}
 						}
 					}
-					this.repaint();
 				}
 			}
 			break;
@@ -963,6 +968,7 @@ function oBrowser() {
 		case "rbtn_up":
 			var is_group_header = false;
 			if (this.ishover) {
+				clear_search();
 				if (this.activeRow > -1) {
 					var rowType = this.rows[this.activeRow].type;
 					switch (true) {
@@ -989,8 +995,9 @@ function oBrowser() {
 					plman.ClearPlaylistSelection(g_active_playlist);
 				}
 			}
-			this.repaint();
-			this.context_menu(x, y, is_group_header);
+			if (!this.inputbox.hover) {
+				this.context_menu(x, y, is_group_header);
+			}
 			break;
 		}
 
@@ -1349,6 +1356,12 @@ function g_sendResponse() {
 	} else {
 		g_search_indexes = plman.SelectQueryItems(g_active_playlist, g_search_text).toArray();
 	}
+}
+
+function clear_search() {
+	brw.inputbox.text = "";
+	g_search_index = 0;
+	g_search_indexes = [];
 }
 
 function get_metrics() {

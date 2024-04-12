@@ -76,7 +76,7 @@ function on_key_down(vkey) {
 			switch (vkey) {
 			case VK_F2:
 				if (playlist_can_rename(brw.selectedRow)) {
-					brw.edit_playlist(brw.rows[brw.selectedRow].idx);
+					brw.rename_playlist(brw.rows[brw.selectedRow].idx);
 				}
 				break;
 			case VK_F3:
@@ -161,6 +161,10 @@ function on_mouse_lbtn_dblclk(x, y, mask) {
 	} else {
 		brw.on_mouse("lbtn_dblclk", x, y);
 	}
+}
+
+function on_mouse_rbtn_down(x, y) {
+	brw.on_mouse("rbtn_down", x, y);
 }
 
 function on_mouse_rbtn_up(x, y) {
@@ -422,12 +426,8 @@ function oBrowser() {
 		}
 	}
 
-	this._isHover = function (x, y) {
-		return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h);
-	}
-
 	this.on_mouse = function (event, x, y) {
-		this.ishover = this._isHover(x, y);
+		this.ishover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
 
 		if (y > this.y && y < this.y + this.h) {
 			this.activeRow = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
@@ -439,23 +439,22 @@ function oBrowser() {
 
 		switch (event) {
 		case "lbtn_down":
+		case "rbtn_down":
 			this.down = true;
 			if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
 				this.selectedRow = this.activeRow;
 				if (this.activeRow == this.inputboxID) {
 					this.inputbox.check("lbtn_down", x, y);
 				} else {
-					if (this.inputboxID > -1)
-						this.inputboxID = -1;
-					if (!this.up) {
+					this.inputboxID = -1;
+					if (!this.up && event == "lbtn_down") {
 						cPlaylistManager.drag_clicked = true;
 						cPlaylistManager.drag_source_id = this.selectedRow;
 					}
 				}
 				this.repaint();
 			} else {
-				if (this.inputboxID > -1)
-					this.inputboxID = -1;
+				this.inputboxID = -1;
 			}
 			this.up = false;
 			break;
@@ -488,8 +487,7 @@ function oBrowser() {
 		case "lbtn_dblclk":
 			if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
 				if (plman.ActivePlaylist != this.rows[this.activeRow].idx) {
-					if (this.inputboxID > -1)
-						this.inputboxID = -1;
+					this.inputboxID = -1;
 					this.repaint();
 					plman.ActivePlaylist = this.rows[this.activeRow].idx;
 				}
@@ -540,11 +538,11 @@ function oBrowser() {
 			break;
 		case "rbtn_up":
 			if (this.inputboxID >= 0) {
-				if (!this.inputbox.hover) {
+				if (this.inputbox.hover) {
+					this.inputbox.check("rbtn_up", x, y);
+				} else {
 					this.inputboxID = -1;
 					this.on_mouse("rbtn_up", x, y);
-				} else {
-					this.inputbox.check("rbtn_up", x, y);
 				}
 			} else {
 				if (this.ishover) {
@@ -572,46 +570,7 @@ function oBrowser() {
 		}
 	}
 
-	this.g_time = window.SetInterval(function () {
-		if (!window.IsVisible) {
-			need_repaint = true;
-			return;
-		}
-
-		if (m_y > brw.y && m_y < brw.y + brw.h) {
-			brw.activeRow = Math.ceil((m_y + scroll_ - brw.y) / ppt.rowHeight - 1);
-			if (brw.activeRow >= brw.rows.length)
-				brw.activeRow = -1;
-		} else {
-			brw.activeRow = -1;
-		}
-
-		scroll = check_scroll(scroll);
-		if (Math.abs(scroll - scroll_) >= 1) {
-			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
-			need_repaint = true;
-			isScrolling = true;
-			if (scroll_prev != scroll)
-				brw.scrollbar.updateScrollbar();
-		} else {
-			if (isScrolling) {
-				if (scroll_ < 1)
-					scroll_ = 0;
-				isScrolling = false;
-				need_repaint = true;
-			}
-		}
-
-		if (need_repaint) {
-			need_repaint = false;
-			window.Repaint();
-		}
-
-		scroll_prev = scroll;
-
-	}, ppt.refreshRate);
-
-	this.edit_playlist = function (p) {
+	this.rename_playlist = function (p) {
 		var rh = ppt.rowHeight - 10;
 		var tw = this.w - rh - 100;
 		this.inputbox = new oInputbox(tw, rh, false, plman.GetPlaylistName(p), "", "renamePlaylist()");
@@ -636,8 +595,8 @@ function oBrowser() {
 
 	this.context_menu = function (x, y, id) {
 		var menu = window.CreatePopupMenu();
-		var autoplaylist = window.CreatePopupMenu();
-		var restore = window.CreatePopupMenu();
+		var autoplaylist_popup = window.CreatePopupMenu();
+		var restore_popup = window.CreatePopupMenu();
 		var context_popup = window.CreatePopupMenu();
 		var context = fb.CreateContextMenuManager();
 
@@ -645,50 +604,22 @@ function oBrowser() {
 		var recycler_count = plman.RecyclerCount;
 		var history = [];
 
-		for (var i = 0; i < autoplaylists.length; i++) {
-			autoplaylist.AppendMenuItem(MF_STRING, 200 + i, autoplaylists[i][0]);
-		}
-
-		menu.AppendMenuItem(MF_STRING, 100, "Create new playlist");
-		menu.AppendMenuItem(MF_STRING, 101, "Load playlist...");
-		menu.AppendMenuSeparator();
-		menu.AppendMenuItem(MF_STRING, 102, "Create new autoplaylist");
-		autoplaylist.AppendTo(menu, MF_STRING, "Preset autoplaylists");
-
-		if (recycler_count > 0) {
-			menu.AppendMenuSeparator();
-
-			for (var i = 0; i < recycler_count; i++) {
-				history.push(i);
-				restore.AppendMenuItem(MF_STRING, 10 + i, plman.GetRecyclerName(i));
-			}
-
-			restore.AppendMenuSeparator();
-			restore.AppendMenuItem(MF_STRING, 99, "Clear history");
-			restore.AppendTo(menu, MF_STRING, "Restore");
-		}
-
-		menu.AppendMenuSeparator();
-		menu.AppendMenuItem(EnableMenuIf(count > 1), 1, "Sort playlists A-Z");
-		menu.AppendMenuItem(EnableMenuIf(count > 1), 2, "Sort playlists Z-A");
-
 		if (id > -1) {
-			menu.AppendMenuSeparator();
 			var lock_name = plman.GetPlaylistLockName(id);
 
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_rename(id)), 1, "Rename this playlist\tF2");
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_remove(id)), 2, "Remove this playlist\tDel");
 			menu.AppendMenuItem(MF_STRING, 3, "Duplicate this playlist");
-			menu.AppendMenuItem(EnableMenuIf(playlist_can_rename(id)), 4, "Rename this playlist\tF2");
-			menu.AppendMenuItem(EnableMenuIf(playlist_can_remove(id)), 5, "Remove this playlist\tDel");
 			menu.AppendMenuSeparator();
 			if (plman.IsAutoPlaylist(id)) {
-				menu.AppendMenuItem(MF_STRING, 6, lock_name + " properties");
-				menu.AppendMenuItem(MF_STRING, 7, "Convert to a normal playlist");
+				menu.AppendMenuItem(MF_STRING, 4, lock_name + " properties");
+				menu.AppendMenuItem(MF_STRING, 5, "Convert to a normal playlist");
 			} else {
 				var is_locked = plman.IsPlaylistLocked(id);
 				var is_mine = lock_name == "JScript Panel 3";
 
-				menu.AppendMenuItem(EnableMenuIf(is_mine || !is_locked), 8, "Edit playlist lock...");
-				menu.AppendMenuItem(EnableMenuIf(is_mine), 9, "Remove playlist lock");
+				menu.AppendMenuItem(EnableMenuIf(is_mine || !is_locked), 6, "Edit playlist lock...");
+				menu.AppendMenuItem(EnableMenuIf(is_mine), 7, "Remove playlist lock");
 			}
 			var playlist_items = plman.GetPlaylistItems(id);
 			if (playlist_items.Count > 0) {
@@ -697,7 +628,36 @@ function oBrowser() {
 				context.BuildMenu(context_popup, 1000);
 				context_popup.AppendTo(menu, MF_STRING, 'Items');
 			}
+			menu.AppendMenuSeparator();
 		}
+
+		for (var i = 0; i < autoplaylists.length; i++) {
+			autoplaylist_popup.AppendMenuItem(MF_STRING, 200 + i, autoplaylists[i][0]);
+		}
+
+		menu.AppendMenuItem(MF_STRING, 100, "Create new playlist");
+		menu.AppendMenuItem(MF_STRING, 101, "Load playlist...");
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(MF_STRING, 102, "Create new autoplaylist");
+		autoplaylist_popup.AppendTo(menu, MF_STRING, "Preset autoplaylists");
+
+		if (recycler_count > 0) {
+			menu.AppendMenuSeparator();
+
+			for (var i = 0; i < recycler_count; i++) {
+				history.push(i);
+				restore_popup.AppendMenuItem(MF_STRING, 10 + i, plman.GetRecyclerName(i));
+			}
+
+			restore_popup.AppendMenuSeparator();
+			restore_popup.AppendMenuItem(MF_STRING, 103, "Clear history");
+			restore_popup.AppendTo(menu, MF_STRING, "Restore");
+		}
+
+		menu.AppendMenuSeparator();
+		menu.AppendMenuItem(EnableMenuIf(count > 1), 104, "Sort playlists A-Z");
+		menu.AppendMenuItem(EnableMenuIf(count > 1), 105, "Sort playlists Z-A");
+
 
 		var idx = menu.TrackPopupMenu(x, y);
 		menu.Dispose();
@@ -706,40 +666,31 @@ function oBrowser() {
 		case 0:
 			break;
 		case 1:
-			plman.SortPlaylistsByName(1);
+			this.rename_playlist(id);
 			break;
 		case 2:
-			plman.SortPlaylistsByName(-1);
+			plman.RemovePlaylistSwitch(id);
 			break;
 		case 3:
 			plman.ActivePlaylist = plman.DuplicatePlaylist(id, "Copy of " + plman.GetPlaylistName(id));
 			break;
 		case 4:
-			this.edit_playlist(id);
-			break;
-		case 5:
-			plman.RemovePlaylistSwitch(id);
-			break;
-		case 6:
 			plman.ShowAutoPlaylistUI(id);
 			break;
-		case 7:
+		case 5:
 			plman.ActivePlaylist = plman.DuplicatePlaylist(id, plman.GetPlaylistName(id));
 			plman.RemovePlaylist(id);
 			break;
-		case 8:
+		case 6:
 			plman.ShowPlaylistLockUI(id);
 			break;
-		case 9:
+		case 7:
 			plman.RemovePlaylistLock(id);
-			break;
-		case 99:
-			plman.RecyclerPurge(history);
 			break;
 		case 100:
 			var p = plman.CreatePlaylist();
 			plman.ActivePlaylist = p;
-			this.edit_playlist(p);
+			this.rename_playlist(p);
 			break;
 		case 101:
 			fb.LoadPlaylist();
@@ -748,7 +699,16 @@ function oBrowser() {
 			var p = plman.CreateAutoPlaylist(plman.PlaylistCount, "", "enter your query here");
 			plman.ActivePlaylist = p;
 			plman.ShowAutoPlaylistUI(p);
-			this.edit_playlist(p);
+			this.rename_playlist(p);
+			break;
+		case 103:
+			plman.RecyclerPurge(history);
+			break;
+		case 104:
+			plman.SortPlaylistsByName(1);
+			break;
+		case 105:
+			plman.SortPlaylistsByName(-1);
 			break;
 		default:
 			if (idx >= 10 && idx <= 98) {
@@ -864,6 +824,45 @@ function oBrowser() {
 		}
 		return true;
 	}
+
+	window.SetInterval(function () {
+		if (!window.IsVisible) {
+			need_repaint = true;
+			return;
+		}
+
+		if (m_y > brw.y && m_y < brw.y + brw.h) {
+			brw.activeRow = Math.ceil((m_y + scroll_ - brw.y) / ppt.rowHeight - 1);
+			if (brw.activeRow >= brw.rows.length)
+				brw.activeRow = -1;
+		} else {
+			brw.activeRow = -1;
+		}
+
+		scroll = check_scroll(scroll);
+		if (Math.abs(scroll - scroll_) >= 1) {
+			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
+			need_repaint = true;
+			isScrolling = true;
+			if (scroll_prev != scroll)
+				brw.scrollbar.updateScrollbar();
+		} else {
+			if (isScrolling) {
+				if (scroll_ < 1)
+					scroll_ = 0;
+				isScrolling = false;
+				need_repaint = true;
+			}
+		}
+
+		if (need_repaint) {
+			need_repaint = false;
+			window.Repaint();
+		}
+
+		scroll_prev = scroll;
+
+	}, ppt.refreshRate);
 
 	window.SetTimeout(function () {
 		brw.populate();

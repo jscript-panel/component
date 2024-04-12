@@ -304,10 +304,10 @@ function on_mouse_move(x, y) {
 	if (m_x == x && m_y == y)
 		return;
 
-	brw.on_mouse("move", x, y);
-
 	m_x = x;
 	m_y = y;
+
+	brw.on_mouse("move", x, y);
 }
 
 function on_mouse_rbtn_down(x, y) {
@@ -335,9 +335,10 @@ function on_paint(gr) {
 	if (ppt.wallpapermode && g_wallpaperImg) {
 		drawImage(gr, g_wallpaperImg, brw.x, brw.y, brw.w, brw.h, true, null, ppt.wallpaperopacity);
 	}
+
 	brw.draw(gr);
 
-	if (ppt.showHeaderBar) {
+	if (ppt.showHeaderBar && brw.list.Count > 0) {
 		var size = ppt.headerBarHeight;
 
 		if (brw.inputbox.text.length > 0) {
@@ -834,13 +835,9 @@ function oBrowser() {
 		plman.SetPlaylistSelection(g_active_playlist, affectedItems, true);
 	}
 
-	this._isHover = function (x, y) {
-		return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h);
-	}
-
 	this.on_mouse = function (event, x, y) {
 		if (g_active_playlist == -1) return;
-		this.ishover = this._isHover(x, y);
+		this.ishover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
 
 		if (this.ishover) {
 			this.activeRow = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
@@ -1001,7 +998,7 @@ function oBrowser() {
 			break;
 		}
 
-		if (ppt.showHeaderBar) {
+		if (ppt.showHeaderBar && this.list.Count > 0) {
 			this.inputbox.check(event, x, y);
 
 			if (this.inputbox.text.length > 0) {
@@ -1021,44 +1018,6 @@ function oBrowser() {
 			this.scrollbar.on_mouse(event, x, y);
 		}
 	}
-
-	this.g_time = window.SetInterval(function () {
-		if (!window.IsVisible) {
-			need_repaint = true;
-			return;
-		}
-
-		if (m_y > brw.y && m_y < brw.y + brw.h) {
-			brw.activeRow = Math.ceil((m_y + scroll_ - brw.y) / ppt.rowHeight - 1);
-			if (brw.activeRow >= brw.rows.length)
-				brw.activeRow = -1;
-		} else {
-			brw.activeRow = -1;
-		}
-
-		scroll = check_scroll(scroll);
-		if (Math.abs(scroll - scroll_) >= 1) {
-			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
-			need_repaint = true;
-			isScrolling = true;
-			if (scroll_prev != scroll)
-				brw.scrollbar.updateScrollbar();
-		} else {
-			if (isScrolling) {
-				if (scroll_ < 1)
-					scroll_ = 0;
-				isScrolling = false;
-				need_repaint = true;
-			}
-		}
-		if (need_repaint) {
-			need_repaint = false;
-			window.Repaint();
-		}
-
-		scroll_prev = scroll;
-
-	}, ppt.refreshRate);
 
 	this.context_menu = function (x, y, is_group_header) {
 		var menu = window.CreatePopupMenu();
@@ -1307,6 +1266,44 @@ function oBrowser() {
 		plman.InsertPlaylistItems(g_active_playlist, pos, clipboard_contents);
 		clipboard_contents.Dispose();
 	}
+
+	window.SetInterval(function () {
+		if (!window.IsVisible) {
+			need_repaint = true;
+			return;
+		}
+
+		if (m_y > brw.y && m_y < brw.y + brw.h) {
+			brw.activeRow = Math.ceil((m_y + scroll_ - brw.y) / ppt.rowHeight - 1);
+			if (brw.activeRow >= brw.rows.length)
+				brw.activeRow = -1;
+		} else {
+			brw.activeRow = -1;
+		}
+
+		scroll = check_scroll(scroll);
+		if (Math.abs(scroll - scroll_) >= 1) {
+			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
+			need_repaint = true;
+			isScrolling = true;
+			if (scroll_prev != scroll)
+				brw.scrollbar.updateScrollbar();
+		} else {
+			if (isScrolling) {
+				if (scroll_ < 1)
+					scroll_ = 0;
+				isScrolling = false;
+				need_repaint = true;
+			}
+		}
+		if (need_repaint) {
+			need_repaint = false;
+			window.Repaint();
+		}
+
+		scroll_prev = scroll;
+
+	}, ppt.refreshRate);
 
 	window.SetTimeout(function () {
 		brw.populate();

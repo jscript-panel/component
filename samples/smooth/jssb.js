@@ -112,7 +112,7 @@ function on_paint(gr) {
 	gr.Clear(g_colour_background);
 	brw.draw(gr);
 
-	if (ppt.library && ppt.showHeaderBar) {
+	if (ppt.library && ppt.showHeaderBar && brw.list.Count > 0) {
 		var size = ppt.headerBarHeight;
 
 		if (brw.inputbox.text.length > 0) {
@@ -203,32 +203,19 @@ function oBrowser() {
 		this.w = ww - cScrollBar.width;
 		this.h = wh - this.y;
 
-		switch (ppt.panelMode) {
+		switch (ppt.display) {
 		case 0:
-		case 1:
-			ppt.lineHeightMin = scale(ppt.default_lineHeightMin);
 			this.totalColumns = 1;
 			this.rowsCount = this.groups.length;
 			this.thumbnailWidth = this.w;
-			switch (ppt.tagMode) {
-			case 0: // album
-				this.rowHeight = (ppt.panelMode == 0 ? Math.ceil(g_fsize * 5.5) : ppt.lineHeightMin);
-				break;
-			case 1: // artist
-			case 2: // album artist
-				this.rowHeight = (ppt.panelMode == 0 ? Math.ceil(g_fsize * 2.5) : ppt.lineHeightMin);
-				break;
-			}
+			this.rowHeight = scale(ppt.default_lineHeightMin);
 			break;
-		case 2:
-		case 3:
-			ppt.thumbnailWidthMin = scale(ppt.default_thumbnailWidthMin);
-			this.totalColumns = Math.floor(this.w / ppt.thumbnailWidthMin);
+		case 1:
+			this.totalColumns = Math.floor(this.w / scale(ppt.default_thumbnailWidthMin));
 			if (this.totalColumns < 1) this.totalColumns = 1;
 			this.thumbnailWidth = this.w / this.totalColumns;
 			this.rowsCount = Math.ceil(this.groups.length / this.totalColumns);
-			this.rowHeight = this.thumbnailWidth;
-			if (ppt.panelMode == 2) this.rowHeight += g_font_height * 4;
+			this.rowHeight = this.thumbnailWidth + (g_font_height * 4);
 			break;
 		}
 
@@ -346,6 +333,7 @@ function oBrowser() {
 		var ay = 0;
 		var aw = this.thumbnailWidth;
 		var ah = this.rowHeight;
+		var margin = scale(8);
 
 		for (var i = g_start_; i < g_end_; i++) {
 			var group = this.groups[i];
@@ -359,7 +347,7 @@ function oBrowser() {
 			var normal_text = g_colour_text;
 			var fader_txt = setAlpha(normal_text, 180);
 
-			if (ppt.panelMode != 0 && !group.cover_image && !group.image_requested && group.metadb) {
+			if (!group.cover_image && !group.image_requested && group.metadb) {
 				group.image_requested = true;
 				var id = ppt.tagMode == 0 ? AlbumArtId.front : AlbumArtId.artist;
 				group.cover_image = get_art(group.metadb, group.cachekey, id);
@@ -368,9 +356,8 @@ function oBrowser() {
 			var fh = g_font_height + 6;
 			var str = group.date.length ? group.date + "\r\n" + group.artist : group.artist;
 
-			switch (ppt.panelMode) {
+			switch (ppt.display) {
 			case 0:
-			case 1:
 				if (i % 2 != 0) {
 					gr.FillRectangle(ax, ay, aw, ah, setAlpha(g_colour_text, 8));
 				}
@@ -381,40 +368,32 @@ function oBrowser() {
 					fader_txt = setAlpha(normal_text, 180);
 				}
 
-				var text_left = 8;
-				var text_width = aw - (text_left * 2);
-				if (ppt.panelMode == 1) {
-					var cover_size = ah - (text_left * 2);
-					if (ppt.showAllItem && i == 0 && this.groups.length > 1) {
-						gr.FillRectangle(ax + text_left, ay + text_left, cover_size, cover_size, g_colour_background);
-						drawImage(gr, images.all, ax + text_left, ay + text_left, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
-					} else {
-						if (!group.cover_image) gr.FillRectangle(ax + text_left, ay + text_left, cover_size, cover_size, g_colour_background);
-						drawImage(gr, group.cover_image || images.noart, ax + text_left, ay + text_left, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
-					}
-					text_left += cover_size + 8;
-					text_width = aw - text_left - 16;
+				var cover_size = ah - (margin * 2);
+				var text_left = cover_size + (margin * 2);
+				var text_width = aw - cover_size - (margin * 3);
+
+				if (ppt.showAllItem && i == 0 && this.groups.length > 1) {
+					gr.FillRectangle(ax + margin, ay + margin, cover_size, cover_size, g_colour_background);
+					drawImage(gr, images.all, ax + margin, ay + margin, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
+				} else {
+					if (!group.cover_image) gr.FillRectangle(ax + margin, ay + margin, cover_size, cover_size, g_colour_background);
+					drawImage(gr, group.cover_image || images.noart, ax + margin, ay + margin, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
 				}
 
 				if (ppt.tagMode == 0) { // album
 					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + text_left, ay + (fh * 0.2), text_width, fh, 0, 0, 1, 1);
 
-					if (ppt.panelMode == 0) { // no art
-						gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 2, 0, 0, 1, 1);
-					} else {
-						if (str.length) str += "\r\n";
-						str += group.count + " track";
-						if (group.count > 1) str += "s";
-						str += ". " + group.duration + ".";
-						gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);
-					}
+					if (str.length) str += "\r\n";
+					str += group.count + " track";
+					if (group.count > 1) str += "s";
+					str += ". " + group.duration + ".";
+					gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);
 				} else { // artist/album artist, 1 line
 					gr.WriteText(group.artist, g_font.str, normal_text, ax + text_left, ay, text_width, ah, 0, 2, 1, 1);
 				}
 				break;
-			case 2:
-				var text_left = 8;
-				var cover_size = aw - (text_left * 2);
+			case 1:
+				var cover_size = aw - (margin * 2);
 
 				if (i == this.selectedIndex) {
 					drawSelectedRectangle(gr, ax, ay, aw, ah);
@@ -423,43 +402,24 @@ function oBrowser() {
 				}
 
 				if (ppt.showAllItem && i == 0 && this.groups.length > 1) {
-					gr.FillRectangle(ax + text_left, ay + text_left, cover_size, cover_size, g_colour_background);
-					drawImage(gr, images.all, ax + text_left, ay + text_left, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
+					gr.FillRectangle(ax + margin, ay + margin, cover_size, cover_size, g_colour_background);
+					drawImage(gr, images.all, ax + margin, ay + margin, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
 				} else {
 					if (group.cover_image) {
-						drawImage(gr, group.cover_image, ax + text_left, ay + text_left, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
+						drawImage(gr, group.cover_image, ax + margin, ay + margin, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
 					} else {
-						gr.FillRectangle(ax + text_left, ay + text_left, cover_size, cover_size, g_colour_background);
-						drawImage(gr, images.noart, ax + text_left, ay + text_left, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
+						gr.FillRectangle(ax + margin, ay + margin, cover_size, cover_size, g_colour_background);
+						drawImage(gr, images.noart, ax + margin, ay + margin, cover_size, cover_size, ppt.autoFill, normal_text & 0x25ffffff);
 					}
 				}
 
 				if (ppt.tagMode == 0) {
-					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + text_left, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
-					gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
+					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + margin, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
+					gr.WriteText(str, g_font.str, fader_txt, ax + margin, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
 				} else {
-					gr.WriteText(group.artist, g_font_bold.str, normal_text, ax + text_left, ay + cover_size + text_left, cover_size, fh * 3, 2, 2, 3, 1);
+					gr.WriteText(group.artist, g_font_bold.str, normal_text, ax + margin, ay + cover_size + margin, cover_size, fh * 3, 2, 2, 3, 1);
 				}
 
-				break;
-			case 3: // auto-fil setting is ignored here and forced on. if turned off, it looks terrible with non square artist images
-				if (ppt.showAllItem && i == 0 && this.groups.length > 1) {
-					drawImage(gr, images.all, ax, ay, aw, ah, true, normal_text & 0x25ffffff);
-				} else {
-					drawImage(gr, group.cover_image || images.noart, ax, ay, aw, ah, true, normal_text & 0x25ffffff);
-					var h = g_font_height * 3;
-					var hh = h / 2;
-					gr.FillRectangle(ax, ay + ah - h, aw, h, RGBA(0, 0, 0, 230));
-					if (ppt.tagMode == 0) {
-						gr.WriteText(group.album, g_font_bold.str, RGB(240, 240, 240), ax + 8, ay + ah - h + 2, aw - 16, hh, 0, 2, 1, 1);
-						gr.WriteText(group.artist, g_font.str, RGB(230, 230, 230), ax + 8, ay + ah - hh - 2, aw - 16, hh, 0, 2, 1, 1);
-					} else {
-						gr.WriteText(group.artist, g_font.str, RGB(230, 230, 230), ax + 8, ay + ah - h, aw - 16, h, 0, 2, 1, 1);
-					}
-				}
-				if (i == this.selectedIndex) {
-					gr.DrawRectangle(ax + 1, ay + 1, aw - 3, ah - 3, 3.0, g_colour_selection);
-				}
 				break;
 			}
 
@@ -481,19 +441,14 @@ function oBrowser() {
 		}
 	}
 
-	this._isHover = function (x, y) {
-		return (x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h);
-	}
-
 	this.on_mouse = function (event, x, y, delta) {
-		this.ishover = this._isHover(x, y);
+		this.ishover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
 		this.activeIndex = -1;
 		if (this.ishover) {
-			this.activeRow = Math.ceil((y + scroll_ - this.y) / this.rowHeight) - 1;
-			if (y > this.y && x > this.x && x < this.x + this.w) {
-				this.activeColumn = Math.ceil((x - this.x) / this.thumbnailWidth) - 1;
-				this.activeIndex = (this.activeRow * this.totalColumns) + this.activeColumn;
-				this.activeIndex = this.activeIndex > this.groups.length - 1 ? -1 : this.activeIndex;
+			var activeRow = Math.ceil((y + scroll_ - this.y) / this.rowHeight) - 1;
+			if (x > this.x && x < this.x + this.w && y > this.y) {
+				var tmp = (activeRow * this.totalColumns) + (Math.ceil((x - this.x) / this.thumbnailWidth) - 1);
+				this.activeIndex = tmp > this.groups.length - 1 ? -1 : tmp;
 			}
 		}
 
@@ -558,7 +513,7 @@ function oBrowser() {
 			break;
 		}
 
-		if (ppt.library && ppt.showHeaderBar) {
+		if (ppt.library && ppt.showHeaderBar && this.list && this.list.Count > 0) {
 			this.inputbox.check(event, x, y);
 
 			if (this.inputbox.text.length > 0) {
@@ -578,41 +533,6 @@ function oBrowser() {
 			this.scrollbar.on_mouse(event, x, y);
 		}
 	}
-
-	this.g_time = window.SetInterval(function () {
-		if (!window.IsVisible) {
-			need_repaint = true;
-			return;
-		}
-
-		scroll = check_scroll(scroll);
-		if (Math.abs(scroll - scroll_) >= 1) {
-			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
-			isScrolling = true;
-			need_repaint = true;
-			if (scroll_prev != scroll)
-				brw.scrollbar.updateScrollbar();
-		} else {
-			if (scroll_ != scroll) {
-				scroll_ = scroll;
-				need_repaint = true;
-			}
-			if (isScrolling) {
-				if (scroll_ < 1)
-					scroll_ = 0;
-				isScrolling = false;
-				need_repaint = true;
-			}
-		}
-
-		if (need_repaint) {
-			need_repaint = false;
-			window.Repaint();
-		}
-
-		scroll_prev = scroll;
-
-	}, ppt.refreshRate);
 
 	this.context_menu = function (x, y, handles) {
 		var menu = window.CreatePopupMenu();
@@ -695,19 +615,24 @@ function oBrowser() {
 
 	this.settings_menu = function (x, y) {
 		var menu = window.CreatePopupMenu();
-		var sub = window.CreatePopupMenu();
+		var colour_popup = window.CreatePopupMenu();
+		var art_popup = window.CreatePopupMenu();
 
 		menu.AppendMenuItem(CheckMenuIf(ppt.showHeaderBar), 1, "Header Bar");
 		menu.AppendMenuSeparator();
 
 		var colour_flag = EnableMenuIf(ppt.enableCustomColours);
-		sub.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
-		sub.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
-		sub.AppendMenuSeparator();
-		sub.AppendMenuItem(colour_flag, 4, "Text");
-		sub.AppendMenuItem(colour_flag, 5, "Background");
-		sub.AppendMenuItem(colour_flag, 6, "Selected background");
-		sub.AppendTo(menu, MF_STRING, "Colours");
+		colour_popup.AppendMenuItem(CheckMenuIf(ppt.enableDynamicColours), 2, "Enable Dynamic");
+		colour_popup.AppendMenuItem(CheckMenuIf(ppt.enableCustomColours), 3, "Enable Custom");
+		colour_popup.AppendMenuSeparator();
+		colour_popup.AppendMenuItem(colour_flag, 4, "Text");
+		colour_popup.AppendMenuItem(colour_flag, 5, "Background");
+		colour_popup.AppendMenuItem(colour_flag, 6, "Selected background");
+		colour_popup.AppendTo(menu, MF_STRING, "Colours");
+
+		art_popup.AppendMenuItem(CheckMenuIf(ppt.autoFill), 7, "Auto-fill");
+		art_popup.AppendMenuItem(MF_STRING, 8, "Clear cache");
+		art_popup.AppendTo(menu, MF_STRING, "Album Art");
 		menu.AppendMenuSeparator();
 
 		menu.AppendMenuItem(MF_STRING, 10, "Library");
@@ -715,27 +640,23 @@ function oBrowser() {
 		menu.CheckMenuRadioItem(10, 11, ppt.library ? 10 : 11);
 		menu.AppendMenuSeparator();
 
+		menu.AppendMenuItem(MF_STRING, 20, "List");
+		menu.AppendMenuItem(MF_STRING, 21, "Grid");
+		menu.CheckMenuRadioItem(20, 21, 20 + ppt.display);
+		menu.AppendMenuSeparator();
+
 		if (ppt.library) {
-			menu.AppendMenuItem(MF_STRING, 20, "Album");
-			menu.AppendMenuItem(MF_STRING, 21, "Artist");
-			menu.AppendMenuItem(MF_STRING, 22, "Album Artist");
-			menu.CheckMenuRadioItem(20, 22, 20 + ppt.tagMode);
+			menu.AppendMenuItem(MF_STRING, 30, "Album");
+			menu.AppendMenuItem(MF_STRING, 31, "Artist");
+			menu.AppendMenuItem(MF_STRING, 32, "Album Artist");
+			menu.CheckMenuRadioItem(30, 32, 30 + ppt.tagMode);
 			menu.AppendMenuSeparator();
 
-			menu.AppendMenuItem(MF_STRING, 23, "Sort pattern...");
+			menu.AppendMenuItem(MF_STRING, 33, "Sort pattern...");
 			menu.AppendMenuSeparator();
 		}
 
-		menu.AppendMenuItem(MF_STRING, 30, "Column");
-		menu.AppendMenuItem(MF_STRING, 31, "Column + Album Art");
-		menu.AppendMenuItem(MF_STRING, 32, "Album Art Grid (Original style)");
-		menu.AppendMenuItem(MF_STRING, 33, "Album Art Grid (Overlayed text)");
-		menu.CheckMenuRadioItem(30, 33, 30 + ppt.panelMode);
-		menu.AppendMenuSeparator();
-
 		menu.AppendMenuItem(CheckMenuIf(ppt.showAllItem), 40, "Show all items");
-		menu.AppendMenuItem(GetMenuFlags(ppt.panelMode == 1 || ppt.panelMode == 2, ppt.autoFill), 41, "Album Art: Auto-fill");
-		menu.AppendMenuItem(MF_STRING, 42, "Clear Album Art cache");
 		menu.AppendMenuSeparator();
 
 		menu.AppendMenuItem(MF_STRING, 50, "Configure...");
@@ -775,6 +696,17 @@ function oBrowser() {
 			window.SetProperty("SMOOTH.COLOUR.BACKGROUND.SELECTED", g_colour_selection);
 			on_colours_changed();
 			break;
+		case 7:
+			ppt.autoFill = !ppt.autoFill;
+			window.SetProperty("SMOOTH.AUTO.FILL", ppt.autoFill);
+			images.clear();
+			this.populate();
+			break;
+		case 8:
+			utils.RemoveFolderRecursive(CACHE_FOLDER, 1);
+			images.clear();
+			this.populate();
+			break;
 		case 10:
 		case 11:
 			ppt.library = idx == 10;
@@ -783,12 +715,19 @@ function oBrowser() {
 			break;
 		case 20:
 		case 21:
-		case 22:
-			ppt.tagMode = idx - 20;
+			ppt.display = idx - 20;
+			window.SetProperty("SMOOTH.DISPLAY", ppt.display);
+			get_metrics();
+			this.repaint();
+			break;
+		case 30:
+		case 31:
+		case 32:
+			ppt.tagMode = idx - 30;
 			window.SetProperty("SMOOTH.TAG.MODE", ppt.tagMode);
 			this.populate();
 			break;
-		case 23:
+		case 33:
 			var obj = group_objects[ppt.tagMode];
 			var tmp = utils.InputBox('Enter sort pattern for "' + obj.name + '"', window.Name, obj.sort_tf);
 			if (tmp != obj.sort_tf) {
@@ -797,29 +736,9 @@ function oBrowser() {
 				this.populate();
 			}
 			break;
-		case 30:
-		case 31:
-		case 32:
-		case 33:
-			ppt.panelMode = idx - 30;
-			window.SetProperty("SMOOTH.DISPLAY.MODE", ppt.panelMode);
-			get_metrics();
-			this.repaint();
-			break;
 		case 40:
 			ppt.showAllItem = !ppt.showAllItem;
 			window.SetProperty("SMOOTH.SHOW.ALL.ITEMS", ppt.showAllItem);
-			this.populate();
-			break;
-		case 41:
-			ppt.autoFill = !ppt.autoFill;
-			window.SetProperty("SMOOTH.AUTO.FILL", ppt.autoFill);
-			images.clear();
-			this.populate();
-			break;
-		case 42:
-			utils.RemoveFolderRecursive(CACHE_FOLDER, 1);
-			images.clear();
 			this.populate();
 			break;
 		case 50:
@@ -829,6 +748,41 @@ function oBrowser() {
 		return true;
 	}
 
+	window.SetInterval(function () {
+		if (!window.IsVisible) {
+			need_repaint = true;
+			return;
+		}
+
+		scroll = check_scroll(scroll);
+		if (Math.abs(scroll - scroll_) >= 1) {
+			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
+			isScrolling = true;
+			need_repaint = true;
+			if (scroll_prev != scroll)
+				brw.scrollbar.updateScrollbar();
+		} else {
+			if (scroll_ != scroll) {
+				scroll_ = scroll;
+				need_repaint = true;
+			}
+			if (isScrolling) {
+				if (scroll_ < 1)
+					scroll_ = 0;
+				isScrolling = false;
+				need_repaint = true;
+			}
+		}
+
+		if (need_repaint) {
+			need_repaint = false;
+			window.Repaint();
+		}
+
+		scroll_prev = scroll;
+
+	}, ppt.refreshRate);
+
 	window.SetTimeout(function () {
 		brw.populate();
 	}, 100);
@@ -837,6 +791,7 @@ function oBrowser() {
 	this.rowsCount = 0;
 	this.scrollbar = new oScrollbar();
 	this.selectedIndex = -1;
+	this.list = fb.CreateHandleList();
 	this.inputbox = new oInputbox(300, scale(20), true, "", "Filter", g_sendResponse);
 }
 
@@ -863,15 +818,10 @@ function oGroup(index, start, metadb, groupkey, cachekey) {
 }
 
 function get_metrics() {
-	switch (ppt.panelMode) {
-	case 0:
-	case 1:
+	if (ppt.display == 0) {
 		ppt.rowScrollStep = 3;
-		break;
-	case 2:
-	case 3:
+	} else {
 		ppt.rowScrollStep = 1;
-		break;
 	}
 
 	if (ppt.showHeaderBar) {
@@ -940,16 +890,14 @@ var album_artist_obj = new group_object(
 var group_objects = [album_obj, artist_obj, album_artist_obj];
 
 ppt.library = window.GetProperty("SMOOTH.LIBRARY", true); // false = active playlist
-ppt.panelMode = window.GetProperty("SMOOTH.DISPLAY.MODE", 2); // 0 = column, 1 = column + art, 2 = album art grid, 3 - album art grid + overlay text
+ppt.display = window.GetProperty("SMOOTH.DISPLAY", 1); // 0 = list, 1 = grid
 ppt.sendto_playlist = window.GetProperty("SMOOTH.SENDTO.PLAYLIST", "Library selection");
 ppt.sendto_playlist_play = window.GetProperty("SMOOTH.SENDTO.PLAYLIST.PLAY", true);
 ppt.showAllItem = window.GetProperty("SMOOTH.SHOW.ALL.ITEMS", true);
 ppt.tagMode = window.GetProperty("SMOOTH.TAG.MODE", 0); // 0 = album, 1 = artist, 2 = album artist
 
 ppt.default_thumbnailWidthMin = window.GetProperty("SMOOTH.THUMB.MIN.WIDTH", 130);
-ppt.thumbnailWidthMin = ppt.default_thumbnailWidthMin;
 ppt.default_lineHeightMin = window.GetProperty("SMOOTH.LINE.MIN.HEIGHT", 120);
-ppt.lineHeightMin = ppt.default_lineHeightMin;
 
 var g_active_playlist = plman.ActivePlaylist;
 var g_drag_drop = false;

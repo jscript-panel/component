@@ -142,8 +142,6 @@ function oScrollbar() {
 		case "lbtn_down":
 			var tmp = this.buttons[cScrollBar.ButtonType.cursor].checkstate(event, x, y);
 			if (tmp == ButtonStates.down) {
-				this.cursorClickX = x;
-				this.cursorClickY = y;
 				this.cursorDrag = true;
 				this.cursorDragDelta = y - this.cursory;
 			}
@@ -154,8 +152,6 @@ function oScrollbar() {
 				this.setScrollFromCursorPos();
 				brw.repaint();
 			}
-			this.cursorClickX = 0;
-			this.cursorClickY = 0;
 			this.cursorDrag = false;
 			break;
 		case "move":
@@ -175,22 +171,10 @@ function oScrollbar() {
 		}
 	}
 
-	this._isHover = function (x, y) {
-		return (x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h);
-	}
-
-	this._isHoverArea = function (x, y) {
-		return (x >= this.x && x <= this.x + this.w && y >= this.areay && y <= this.areay + this.areah);
-	}
-
-	this._isHoverCursor = function (x, y) {
-		return (x >= this.x && x <= this.x + this.w && y >= this.cursory && y <= this.cursory + this.cursorh);
-	}
-
 	this.on_mouse = function (event, x, y, delta) {
-		this.isHover = this._isHover(x, y);
-		this.isHoverArea = this._isHoverArea(x, y);
-		this.isHoverCursor = this._isHoverCursor(x, y);
+		this.isHover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
+		this.isHoverArea = x >= this.x && x <= this.x + this.w && y >= this.areay && y <= this.areay + this.areah;
+		this.isHoverCursor = x >= this.x && x <= this.x + this.w && y >= this.cursory && y <= this.cursory + this.cursorh;
 		this.isHoverButtons = this.isHover && !this.isHoverCursor && !this.isHoverArea;
 		this.isHoverEmptyArea = this.isHoverArea && !this.isHoverCursor;
 

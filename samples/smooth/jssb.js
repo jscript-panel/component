@@ -463,11 +463,14 @@ function oBrowser() {
 			break;
 		case "lbtn_down":
 		case "rbtn_down":
-			if (this.ishover && this.activeIndex > -1) {
-				this.selectedIndex = this.activeIndex;
-				window.SetSelection(group.handles, 6);
+			this.selectedIndex = this.activeIndex;
 
-				if (!ppt.library) {
+			if (this.ishover && this.selectedIndex > -1) {
+				if (ppt.library) {
+					window.SetSelection(group.handles, 6);
+				} else {
+					window.SetSelection(group.handles, 1);
+
 					var start = group.start;
 					var end = start + group.count;
 					var arr = [];
@@ -480,10 +483,10 @@ function oBrowser() {
 					plman.SetPlaylistFocusItem(g_active_playlist, start);
 				}
 			} else {
-				this.selectedIndex = -1;
-				window.SetSelection(fb.CreateHandleList(), 6);
-
-				if (!ppt.library) {
+				if (ppt.library) {
+					window.SetSelection(fb.CreateHandleList(), 6);
+				} else {
+					window.SetSelection(fb.CreateHandleList(), 1);
 					plman.ClearPlaylistSelection(g_active_playlist);
 				}
 			}

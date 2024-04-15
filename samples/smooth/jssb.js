@@ -160,6 +160,7 @@ function on_playlist_items_changed(playlistIndex) {
 
 function on_playlist_items_removed(playlistIndex, new_count) {
 	if (!ppt.library && playlistIndex == g_active_playlist) {
+		brw.selectedIndex = -1;
 		brw.populate();
 	}
 }
@@ -442,28 +443,28 @@ function oBrowser() {
 	}
 
 	this.on_mouse = function (event, x, y, delta) {
+		var activeIndex = -1;
 		this.ishover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
-		this.activeIndex = -1;
 		if (this.ishover) {
 			var activeRow = Math.ceil((y + scroll_ - this.y) / this.rowHeight) - 1;
-			if (x > this.x && x < this.x + this.w && y > this.y) {
-				var tmp = (activeRow * this.totalColumns) + (Math.ceil((x - this.x) / this.thumbnailWidth) - 1);
-				this.activeIndex = tmp > this.groups.length - 1 ? -1 : tmp;
+			var tmp = (activeRow * this.totalColumns) + (Math.ceil((x - this.x) / this.thumbnailWidth) - 1);
+			if (tmp < this.groups.length) {
+				activeIndex = tmp;
 			}
 		}
 
-		var group = this.groups[this.activeIndex];
+		var group = this.groups[activeIndex];
 
 		switch (event) {
 		case "move":
-			if (g_drag_drop && this.ishover && this.activeIndex > -1) {
+			if (g_drag_drop && this.ishover && activeIndex > -1) {
 				group.handles.DoDragDrop(1);
 				g_drag_drop = false;
 			}
 			break;
 		case "lbtn_down":
 		case "rbtn_down":
-			this.selectedIndex = this.activeIndex;
+			this.selectedIndex = activeIndex;
 
 			if (this.ishover && this.selectedIndex > -1) {
 				if (ppt.library) {
@@ -494,16 +495,16 @@ function oBrowser() {
 			this.repaint();
 			break;
 		case "lbtn_dblclk":
-			if (this.ishover && this.activeIndex > -1) {
+			if (this.ishover && activeIndex > -1) {
 				if (ppt.library) {
-					this.sendItemsToPlaylist(this.activeIndex);
+					this.sendItemsToPlaylist(activeIndex);
 				} else {
 					plman.ExecutePlaylistDefaultAction(g_active_playlist, group.start);
 				}
 			}
 			break;
 		case "rbtn_up":
-			if (this.ishover && this.activeIndex > -1) {
+			if (this.ishover && activeIndex > -1) {
 				this.context_menu(x, y, group.handles);
 			} else if (!this.inputbox.hover) {
 				this.settings_menu(x, y);

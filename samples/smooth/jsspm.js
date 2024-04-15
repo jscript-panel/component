@@ -427,21 +427,20 @@ function oBrowser() {
 	}
 
 	this.on_mouse = function (event, x, y) {
+		this.activeRow = -1;
 		this.ishover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
 
-		if (y > this.y && y < this.y + this.h) {
-			this.activeRow = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
-			if (this.activeRow >= this.rows.length)
-				this.activeRow = -1;
-		} else {
-			this.activeRow = -1;
+		if (this.ishover) {
+			var tmp = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
+			if (tmp < this.rows.length) {
+				this.activeRow = tmp;
+			}
 		}
 
 		switch (event) {
 		case "lbtn_down":
-		case "rbtn_down":
 			this.down = true;
-			if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+			if (this.activeRow > -1) {
 				this.selectedRow = this.activeRow;
 				if (this.activeRow == this.inputboxID) {
 					this.inputbox.check("lbtn_down", x, y);
@@ -452,11 +451,11 @@ function oBrowser() {
 						cPlaylistManager.drag_source_id = this.selectedRow;
 					}
 				}
-				this.repaint();
 			} else {
 				this.inputboxID = -1;
 			}
 			this.up = false;
+			this.repaint();
 			break;
 		case "lbtn_up":
 			this.up = true;
@@ -485,7 +484,7 @@ function oBrowser() {
 			cPlaylistManager.drag_target_id = -1;
 			break;
 		case "lbtn_dblclk":
-			if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+			if (this.ishover && this.activeRow > -1) {
 				if (plman.ActivePlaylist != this.rows[this.activeRow].idx) {
 					this.inputboxID = -1;
 					this.repaint();
@@ -546,7 +545,7 @@ function oBrowser() {
 				}
 			} else {
 				if (this.ishover) {
-					if (this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+					if (this.activeRow > -1) {
 						this.repaint();
 						this.selectedRow = this.activeRow;
 						this.context_menu(x, y, this.selectedRow);

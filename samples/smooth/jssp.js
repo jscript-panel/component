@@ -837,15 +837,15 @@ function oBrowser() {
 
 	this.on_mouse = function (event, x, y) {
 		if (g_active_playlist == -1) return;
+
+		this.activeRow = -1
 		this.ishover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
 
 		if (this.ishover) {
-			this.activeRow = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
-			if (this.activeRow >= this.rows.length) {
-				this.activeRow = -1;
+			var tmp = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
+			if (tmp < this.rows.length) {
+				this.activeRow = tmp;
 			}
-		} else {
-			this.activeRow = -1;
 		}
 
 		var rating_hover = ppt.showRating && this.activeRow > -1 && this.rows[this.activeRow].type == 0 && x > this.rating_x && x < this.rating_x + g_rating_width;
@@ -853,7 +853,7 @@ function oBrowser() {
 		switch (event) {
 		case "lbtn_down":
 		case "rbtn_down":
-			if (y > this.y && !rating_hover && Math.abs(scroll - scroll_) < 2) {
+			if (y > this.y && !rating_hover) {
 				clear_search();
 				if (this.activeRow == -1) {
 					plman.ClearPlaylistSelection(g_active_playlist);
@@ -955,7 +955,7 @@ function oBrowser() {
 		case "lbtn_dblclk":
 			if (y < this.y && ppt.wallpapermode == 1 && fb.IsPlaying) {
 				fb.GetNowPlaying().ShowAlbumArtViewer();
-			} else if (y > this.y && !rating_hover && this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+			} else if (this.activeRow > -1 && !rating_hover) {
 				if (this.rows[this.activeRow].type == 0) {
 					play(g_active_playlist, this.rows[this.activeRow].playlistTrackId);
 				}

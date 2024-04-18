@@ -438,6 +438,20 @@ function oBrowser() {
 		}
 
 		switch (event) {
+		case "drag_over":
+			if (this.rows.length > 0 && this.activeRow > -1) {
+				g_drag_drop_target_id = this.activeRow;
+			}
+			break;
+		case "lbtn_dblclk":
+			if (this.ishover && this.activeRow > -1) {
+				if (plman.ActivePlaylist != this.rows[this.activeRow].idx) {
+					this.inputboxID = -1;
+					this.repaint();
+					plman.ActivePlaylist = this.rows[this.activeRow].idx;
+				}
+			}
+			break;
 		case "lbtn_down":
 			this.down = true;
 			if (this.activeRow > -1) {
@@ -482,15 +496,6 @@ function oBrowser() {
 			cPlaylistManager.drag_moved = false;
 			cPlaylistManager.drag_source_id = -1;
 			cPlaylistManager.drag_target_id = -1;
-			break;
-		case "lbtn_dblclk":
-			if (this.ishover && this.activeRow > -1) {
-				if (plman.ActivePlaylist != this.rows[this.activeRow].idx) {
-					this.inputboxID = -1;
-					this.repaint();
-					plman.ActivePlaylist = this.rows[this.activeRow].idx;
-				}
-			}
 			break;
 		case "move":
 			this.up = false;
@@ -555,11 +560,6 @@ function oBrowser() {
 				} else {
 					this.settings_menu(x, y);
 				}
-			}
-			break;
-		case "drag_over":
-			if (this.rows.length > 0 && this.activeRow > -1) {
-				g_drag_drop_target_id = this.activeRow;
 			}
 			break;
 		}

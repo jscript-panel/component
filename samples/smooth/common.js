@@ -199,7 +199,7 @@ function button(normal, hover, down) {
 
 	this.checkstate = function (event, x, y) {
 		this.ishover = (x > this.x && x < this.x + this.w - 1 && y > this.y && y < this.y + this.h - 1);
-		this.old = this.state;
+		var old = this.state;
 		switch (event) {
 		case "lbtn_down":
 			switch (this.state) {
@@ -223,7 +223,7 @@ function button(normal, hover, down) {
 			}
 			break;
 		}
-		if (this.state != this.old)
+		if (this.state != old)
 			this.repaint();
 		return this.state;
 	}

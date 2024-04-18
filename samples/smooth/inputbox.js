@@ -21,7 +21,6 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 	this.Cpos = 0;
 	this.Cx = 0;
 	this.offset = 0;
-	this.right_margin = 2;
 	this.drag = false;
 
 	this.setSize = function (w, h) {
@@ -36,7 +35,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 
 		if (!this.drag && !this.select) {
 			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
-			while (this.Cx >= this.w - this.right_margin) {
+			while (this.Cx >= this.w) {
 				this.offset++;
 				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
 			}
@@ -524,7 +523,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 						}
 
 						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
-						while (this.Cx >= this.w - this.right_margin) {
+						while (this.Cx >= this.w) {
 							this.offset++;
 							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
 						}
@@ -584,7 +583,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 							}
 						}
 
-						if (this.GetCx(this.Cpos) > this.w - this.right_margin) {
+						if (this.GetCx(this.Cpos) > this.w) {
 							this.offset++;
 						}
 						this.repaint();

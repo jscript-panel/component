@@ -528,43 +528,6 @@ function oBrowser() {
 		this.scrollbar.updateScrollbar();
 	}
 
-	this.selectAtoB = function (start_id, end_id) {
-		if (start_id == -1 || end_id == -1) return;
-		var affectedItems = Array();
-
-		if (this.SHIFT_start_id == null) {
-			this.SHIFT_start_id = start_id;
-		}
-
-		plman.ClearPlaylistSelection(g_active_playlist);
-
-		var previous_focus_id = g_focus_id;
-
-		if (start_id < end_id) {
-			var deb = start_id;
-			var fin = end_id;
-		} else {
-			var deb = end_id;
-			var fin = start_id;
-		}
-
-		for (var i = deb; i <= fin; i++) {
-			affectedItems.push(i);
-		}
-		plman.SetPlaylistSelection(g_active_playlist, affectedItems, true);
-		plman.SetPlaylistFocusItem(g_active_playlist, end_id);
-
-		if (affectedItems.length > 1) {
-			if (end_id > previous_focus_id) {
-				var delta = end_id - previous_focus_id;
-				this.SHIFT_count += delta;
-			} else {
-				var delta = previous_focus_id - end_id;
-				this.SHIFT_count -= delta;
-			}
-		}
-	}
-
 	this.getAlbumIdfromTrackId = function (value) {
 		if (value >= 0) {
 			var mediane = 0;
@@ -655,6 +618,7 @@ function oBrowser() {
 	}
 
 	this.populate = function () {
+		this.list.RemoveAll();
 		this.list = plman.GetPlaylistItems(g_active_playlist);
 		this.track_tf_arr = tfo.track.EvalWithMetadbs(this.list).toArray();
 
@@ -851,8 +815,17 @@ function oBrowser() {
 		var rating_hover = ppt.showRating && this.activeRow > -1 && this.rows[this.activeRow].type == 0 && x > this.rating_x && x < this.rating_x + g_rating_width;
 
 		switch (event) {
+		case "lbtn_dblclk":
+			if (y < this.y && ppt.wallpapermode == 1 && fb.IsPlaying) {
+				fb.GetNowPlaying().ShowAlbumArtViewer();
+			} else if (this.activeRow > -1 && !rating_hover) {
+				if (this.rows[this.activeRow].type == 0) {
+					play(g_active_playlist, this.rows[this.activeRow].playlistTrackId);
+				}
+				this.repaint();
+			}
+			break;
 		case "lbtn_down":
-		case "rbtn_down":
 			if (y > this.y && !rating_hover) {
 				clear_search();
 				if (this.activeRow == -1) {
@@ -863,47 +836,27 @@ function oBrowser() {
 
 					switch (true) {
 					case rowType == 0: // ----------------> track row
-						if (utils.IsKeyPressed(VK_SHIFT)) {
-							if (g_focus_id != playlistTrackId) {
-								if (this.SHIFT_start_id != null) {
-									this.selectAtoB(this.SHIFT_start_id, playlistTrackId);
-								} else {
-									this.selectAtoB(g_focus_id, playlistTrackId);
-								}
-							}
-						} else if (utils.IsKeyPressed(VK_CONTROL)) {
+						if (utils.IsKeyPressed(VK_CONTROL)) {
 							if (plman.IsPlaylistItemSelected(g_active_playlist, playlistTrackId)) {
 								plman.SetPlaylistSelectionSingle(g_active_playlist, playlistTrackId, false);
 							} else {
 								plman.SetPlaylistSelectionSingle(g_active_playlist, playlistTrackId, true);
 								plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
 							}
-							this.SHIFT_start_id = null;
 						} else {
 							if (!plman.IsPlaylistItemSelected(g_active_playlist, playlistTrackId)) {
 								plman.ClearPlaylistSelection(g_active_playlist);
 								plman.SetPlaylistSelectionSingle(g_active_playlist, playlistTrackId, true);
 								plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
 							}
-							this.SHIFT_start_id = null;
 						}
 						break;
 					default: // ----------------> group header row
-						if (utils.IsKeyPressed(VK_SHIFT)) {
-							if (g_focus_id != playlistTrackId) {
-								if (this.SHIFT_start_id != null) {
-									this.selectAtoB(this.SHIFT_start_id, playlistTrackId);
-								} else {
-									this.selectAtoB(g_focus_id, playlistTrackId);
-								}
-							}
-						} else if (utils.IsKeyPressed(VK_CONTROL)) {
+						if (utils.IsKeyPressed(VK_CONTROL)) {
 							this.selectGroupTracks(this.rows[this.activeRow].albumId);
-							this.SHIFT_start_id = null;
 						} else {
 							plman.ClearPlaylistSelection(g_active_playlist);
 							this.selectGroupTracks(this.rows[this.activeRow].albumId);
-							this.SHIFT_start_id = null;
 						}
 						plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
 						break;
@@ -952,16 +905,6 @@ function oBrowser() {
 				}
 			}
 			break;
-		case "lbtn_dblclk":
-			if (y < this.y && ppt.wallpapermode == 1 && fb.IsPlaying) {
-				fb.GetNowPlaying().ShowAlbumArtViewer();
-			} else if (this.activeRow > -1 && !rating_hover) {
-				if (this.rows[this.activeRow].type == 0) {
-					play(g_active_playlist, this.rows[this.activeRow].playlistTrackId);
-				}
-				this.repaint();
-			}
-			break;
 		case "rbtn_up":
 			var is_group_header = false;
 			if (this.ishover) {
@@ -983,7 +926,6 @@ function oBrowser() {
 							plman.ClearPlaylistSelection(g_active_playlist);
 							this.selectGroupTracks(this.rows[this.activeRow].albumId);
 							plman.SetPlaylistFocusItem(g_active_playlist, playlistTrackId);
-							this.SHIFT_start_id = null;
 						}
 						is_group_header = true;
 						break;
@@ -1312,8 +1254,6 @@ function oBrowser() {
 
 	this.groups = [];
 	this.rows = [];
-	this.SHIFT_start_id = null;
-	this.SHIFT_count = 0;
 	this.scrollbar = new oScrollbar();
 	this.keypressed = false;
 	this.playlist_info = "";

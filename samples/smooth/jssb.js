@@ -66,7 +66,7 @@ function on_mouse_lbtn_dblclk(x, y, mask) {
 }
 
 function on_mouse_lbtn_down(x, y) {
-	if (x < brw.w) g_drag_drop = true;
+	if (x < brw.w && ppt.library) g_drag_drop = true;
 
 	brw.on_mouse("lbtn_down", x, y);
 }
@@ -112,7 +112,7 @@ function on_paint(gr) {
 	gr.Clear(g_colour_background);
 	brw.draw(gr);
 
-	if (ppt.library && ppt.showHeaderBar && brw.list.Count > 0) {
+	if (ppt.library && ppt.showHeaderBar) {
 		var size = ppt.headerBarHeight;
 
 		if (brw.inputbox.text.length > 0) {
@@ -160,7 +160,7 @@ function on_playlist_items_changed(playlistIndex) {
 
 function on_playlist_items_removed(playlistIndex, new_count) {
 	if (!ppt.library && playlistIndex == g_active_playlist) {
-		brw.selectedIndex = -1;
+		brw.selected_indexes = [];
 		brw.populate();
 	}
 }
@@ -236,6 +236,7 @@ function oBrowser() {
 
 	this.populate = function () {
 		this.groups = [];
+		this.list.RemoveAll();
 
 		if (ppt.library) {
 			this.list = fb.GetLibraryItems(g_filter_text);
@@ -342,8 +343,6 @@ function oBrowser() {
 			var row = Math.floor(i / this.totalColumns);
 			ax = this.x + (cx * this.thumbnailWidth);
 			ay = Math.floor(this.y + (row * this.rowHeight) - scroll_);
-			group.x = ax;
-			group.y = ay;
 
 			var normal_text = g_colour_text;
 			var fader_txt = setAlpha(normal_text, 180);
@@ -363,7 +362,7 @@ function oBrowser() {
 					gr.FillRectangle(ax, ay, aw, ah, setAlpha(g_colour_text, 8));
 				}
 
-				if (i == this.selectedIndex) {
+				if (this.selected_indexes.indexOf(i) > -1) {
 					drawSelectedRectangle(gr, ax, ay, aw, ah);
 					normal_text = g_colour_selected_text;
 					fader_txt = setAlpha(normal_text, 180);
@@ -396,7 +395,7 @@ function oBrowser() {
 			case 1:
 				var cover_size = aw - (margin * 2);
 
-				if (i == this.selectedIndex) {
+				if (this.selected_indexes.indexOf(i) > -1) {
 					drawSelectedRectangle(gr, ax, ay, aw, ah);
 					normal_text = g_colour_selected_text;
 					fader_txt = setAlpha(normal_text, 180);
@@ -442,70 +441,124 @@ function oBrowser() {
 		}
 	}
 
+	this.set_playlist_selection = function (group) {
+		var start = group.start;
+		var end = start + group.count;
+		var arr = [];
+		for (var i = start; i < end; i++) {
+			arr.push(i);
+		}
+
+		plman.ClearPlaylistSelection(g_active_playlist);
+		plman.SetPlaylistSelection(g_active_playlist, arr, true);
+		plman.SetPlaylistFocusItem(g_active_playlist, start);
+	}
+
+	this.reset_selection = function () {
+		this.selected_indexes = [];
+		this.selected_handles.RemoveAll();
+
+		if (ppt.library) {
+			window.SetSelection(this.selected_handles, 6);
+		} else {
+			window.SetSelection(this.selected_handles, 1);
+
+			if (g_active_playlist > -1) {
+				plman.ClearPlaylistSelection(plman.ActivePlaylist);
+			}
+		}
+	}
+
 	this.on_mouse = function (event, x, y, delta) {
-		var activeIndex = -1;
-		this.ishover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
-		if (this.ishover) {
-			var activeRow = Math.ceil((y + scroll_ - this.y) / this.rowHeight) - 1;
-			var tmp = (activeRow * this.totalColumns) + (Math.ceil((x - this.x) / this.thumbnailWidth) - 1);
+		var active_index = -1;
+		var hover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
+		if (hover) {
+			var active_row = Math.ceil((y + scroll_ - this.y) / this.rowHeight) - 1;
+			var tmp = (active_row * this.totalColumns) + (Math.ceil((x - this.x) / this.thumbnailWidth) - 1);
 			if (tmp < this.groups.length) {
-				activeIndex = tmp;
+				active_index = tmp;
 			}
 		}
 
-		var group = this.groups[activeIndex];
-
 		switch (event) {
-		case "move":
-			if (g_drag_drop && this.ishover && activeIndex > -1) {
-				group.handles.DoDragDrop(1);
-				g_drag_drop = false;
+		case "lbtn_dblclk":
+			if (active_index > -1) {
+				if (ppt.library) {
+					this.sendItemsToPlaylist(active_index);
+				} else {
+					plman.ExecutePlaylistDefaultAction(g_active_playlist, this.groups[active_index].start);
+				}
 			}
 			break;
 		case "lbtn_down":
-		case "rbtn_down":
-			this.selectedIndex = activeIndex;
-
-			if (this.ishover && this.selectedIndex > -1) {
+			if (active_index > -1) {
 				if (ppt.library) {
-					window.SetSelection(group.handles, 6);
-				} else {
-					window.SetSelection(group.handles, 1);
-
-					var start = group.start;
-					var end = start + group.count;
-					var arr = [];
-					for (var i = start; i < end; i++) {
-						arr.push(i);
+					if (utils.IsKeyPressed(VK_CONTROL)) {
+						var idx = this.selected_indexes.indexOf(active_index);
+						if (idx > -1) {
+							this.selected_indexes.splice(idx, 1);
+						} else {
+							this.selected_indexes.push(active_index);
+							this.selected_indexes.sort(function (a, b) { return a - b; });
+						}
+					} else {
+						if (this.selected_indexes.indexOf(active_index) == -1) {
+							this.selected_indexes = [active_index];
+						}
 					}
 
-					plman.ClearPlaylistSelection(g_active_playlist);
-					plman.SetPlaylistSelection(g_active_playlist, arr, true);
-					plman.SetPlaylistFocusItem(g_active_playlist, start);
+					this.selected_handles.RemoveAll();
+					this.selected_indexes.forEach((function (item) {
+						this.selected_handles.AddItems(this.groups[item].handles);
+					}).bind(this));
+
+					window.SetSelection(this.selected_handles, 6);
+				} else {
+					this.selected_indexes = [active_index];
+					this.selected_handles = this.groups[active_index].handles.Clone();
+					window.SetSelection(this.selected_handles, 1);
+					this.set_playlist_selection(this.groups[active_index]);
 				}
 			} else {
-				if (ppt.library) {
-					window.SetSelection(fb.CreateHandleList(), 6);
-				} else {
-					window.SetSelection(fb.CreateHandleList(), 1);
-					plman.ClearPlaylistSelection(g_active_playlist);
-				}
+				this.reset_selection();
 			}
-
 			this.repaint();
 			break;
-		case "lbtn_dblclk":
-			if (this.ishover && activeIndex > -1) {
-				if (ppt.library) {
-					this.sendItemsToPlaylist(activeIndex);
-				} else {
-					plman.ExecutePlaylistDefaultAction(g_active_playlist, group.start);
-				}
+		case "lbtn_up":
+			if (active_index > -1 && !utils.IsKeyPressed(VK_CONTROL)) {
+				this.selected_indexes = [active_index];
+				this.selected_handles = this.groups[active_index].handles.Clone();
+				window.SetSelection(this.selected_handles, 1);
+				this.repaint();
 			}
 			break;
+		case "move":
+			if (g_drag_drop && active_index > -1) {
+				this.selected_handles.DoDragDrop(1);
+				g_drag_drop = false;
+			}
+			break;
+		case "rbtn_down":
+			if (active_index > -1) {
+				if (this.selected_indexes.indexOf(active_index) > -1) break;
+
+				this.selected_indexes = [active_index];
+				this.selected_handles = this.groups[active_index].handles.Clone();
+
+				if (ppt.library) {
+					window.SetSelection(this.selected_handles, 6);
+				} else {
+					window.SetSelection(this.selected_handles, 1);
+					this.set_playlist_selection(this.groups[active_index]);
+				}
+			} else {
+				this.reset_selection();
+			}
+			this.repaint();
+			break;
 		case "rbtn_up":
-			if (this.ishover && activeIndex > -1) {
-				this.context_menu(x, y, group.handles);
+			if (active_index > -1) {
+				this.context_menu(x, y);
 			} else if (!this.inputbox.hover) {
 				this.settings_menu(x, y);
 			}
@@ -517,7 +570,7 @@ function oBrowser() {
 			break;
 		}
 
-		if (ppt.library && ppt.showHeaderBar && this.list && this.list.Count > 0) {
+		if (ppt.library && ppt.showHeaderBar && this.list) {
 			this.inputbox.check(event, x, y);
 
 			if (this.inputbox.text.length > 0) {
@@ -538,7 +591,7 @@ function oBrowser() {
 		}
 	}
 
-	this.context_menu = function (x, y, handles) {
+	this.context_menu = function (x, y) {
 		var menu = window.CreatePopupMenu();
 		var sub = window.CreatePopupMenu();
 		var add = window.CreatePopupMenu()
@@ -569,7 +622,7 @@ function oBrowser() {
 			menu.AppendMenuSeparator();
 		}
 
-		context.InitContext(handles);
+		context.InitContext(this.selected_handles);
 		context.BuildMenu(menu, 10000);
 
 		var idx = menu.TrackPopupMenu(x, y);
@@ -580,13 +633,16 @@ function oBrowser() {
 			break;
 		case 1:
 			var base = plman.GetPlaylistItemCount(ap);
-			plman.InsertPlaylistItems(ap, base, handles);
+			plman.InsertPlaylistItems(ap, base, this.selected_handles);
 			break;
 		case 2:
-			var name = group_objects[ppt.tagMode].playlist_tfo.EvalWithMetadb(handles.GetItem(0));
+			var name = "";
+			if (this.selected_indexes.length == 1 && !(ppt.showAllItem && this.selected_indexes[0] == 0)) {
+				name = group_objects[ppt.tagMode].playlist_tfo.EvalWithMetadb(this.selected_handles.GetItem(0));
+			}
 			var p = plman.CreatePlaylist(plman.PlaylistCount, name);
 			plman.ActivePlaylist = p
-			plman.InsertPlaylistItems(p, 0, handles);
+			plman.InsertPlaylistItems(p, 0, this.selected_handles);
 			break;
 		case 1000:
 		case 1001:
@@ -605,7 +661,7 @@ function oBrowser() {
 				var target_playlist = idx - 10;
 				plman.UndoBackup(target_playlist);
 				var base = plman.GetPlaylistItemCount(target_playlist);
-				plman.InsertPlaylistItems(target_playlist, base, handles);
+				plman.InsertPlaylistItems(target_playlist, base, this.selected_handles);
 				plman.ActivePlaylist = target_playlist;
 			} else {
 				context.ExecuteByID(idx - 10000);
@@ -794,8 +850,9 @@ function oBrowser() {
 	this.groups = [];
 	this.rowsCount = 0;
 	this.scrollbar = new oScrollbar();
-	this.selectedIndex = -1;
 	this.list = fb.CreateHandleList();
+	this.selected_handles = fb.CreateHandleList();
+	this.selected_indexes = [];
 	this.inputbox = new oInputbox(300, scale(20), true, "", "Filter", g_sendResponse);
 }
 

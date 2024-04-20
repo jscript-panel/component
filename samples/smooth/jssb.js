@@ -80,10 +80,10 @@ function on_mouse_move(x, y) {
 	if (m_x == x && m_y == y)
 		return;
 
-	brw.on_mouse("move", x, y);
-
 	m_x = x;
 	m_y = y;
+
+	brw.on_mouse("move", x, y);
 }
 
 function on_mouse_rbtn_down(x, y) {
@@ -464,14 +464,17 @@ function oBrowser() {
 			window.SetSelection(this.selected_handles, 1);
 
 			if (g_active_playlist > -1) {
-				plman.ClearPlaylistSelection(plman.ActivePlaylist);
+				plman.ClearPlaylistSelection(g_active_playlist);
 			}
 		}
 	}
 
 	this.on_mouse = function (event, x, y, delta) {
+		var shift = utils.IsKeyPressed(VK_SHIFT);
+		var ctrl = utils.IsKeyPressed(VK_CONTROL);
 		var active_index = -1;
-		var hover = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
+		var hover = x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
+
 		if (hover) {
 			var active_row = Math.ceil((y + scroll_ - this.y) / this.rowHeight) - 1;
 			var tmp = (active_row * this.totalColumns) + (Math.ceil((x - this.x) / this.thumbnailWidth) - 1);
@@ -493,17 +496,33 @@ function oBrowser() {
 		case "lbtn_down":
 			if (active_index > -1) {
 				if (ppt.library) {
-					if (utils.IsKeyPressed(VK_CONTROL)) {
-						var idx = this.selected_indexes.indexOf(active_index);
-						if (idx > -1) {
-							this.selected_indexes.splice(idx, 1);
+					if (shift) {
+						if (this.old_active_index == -1 || active_index == this.old_active_index) {
+							this.selected_indexes = [active_index];
 						} else {
-							this.selected_indexes.push(active_index);
-							this.selected_indexes.sort(function (a, b) { return a - b; });
+							var start = Math.min(active_index, this.old_active_index);
+							var end = Math.max(active_index, this.old_active_index);
+
+							this.selected_indexes = [];
+							for (var i = start; i <= end; i++) {
+								this.selected_indexes.push(i);
+							}
 						}
 					} else {
-						if (this.selected_indexes.indexOf(active_index) == -1) {
-							this.selected_indexes = [active_index];
+						this.old_active_index = active_index;
+
+						if (ctrl) {
+							var idx = this.selected_indexes.indexOf(active_index);
+							if (idx > -1) {
+								this.selected_indexes.splice(idx, 1);
+							} else {
+								this.selected_indexes.push(active_index);
+								this.selected_indexes.sort(function (a, b) { return a - b; });
+							}
+						} else {
+							if (this.selected_indexes.indexOf(active_index) == -1) {
+								this.selected_indexes = [active_index];
+							}
 						}
 					}
 
@@ -519,17 +538,23 @@ function oBrowser() {
 					window.SetSelection(this.selected_handles, 1);
 					this.set_playlist_selection(this.groups[active_index]);
 				}
-			} else {
+			} else if (!shift && !ctrl) {
 				this.reset_selection();
 			}
-			this.repaint();
 			break;
 		case "lbtn_up":
-			if (active_index > -1 && !utils.IsKeyPressed(VK_CONTROL)) {
+			if (shift || ctrl) {
+				// do nothing
+			} else if (active_index > -1) {
 				this.selected_indexes = [active_index];
 				this.selected_handles = this.groups[active_index].handles.Clone();
-				window.SetSelection(this.selected_handles, 1);
-				this.repaint();
+
+				if (ppt.library) {
+					window.SetSelection(this.selected_handles, 6);
+				} else {
+					window.SetSelection(this.selected_handles, 1);
+					this.set_playlist_selection(this.groups[active_index]);
+				}
 			}
 			break;
 		case "move":
@@ -554,7 +579,6 @@ function oBrowser() {
 			} else {
 				this.reset_selection();
 			}
-			this.repaint();
 			break;
 		case "rbtn_up":
 			if (active_index > -1) {
@@ -589,6 +613,10 @@ function oBrowser() {
 		if (cScrollBar.visible) {
 			this.scrollbar.on_mouse(event, x, y);
 		}
+
+		if (event != "move") {
+			this.repaint();
+		}
 	}
 
 	this.context_menu = function (x, y) {
@@ -596,10 +624,9 @@ function oBrowser() {
 		var sub = window.CreatePopupMenu();
 		var add = window.CreatePopupMenu()
 		var context = fb.CreateContextMenuManager();
-		var ap = plman.ActivePlaylist;
 
 		if (ppt.library) {
-			menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(ap)), 1, "Add to current playlist");
+			menu.AppendMenuItem(EnableMenuIf(playlist_can_add_items(g_active_playlist)), 1, "Add to current playlist");
 		}
 
 		menu.AppendMenuItem(MF_STRING, 2, "Add to new playlist");
@@ -632,8 +659,8 @@ function oBrowser() {
 		case 0:
 			break;
 		case 1:
-			var base = plman.GetPlaylistItemCount(ap);
-			plman.InsertPlaylistItems(ap, base, this.selected_handles);
+			var base = plman.GetPlaylistItemCount(g_active_playlist);
+			plman.InsertPlaylistItems(g_active_playlist, base, this.selected_handles);
 			break;
 		case 2:
 			var name = "";
@@ -853,6 +880,7 @@ function oBrowser() {
 	this.list = fb.CreateHandleList();
 	this.selected_handles = fb.CreateHandleList();
 	this.selected_indexes = [];
+	this.old_active_index = -1;
 	this.inputbox = new oInputbox(300, scale(20), true, "", "Filter", g_sendResponse);
 }
 
@@ -960,7 +988,6 @@ ppt.tagMode = window.GetProperty("SMOOTH.TAG.MODE", 0); // 0 = album, 1 = artist
 ppt.default_thumbnailWidthMin = window.GetProperty("SMOOTH.THUMB.MIN.WIDTH", 130);
 ppt.default_lineHeightMin = window.GetProperty("SMOOTH.LINE.MIN.HEIGHT", 120);
 
-var g_active_playlist = plman.ActivePlaylist;
 var g_drag_drop = false;
 var g_filter_text = "";
 var brw = new oBrowser();

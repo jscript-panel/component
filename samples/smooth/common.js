@@ -198,33 +198,36 @@ function button(normal, hover, down) {
 	}
 
 	this.checkstate = function (event, x, y) {
-		this.ishover = (x > this.x && x < this.x + this.w - 1 && y > this.y && y < this.y + this.h - 1);
+		var hover = x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 		var old = this.state;
+
 		switch (event) {
 		case "lbtn_down":
 			switch (this.state) {
 			case ButtonStates.normal:
 			case ButtonStates.hover:
-				this.state = this.ishover ? ButtonStates.down : ButtonStates.normal;
+				this.state = hover ? ButtonStates.down : ButtonStates.normal;
 				this.isdown = true;
 				break;
 			}
 			break;
 		case "lbtn_up":
-			this.state = this.ishover ? ButtonStates.hover : ButtonStates.normal;
+			this.state = hover ? ButtonStates.hover : ButtonStates.normal;
 			this.isdown = false;
 			break;
 		case "move":
 			switch (this.state) {
 			case ButtonStates.normal:
 			case ButtonStates.hover:
-				this.state = this.ishover ? ButtonStates.hover : ButtonStates.normal;
+				this.state = hover ? ButtonStates.hover : ButtonStates.normal;
 				break;
 			}
 			break;
 		}
+
 		if (this.state != old)
 			this.repaint();
+
 		return this.state;
 	}
 }
@@ -397,6 +400,7 @@ var g_colour_highlight = 0;
 var g_time_width = 0;
 var g_rating_width = 0;
 
+var g_active_playlist = plman.ActivePlaylist;
 var g_wallpaperImg = null;
 var isScrolling = false;
 var need_repaint = false;

@@ -1053,14 +1053,11 @@ function get_tfo(pattern) {
 }
 
 function renamePlaylist() {
-	if (!p.playlistManager.inputbox.text || p.playlistManager.inputbox.text == "" || p.playlistManager.inputboxID == -1)
-		p.playlistManager.inputbox.text = p.playlistManager.playlists[p.playlistManager.inputboxID].name;
-	if (p.playlistManager.inputbox.text.length > 1 || (p.playlistManager.inputbox.text.length == 1 && (p.playlistManager.inputbox.text >= "a" && p.playlistManager.inputbox.text <= "z") || (p.playlistManager.inputbox.text >= "A" && p.playlistManager.inputbox.text <= "Z") || (p.playlistManager.inputbox.text >= "0" && p.playlistManager.inputbox.text <= "9"))) {
-		p.playlistManager.playlists[p.playlistManager.inputboxID].name = p.playlistManager.inputbox.text;
-		plman.RenamePlaylist(p.playlistManager.playlists[p.playlistManager.inputboxID].idx, p.playlistManager.inputbox.text);
-		full_repaint();
+	var text = p.playlistManager.inputbox.text.trim();
+	if (p.playlistManager.inputboxID > -1 && text.length) {
+		plman.RenamePlaylist(p.playlistManager.playlists[p.playlistManager.inputboxID].idx, text);
+		p.playlistManager.inputboxID = -1;
 	}
-	p.playlistManager.inputboxID = -1;
 }
 
 function inputboxPlaylistManager_activate() {

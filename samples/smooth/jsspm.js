@@ -75,7 +75,7 @@ function on_key_down(vkey) {
 			case VK_F2:
 				if (brw.selectedRow > -1) {
 					if (playlist_can_rename(brw.selectedRow)) {
-						brw.showPlaylist(brw.selectedRow);
+						brw.showSelectedPlaylist();
 						brw.rename_playlist(brw.selectedRow);
 					}
 				}
@@ -94,7 +94,7 @@ function on_key_down(vkey) {
 			case VK_UP:
 				if (brw.selectedRow > 0) {
 					brw.selectedRow--;
-					brw.showPlaylist(brw.selectedRow);
+					brw.showSelectedPlaylist();
 					brw.repaint();
 				}
 				break;
@@ -107,12 +107,12 @@ function on_key_down(vkey) {
 				break;
 			case VK_HOME:
 				brw.selectedRow = 0;
-				brw.showPlaylist(brw.selectedRow);
+				brw.showSelectedPlaylist();
 				brw.repaint();
 				break;
 			case VK_END:
 				brw.selectedRow = brw.rows.length - 1;
-				brw.showPlaylist(brw.selectedRow);
+				brw.showSelectedPlaylist();
 				brw.repaint();
 				break;
 			}
@@ -236,7 +236,8 @@ function on_playlist_items_removed(playlistIndex) {
 
 function on_playlist_switch() {
 	g_active_playlist = plman.ActivePlaylist;
-	brw.showPlaylist(g_active_playlist);
+	brw.selectedRow = g_active_playlist;
+	brw.showSelectedPlaylist();
 	brw.repaint();
 }
 
@@ -307,14 +308,10 @@ function oBrowser() {
 		this.repaint();
 	}
 
-	this.isVisiblePlaylist = function (playlistIndex) {
-		var offset_active_pl = ppt.rowHeight * playlistIndex;
-		return offset_active_pl >= scroll && offset_active_pl + ppt.rowHeight <= scroll + this.h;
-	}
-
-	this.showPlaylist = function (playlistIndex) {
-		if (!this.isVisiblePlaylist(playlistIndex)) {
-			scroll = (playlistIndex - Math.floor(this.totalRowsVis / 2)) * ppt.rowHeight;
+	this.showSelectedPlaylist = function () {
+		var offset = ppt.rowHeight * this.selectedRow;
+		if (offset < scroll || offset + ppt.rowHeight > scroll + this.h) {
+			scroll = (this.selectedRow - Math.floor(this.totalRowsVis / 2)) * ppt.rowHeight;
 			scroll = check_scroll(scroll);
 			this.scrollbar.updateScrollbar();
 		}

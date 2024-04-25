@@ -667,11 +667,7 @@ function oBrowser() {
 			var ah = ppt.rowHeight;
 			var g = 0;
 
-			if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist) {
-				this.nowplaying = plman.GetPlayingItemLocation();
-			} else {
-				this.nowplaying = null;
-			}
+			var loc = plman.GetPlayingItemLocation();
 
 			for (var i = g_start_; i <= g_end_; i++) {
 				ay = Math.floor(this.y + (i * ah) - scroll_);
@@ -718,19 +714,28 @@ function oBrowser() {
 						gr.FillRectangle(ax, ay, aw, ah, setAlpha(g_colour_text, 8));
 					}
 
-					if (plman.IsPlaylistItemSelected(g_active_playlist, this.rows[i].playlistTrackId)) {
+					if (!this.rows[i].tags) {
+						this.rows[i].tags = this.get_track_tags(i);
+					}
+
+					var playlistTrackId = this.rows[i].playlistTrackId;
+					var is_focused = g_focus_id == playlistTrackId;
+					var is_playing = loc.PlaylistIndex == g_active_playlist && loc.PlaylistItemIndex == playlistTrackId;
+					var is_selected = plman.IsPlaylistItemSelected(g_active_playlist, playlistTrackId);
+					var tags = this.rows[i].tags;
+					var artist = "", title = "";
+					var rw = 0;
+
+					if (is_selected) {
 						drawSelectedRectangle(gr, ax, ay, aw, ah);
 						normal_text = g_colour_selected_text;
 						fader_txt = setAlpha(normal_text, 180);
 					}
 
-					if (!this.rows[i].tags) {
-						this.rows[i].tags = this.get_track_tags(i);
+					if (is_focused) {
+						DrawRectangle(gr, ax, ay, aw - 1, ah - 1, fader_txt);
 					}
 
-					var tags = this.rows[i].tags;
-
-					var rw = 0;
 					if (ppt.showRating) {
 						rw = g_rating_width;
 						this.rating_x = aw - rw - g_time_width;
@@ -738,10 +743,7 @@ function oBrowser() {
 						gr.WriteText(chars.rating_on.repeat(tags.rating), g_font_fluent_20.str, normal_text, this.rating_x, ay, rw, ah, 0, 2);
 					}
 
-					var artist = tags.artist;
-					var title = tags.title;
-					var isplaying = this.nowplaying && this.rows[i].playlistTrackId == this.nowplaying.PlaylistItemIndex;
-					if (isplaying) {
+					if (is_playing) {
 						var arr = tfo.artist_title.Eval().split(" ^^ ");
 						artist = arr[0];
 						title = arr[1];
@@ -752,10 +754,13 @@ function oBrowser() {
 						} else {
 							gr.WriteText(chars.play, g_font_fluent_20.str, g_seconds % 2 == 0 ? normal_text : setAlpha(normal_text, 128), ax, ay, ah, ah, 2, 2);
 						}
+					} else {
+						artist = tags.artist;
+						title = tags.title;
 					}
 
 					if (ppt.doubleRowText) {
-						if (isplaying) {
+						if (is_playing) {
 							gr.WriteText(g_time, g_font.str, normal_text, ax, ay, aw - 5, ah / 2, 1, 2, 1, 1);
 						} else {
 							gr.WriteText(tags.tracknumber, g_font.str, normal_text, ax, ay, ah, ah / 2, 2, 2, 1, 1);
@@ -765,7 +770,7 @@ function oBrowser() {
 						gr.WriteText(title, g_font.str, normal_text, ax + ah, ay, aw - ah - rw - g_time_width - 10, ah / 2, 0, 2, 1, 1);
 						gr.WriteText(artist, g_font.str, fader_txt, ax + ah, ay + (ah / 2) - 2, aw - ah - rw - g_time_width - 10, ah / 2, 0, 2, 1, 1);
 					} else {
-						if (isplaying) {
+						if (is_playing) {
 							gr.WriteText(g_time, g_font.str, normal_text, ax, ay, aw - 5, ah, 1, 2, 1, 1);
 						} else {
 							gr.WriteText(tags.tracknumber, g_font.str, fader_txt, ax, ay, ah, ah, 2, 2, 1, 1);
@@ -1270,6 +1275,7 @@ function oBrowser() {
 	this.list = fb.CreateHandleList();
 	this.track_tf_arr = [];
 	this.old_activeRow = -1;
+	this.nowplaying_y = 0;
 	this.inputbox = new oInputbox(300, scale(20), true, "", "Search", g_sendResponse);
 }
 

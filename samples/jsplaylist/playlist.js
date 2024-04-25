@@ -37,17 +37,20 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 	}
 
 	this.drawRowContents = function (gr) {
-		var is_item_selected = plman.IsPlaylistItemSelected(g_active_playlist, this.track_index);
-		var txt_color = is_item_selected ? g_colour_selected_text : g_colour_text;
+		var is_focused = p.list.focusedTrackId == this.track_index;
+		var is_playing = p.list.nowplaying.PlaylistIndex == g_active_playlist && p.list.nowplaying.PlaylistItemIndex == this.track_index;
+		var is_selected = plman.IsPlaylistItemSelected(g_active_playlist, this.track_index);
+		var txt_color = is_selected ? g_colour_selected_text : g_colour_text;
 		var fader_txt = setAlpha(txt_color, 180);
 		var rating_colour = g_dynamic ? txt_color : g_colour_rating;
 		var mood_colour = g_dynamic ? txt_color : g_colour_mood;
 
-		if (is_item_selected) {
+		if (is_selected) {
 			gr.FillRectangle(this.x, this.y, this.w, this.h, g_colour_selection);
-			if (p.list.focusedTrackId == this.track_index) {
-				DrawRectangle(gr, this.x + 1, this.y, this.w - 2, this.h - 1, setAlpha(txt_color, 150));
-			}
+		}
+
+		if (is_focused) {
+			DrawRectangle(gr, this.x, this.y, this.w - 1, this.h - 1, fader_txt);
 		}
 
 		if (cList.enableExtraLine) {
@@ -86,7 +89,7 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 						break;
 					};
 
-					if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist && this.track_index == p.list.nowplaying.PlaylistItemIndex) {
+					if (is_playing) {
 						if (fb.IsPaused) {
 							gr.WriteText(chars.pause, g_font_fluent_20.str, txt_color, cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
 						} else {
@@ -884,9 +887,7 @@ function oList(object_name) {
 		}
 		var width = 0;
 
-		if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist) {
-			this.nowplaying = plman.GetPlayingItemLocation();
-		}
+		this.nowplaying = plman.GetPlayingItemLocation();
 
 		var fin = this.items.length;
 		for (var i = 0; i < fin; i++) {

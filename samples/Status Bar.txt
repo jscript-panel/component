@@ -154,10 +154,12 @@ function on_mouse_wheel(s) {
 function on_paint(gr) {
 	gr.Clear(properties.background.value);
 
-	var left_text = starting ? 'Starting playback...' : fb.IsPlaying ? tfo.Eval() : '';
-	if (left_text.length) {
-		DrawColouredText(gr, left_text, font, properties.text.value, 5, 2, ww - 200 - right_text_width, wh - 4, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_WORD_WRAPPING_WHOLE_WORD, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
-	}
+	var left_text = '';
+	if (starting) left_text = 'Starting playback...';
+	else if (fb.IsPlaying) left_text = tfo.Eval();
+	else left_text = fb.VersionString;
+
+	DrawColouredText(gr, left_text, font, properties.text.value, 5, 2, ww - 200 - right_text_width, wh - 4, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_WORD_WRAPPING_WHOLE_WORD, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (right_text.length) {
 		gr.WriteText(right_text, font, properties.text.value, 0, 2, ww - 130, wh - 4, DWRITE_TEXT_ALIGNMENT_TRAILING);

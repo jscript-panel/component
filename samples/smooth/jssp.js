@@ -823,12 +823,8 @@ function oBrowser() {
 
 		switch (event) {
 		case "lbtn_dblclk":
-			if (y < this.y && ppt.wallpapermode == 1 && fb.IsPlaying) {
-				fb.GetNowPlaying().ShowAlbumArtViewer();
-			} else if (this.activeRow > -1 && !rating_hover) {
-				if (rowType == 0) {
-					play(g_active_playlist, playlistTrackId);
-				}
+			if (this.activeRow > -1 && !rating_hover && rowType == 0) {
+				play(g_active_playlist, playlistTrackId);
 			}
 			break;
 		case "lbtn_down":

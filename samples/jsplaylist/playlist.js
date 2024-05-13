@@ -282,9 +282,7 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 				} else { // track
 					if (!rating_hover && !mood_hover) {
 						if (is_item_selected) {
-							if (playlist_can_reorder(g_active_playlist)) {
-								g_drag_drop_internal = true;
-							}
+							g_drag_drop_internal = true;
 							if (utils.IsKeyPressed(VK_SHIFT)) {
 								if (p.list.focusedTrackId != this.track_index) {
 									if (p.list.SHIFT_start_id != null) {

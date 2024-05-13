@@ -65,8 +65,10 @@ function on_drag_drop(action, x, y, mask) {
 		var new_pos = g_drag_drop_bottom ? plman.GetPlaylistItemCount(g_active_playlist) : g_drag_drop_track_id;
 
 		if (g_drag_drop_internal) {
-			plman.UndoBackup(g_active_playlist);
-			plman.MovePlaylistSelectionV2(g_active_playlist, new_pos);
+			if (playlist_can_reorder(g_active_playlist)) {
+				plman.UndoBackup(g_active_playlist);
+				plman.MovePlaylistSelectionV2(g_active_playlist, new_pos);
+			}
 			action.Effect = 0;
 		} else if (playlist_can_add_items(g_active_playlist)) {
 			plman.ClearPlaylistSelection(g_active_playlist);
@@ -127,6 +129,8 @@ function on_drag_over(action, x, y, mask) {
 		} else {
 			action.Effect = 0;
 		}
+	} else if (g_drag_drop_internal && !playlist_can_reorder(g_active_playlist)) {
+		action.Effect = 0;
 	} else if (g_drag_drop_internal || playlist_can_add_items(g_active_playlist)) {
 		p.list.check("drag_over", x, y);
 		if (y > p.list.y && y < p.list.y + 40) {

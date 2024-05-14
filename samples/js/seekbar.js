@@ -82,6 +82,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		if (metadb) {
 			this.image = this.get_image(metadb);
 			if (!this.image) {
+				var ext = _getExt(metadb.Path);
 				switch(true) {
 				case utils.IsFile(this.filename):
 					console.log(N, 'Skipping... a cached file appears to exist but it was not recognised as a valid image.');
@@ -92,7 +93,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 				case !utils.IsFolder(spectrogram_cache):
 					console.log(N, 'Skipping... spectrogram_cache folder was not found. Check the path set in the script.');
 					break;
-				case !utils.IsFile(metadb.Path):
+				case !utils.IsFile(metadb.Path) || this.excluded.indexOf(ext) > -1:
 					console.log(N, 'Skipping... Playing item not supported.');
 					break;
 				case fb.PlaybackLength <= 0:
@@ -289,6 +290,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		this.working = false;
 		this.timeout = false;
 		this.task_id = 0;
+		this.excluded = ['mkv', 'm2ts', 'iso'];
 
 		this.properties = {
 			params : new _p('2K3.SPECTROGRAM.FFMPEG.PARAMS', 's=1024x128'),

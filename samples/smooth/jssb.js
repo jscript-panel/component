@@ -43,6 +43,12 @@ function on_key_up(vkey) {
 	brw.repaint();
 }
 
+function on_library_initialised() {
+	if (ppt.library) {
+		brw.populate();
+	}
+}
+
 function on_library_items_added() {
 	if (ppt.library) {
 		brw.populate();

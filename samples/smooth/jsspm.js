@@ -793,13 +793,14 @@ function oBrowser() {
 
 	window.SetTimeout(function () {
 		brw.populate();
+		brw.showSelectedPlaylist();
 	}, 100);
 
 	this.rows = [];
 	this.scrollbar = new oScrollbar();
 	this.inputbox = null;
 	this.inputboxID = -1;
-	this.selectedRow = plman.ActivePlaylist;
+	this.selectedRow = g_active_playlist;
 }
 
 function oPlaylist(name, count) {

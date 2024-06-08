@@ -230,13 +230,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			this.working = true;
 			window.Repaint();
 
-			var extra = '';
 			var time = '';
-
-			var tool = this.tfo.tool.EvalWithMetadb(metadb);
-			if (_.includes(tool, 'exhale')) {
-				extra += ' -c:a libfdk_aac';
-			}
 
 			if (this.is_cue(metadb)) {
 				var offset = this.tfo.offset.EvalWithMetadb(metadb);
@@ -253,7 +247,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 				time += ' -t ' + utils.FormatDuration(metadb.Length);
 			}
 
-			var cmd = extra + time + ' -y -i ' + _q(this.tfo.path.EvalWithMetadb(metadb)) + ' -lavfi showspectrumpic=legend=0:' + this.properties.params.value + ' ' + _q(this.filename);
+			var cmd = time + ' -y -i ' + _q(this.tfo.path.EvalWithMetadb(metadb)) + ' -lavfi showspectrumpic=legend=0:' + this.properties.params.value + ' ' + _q(this.filename);
 			this.task_id = utils.RunCmdAsync(window.ID, ffmpeg_exe, cmd);
 		}
 
@@ -303,7 +297,6 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			path : fb.TitleFormat('$if(%__referenced_file%,$directory_path(%path%)\\%__referenced_file%,%path%)'),
 			cue : fb.TitleFormat('$if($or($strcmp(%__cue_embedded%,yes),$strcmp($right(%path%,3),cue)),cue,)'),
 			offset : fb.TitleFormat('[%__referenced_offset%]'),
-			tool : fb.TitleFormat('$lower(%__tool%)'),
 		};
 	}
 

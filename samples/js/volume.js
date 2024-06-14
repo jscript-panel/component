@@ -27,13 +27,18 @@ function _volume(x, y, w, h) {
 		this.mx = x;
 		this.my = y;
 		if (this.containsXY(x, y)) {
-			x -= this.x;
-			var pos = x < 0 ? 0 : x > this.w ? 1 : x / this.w;
-			this.drag_vol = pos2vol(pos);
-			_tt(this.drag_vol.toFixed(2) + ' dB');
-			if (this.drag) {
-				fb.Volume = this.drag_vol;
+			if (fb.CustomVolume == -1) {
+				x -= this.x;
+				var pos = x < 0 ? 0 : x > this.w ? 1 : x / this.w;
+				this.drag_vol = pos2vol(pos);
+				_tt(this.drag_vol.toFixed(2) + ' dB');
+				if (this.drag) {
+					fb.Volume = this.drag_vol;
+				}
+			} else {
+				_tt('The current output device does not support a volume slider');
 			}
+
 			this.hover = true;
 			return true;
 		}

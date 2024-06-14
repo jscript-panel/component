@@ -165,7 +165,11 @@ function on_paint(gr) {
 		gr.WriteText(right_text, font, properties.text.value, 0, 2, ww - 130, wh - 4, DWRITE_TEXT_ALIGNMENT_TRAILING);
 	}
 
-	gr.WriteText(fb.Volume.toFixed(2) + ' dB', font, properties.text.value, 0, 2, ww - 5, wh - 4, DWRITE_TEXT_ALIGNMENT_TRAILING);
+	if (fb.CustomVolume == -1) {
+		gr.WriteText(fb.Volume.toFixed(2) + ' dB', font, properties.text.value, 0, 2, ww - 5, wh - 4, DWRITE_TEXT_ALIGNMENT_TRAILING);
+	} else {
+		gr.WriteText('Volume: ' + fb.CustomVolume, font, properties.text.value, 0, 2, ww - 5, wh - 4, DWRITE_TEXT_ALIGNMENT_TRAILING);
+	}
 }
 
 function on_playback_new_track() {

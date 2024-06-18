@@ -163,7 +163,11 @@ function _text_display(x, y, w, h, buttons) {
 			} else {
 				var PlaylistIndex = plman.ActivePlaylist;
 				var PlaylistItemIndex = plman.GetPlaylistFocusItemIndex(PlaylistIndex);
-				tmp = tfo.EvalPlaylistItem(PlaylistIndex, PlaylistItemIndex);
+				if (PlaylistIndex > -1 && PlaylistItemIndex > -1) {
+					tmp = tfo.EvalPlaylistItem(PlaylistIndex, PlaylistItemIndex);
+				} else {
+					tmp = tfo.EvalWithMetadb(panel.metadb);
+				}
 			}
 
 			if (force || tmp != this.text) {

@@ -229,7 +229,7 @@ function oBrowser() {
 		this.totalRows = Math.ceil(this.h / this.rowHeight);
 		this.totalRowsVis = Math.floor(this.h / this.rowHeight);
 
-		this.reset_bt = new button(images.reset, images.reset_hover, images.reset_hover);
+		this.reset_bt = new button(images.reset, images.reset, images.reset);
 		this.inputbox.setSize(ww * 0.6, scale(20));
 		this.scrollbar.setSize();
 

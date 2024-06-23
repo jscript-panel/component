@@ -89,10 +89,8 @@ function get_images() {
 	gb.WriteText(chars.close, g_font_fluent_12.str, g_colour_text, 0, 0, button_size, button_size, 2, 2);
 	images.reset.ReleaseGraphics();
 
-	images.reset_hover = utils.CreateImage(button_size, button_size);
-	gb = images.reset_hover.GetGraphics();
-	gb.WriteText(chars.close, g_font_fluent_12.str, RGB(255, 50, 50), 0, 0, button_size, button_size, 2, 2);
-	images.reset_hover.ReleaseGraphics();
+	// force re-creation of buttons with new colours
+	if (typeof brw == 'object') brw.setSize();
 }
 
 function validate_indexes(playlist, item) {

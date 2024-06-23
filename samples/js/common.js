@@ -421,7 +421,7 @@ var ONE_DAY = 86400;
 var DEFAULT_ARTIST = '$meta(artist,0)';
 var N = window.Name + ':';
 var LM = _scale(5);
-var TM = _scale(17);
+var TM = _scale(22);
 
 var tooltip = window.CreateTooltip('Segoe UI', _scale(12));
 tooltip.SetMaxWidth(800);

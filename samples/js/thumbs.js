@@ -101,6 +101,14 @@ function _thumbs() {
 		this.artists[task_id] = this.artist;
 	}
 
+	this.draw_blurred_image = function (gr) {
+		if (!this.blurred_images[this.image_index]) {
+			this.blurred_images[this.image_index] = this.images[this.image_index].Clone();
+			this.blurred_images[this.image_index].StackBlur(120);
+		}
+		_drawImage(gr, this.blurred_images[this.image_index], 0, 0, panel.w, panel.h, image.crop);
+	}
+
 	this.enable_overlay = function (b) {
 		this.overlay = b;
 		window.Repaint();
@@ -191,9 +199,9 @@ function _thumbs() {
 	this.interval_func = _.bind(function () {
 		this.time++;
 		if (this.properties.cycle.value > 0 && this.images.length > 1 && this.time % this.properties.cycle.value == 0) {
-			this.image++;
-			if (this.image == this.images.length) {
-				this.image = 0;
+			this.image_index++;
+			if (this.image_index == this.images.length) {
+				this.image_index = 0;
 			}
 			window.Repaint();
 		}
@@ -223,7 +231,7 @@ function _thumbs() {
 
 	this.lbtn_dblclk = function (x, y) {
 		if (this.image_containsxXY(x, y)) {
-			var path = this.images[this.image].Path;
+			var path = this.images[this.image_index].Path;
 			switch (this.properties.double_click_mode.value) {
 			case 0:
 				utils.Run(path);
@@ -243,13 +251,13 @@ function _thumbs() {
 		case !this.containsXY(x, y):
 		case this.properties.mode.value == 0 && this.overlay && this.close_btn.lbtn_up(x, y):
 			break;
-		case this.properties.mode.value == 0 && !this.overlay && this.index < this.images.length:
-			this.image = this.index;
+		case this.properties.mode.value == 0 && !this.overlay && this.hover_index < this.images.length:
+			this.image_index = this.hover_index;
 			this.enable_overlay(true);
 			break;
-		case this.index < this.images.length:
-			if (this.image != this.index) {
-				this.image = this.index;
+		case this.hover_index < this.images.length:
+			if (this.image_index != this.hover_index) {
+				this.image_index = this.hover_index;
 				window.Repaint();
 			}
 			break;
@@ -282,7 +290,7 @@ function _thumbs() {
 	this.move = function (x, y) {
 		this.mx = x;
 		this.my = y;
-		this.index = this.images.length;
+		this.hover_index = this.images.length;
 		switch (true) {
 		case !this.containsXY(x, y):
 			break;
@@ -292,33 +300,36 @@ function _thumbs() {
 			}
 			var tmp = Math.floor(x / this.properties.px.value);
 			if (tmp < this.columns) {
-				this.index = tmp + ((Math.floor(y / this.properties.px.value) + this.offset) * this.columns);
+				this.hover_index = tmp + ((Math.floor(y / this.properties.px.value) + this.offset) * this.columns);
 			}
 			break;
 		case this.properties.mode.value == 1: // left
 		case this.properties.mode.value == 2: // right
-			this.index = Math.floor(y / this.properties.px.value) + this.offset;
+			this.hover_index = Math.floor(y / this.properties.px.value) + this.offset;
 			break;
 		case this.properties.mode.value == 3: // top
 		case this.properties.mode.value == 4: // bottom
-			this.index = Math.floor(x / this.properties.px.value) + this.offset;
+			this.hover_index = Math.floor(x / this.properties.px.value) + this.offset;
 			break;
 		}
-		window.SetCursor(this.index < this.images.length ? IDC_HAND : IDC_ARROW);
+		window.SetCursor(this.hover_index < this.images.length ? IDC_HAND : IDC_ARROW);
 	}
 
 	this.paint = function (gr) {
+		if (this.images.length == 0) {
+			this.image_xywh = [];
+			return;
+		}
+
 		var offset_px = this.offset * this.properties.px.value;
 
 		switch (true) {
-		case this.images.length == 0:
-			this.image_xywh = [];
-			break;
 		case this.properties.mode.value == 5: // off
 			if (this.properties.aspect.value == image.centre) {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 20, 20, panel.w - 40, panel.h - 40, this.properties.aspect.value);
+				this.draw_blurred_image(gr);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 20, 20, panel.w - 40, panel.h - 40, this.properties.aspect.value);
 			} else {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 0, 0, panel.w, panel.h, this.properties.aspect.value);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
 			break;
 		case !this.img:
@@ -327,7 +338,7 @@ function _thumbs() {
 			gr.DrawImage(this.img, this.x, this.y, this.img.Width, Math.min(this.img.Height - offset_px, this.h), 0, offset_px, this.img.Width, Math.min(this.img.Height - offset_px, this.h));
 			if (this.overlay) {
 				_drawOverlay(gr, this.x, this.y, this.w, this.h);
-				this.image_xywh = _drawImage(gr, this.images[this.image], 20, 20, panel.w - 40, panel.h - 40, image.centre);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 20, 20, panel.w - 40, panel.h - 40, image.centre);
 				this.close_btn.paint(gr, RGB(230, 230, 230));
 			} else {
 				this.image_xywh = [];
@@ -335,36 +346,40 @@ function _thumbs() {
 			break;
 		case this.properties.mode.value == 1: // left
 			if (this.properties.aspect.value == image.centre) {
-				this.image_xywh = _drawImage(gr, this.images[this.image], this.properties.px.value + 20, 20, panel.w - this.properties.px.value - 40, panel.h - 40, this.properties.aspect.value);
+				this.draw_blurred_image(gr);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], this.properties.px.value + 20, 20, panel.w - this.properties.px.value - 40, panel.h - 40, this.properties.aspect.value);
 			} else {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 0, 0, panel.w, panel.h, this.properties.aspect.value);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, this.w, Math.min(this.img.Height - offset_px, this.h), 0, offset_px, this.w, Math.min(this.img.Height - offset_px, this.h));
 			break;
 		case this.properties.mode.value == 2: // right
 			if (this.properties.aspect.value == image.centre) {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 20, 20, panel.w - this.properties.px.value - 40, panel.h - 40, this.properties.aspect.value);
+				this.draw_blurred_image(gr);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 20, 20, panel.w - this.properties.px.value - 40, panel.h - 40, this.properties.aspect.value);
 			} else {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 0, 0, panel.w, panel.h, this.properties.aspect.value);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, this.w, Math.min(this.img.Height - offset_px, this.h), 0, offset_px, this.w, Math.min(this.img.Height - offset_px, this.h));
 			break;
 		case this.properties.mode.value == 3: // top
 			if (this.properties.aspect.value == image.centre) {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 20, this.properties.px.value + 20, panel.w - 40, panel.h - this.properties.px.value - 40, this.properties.aspect.value);
+				this.draw_blurred_image(gr);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 20, this.properties.px.value + 20, panel.w - 40, panel.h - this.properties.px.value - 40, this.properties.aspect.value);
 			} else {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 0, 0, panel.w, panel.h, this.properties.aspect.value);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, Math.min(this.img.Width - offset_px, this.w), this.img.Height, offset_px, 0, Math.min(this.img.Width - offset_px, this.w), this.img.Height);
 			break;
 		case this.properties.mode.value == 4: // bottom
 			if (this.properties.aspect.value == image.centre) {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 20, 20, panel.w - 40, panel.h - this.properties.px.value - 40, this.properties.aspect.value);
+				this.draw_blurred_image(gr);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 20, 20, panel.w - 40, panel.h - this.properties.px.value - 40, this.properties.aspect.value);
 			} else {
-				this.image_xywh = _drawImage(gr, this.images[this.image], 0, 0, panel.w, panel.h, this.properties.aspect.value);
+				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, Math.min(this.img.Width - offset_px, this.w), this.img.Height, offset_px, 0, Math.min(this.img.Width - offset_px, this.w), this.img.Height);
@@ -455,7 +470,7 @@ function _thumbs() {
 				panel.m.AppendMenuSeparator();
 			}
 			if (this.properties.source.value == 1 && this.images.length > 1) {
-				panel.m.AppendMenuItem(EnableMenuIf(this.default_file != this.images[this.image].Path), 1520, 'Set as default');
+				panel.m.AppendMenuItem(EnableMenuIf(this.default_file != this.images[this.image_index].Path), 1520, 'Set as default');
 				panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.default_file)), 1521, 'Clear default');
 				panel.m.AppendMenuSeparator();
 			}
@@ -544,16 +559,16 @@ function _thumbs() {
 			window.Repaint();
 			break;
 		case 1520:
-			this.set_default(this.images[this.image].Path.split('\\').pop());
+			this.set_default(this.images[this.image_index].Path.split('\\').pop());
 			break;
 		case 1521:
 			this.set_default(undefined);
 			break;
 		case 1530:
-			utils.Run(this.images[this.image].Path);
+			utils.Run(this.images[this.image_index].Path);
 			break;
 		case 1531:
-			utils.RemovePath(this.images[this.image].Path);
+			utils.RemovePath(this.images[this.image_index].Path);
 			this.update();
 			break;
 		case 1540:
@@ -563,7 +578,7 @@ function _thumbs() {
 			break;
 		case 1550:
 			if (this.images.length) {
-				_explorer(this.images[this.image].Path);
+				_explorer(this.images[this.image_index].Path);
 			} else {
 				utils.Run(this.folder);
 			}
@@ -590,13 +605,11 @@ function _thumbs() {
 	}
 
 	this.reset = function () {
-		this.image = 0;
+		this.image_index = 0;
 		_dispose.apply(null, this.images);
+		_dispose.apply(null, this.blurred_images);
 		this.images = [];
-		if (this.blur_img) {
-			this.blur_img.Dispose();
-			this.blur_img = null;
-		}
+		this.blurred_images = [];
 	}
 
 	this.set_default = function (val) {
@@ -685,10 +698,7 @@ function _thumbs() {
 			}
 		}
 
-		if (this.images.length) {
-			this.blur_img = this.images[0].Clone();
-			this.blur_img.StackBlur(120);
-		}
+		this.blurred_images = new Array(this.images.length);
 
 		if (this.properties.mode.value != 5) {
 			this.create_thumbs();
@@ -705,12 +715,12 @@ function _thumbs() {
 			if (this.images.length < 2) {
 				return;
 			}
-			this.image -= s;
-			if (this.image < 0) {
-				this.image = this.images.length - 1;
+			this.image_index -= s;
+			if (this.image_index < 0) {
+				this.image_index = this.images.length - 1;
 			}
-			if (this.image >= this.images.length) {
-				this.image = 0;
+			if (this.image_index >= this.images.length) {
+				this.image_index = 0;
 			}
 			window.Repaint();
 			return;
@@ -756,61 +766,53 @@ function _thumbs() {
 		}
 	}
 
-	this.is_bio_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'lastfm_bio';
-	if (this.is_bio_panel) {
-		window.SetProperty('2K3.THUMBS.MODE', 5);
-		window.SetProperty('2K3.THUMBS.SOURCE', 1);
-	}
-
 	this.mx = 0;
 	this.my = 0;
 	this.images = [];
+	this.blurred_images = [];
 	this.thumbs = [];
 	this.history = {}; // track auto-downloads, attempt same artist only once per session
 	this.limits = [1, 3, 5, 10, 15, 20];
 	this.modes = ['grid', 'left', 'right', 'top', 'bottom', 'off'];
 	this.pxs = [75, 100, 150, 200, 250, 300];
-	this.exts = ['webp', 'jpg', 'jpeg', 'png', 'gif', 'heif', 'heic', 'avif'];
+	this.exts = ['webp', 'jpg', 'jpeg', 'png', 'gif', 'heif', 'heic', 'avif', 'jxl'];
 	this.json_file = folders.data + 'thumbs.json';
 	this.defaults = this.get_defaults();
 	this.default_file = '';
 	this.folder = '';
 	this.artist = '';
 	this.artists = {};
+	this.properties = {};
 	this.img = null;
-	this.blur_img = null;
 	this.circular_mask = null;
 	this.nc = false;
 	this.image_xywh = [];
-	this.image = 0;
-	this.index = 0;
+	this.hover_index = 0;
+	this.image_index = 0;
 	this.time = 0;
 	this.counter = 0;
 	this.using_stub = false;
-	this.properties = {
-		mode : new _p('2K3.THUMBS.MODE', 4), // 0 grid 1 left 2 right 3 top 4 bottom 5 off
-		source : new _p('2K3.THUMBS.SOURCE', 0), // 0 custom folder 1 last.fm
-		tf : new _p('2K3.THUMBS.CUSTOM.FOLDER.TF', '$directory_path(%path%)'),
-		limit : new _p('2K3.THUMBS.DOWNLOAD.LIMIT', 10),
-		px : new _p('2K3.THUMBS.PX', 75),
-		cycle : new _p('2K3.THUMBS.CYCLE', 5),
-		aspect : new _p('2K3.THUMBS.ASPECT', image.crop_top),
-		auto_download : new _p('2K3.THUMBS.AUTO.DOWNLOAD', true),
-		circular : new _p('2K3.THUMBS.CIRCULAR', false),
-		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
-		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer
-		max_size : new _p('2K3.THUMBS.MAX.SIZE', 1024), // improve performance
-	};
 
-	if (_.includes(this.properties.tf.value, '|')) {
-		var arr = _stringToArray(this.properties.tf.value, '|');
-		this.properties.tf.value = arr.join('\r\n');
-	}
-
+	this.is_bio_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'lastfm_bio';
 	if (this.is_bio_panel) {
+		window.SetProperty('2K3.THUMBS.MODE', 5);
+		window.SetProperty('2K3.THUMBS.SOURCE', 1);
 		this.properties.layout = new _p('2K3.THUMBS.LAYOUT', 0); // 0 horizontal, 1 vertical
 		this.properties.ratio = new _p('2K3.THUMBS.RATIO', 0.5);
 	}
+
+	this.properties.mode = new _p('2K3.THUMBS.MODE', 4); // 0 grid 1 left 2 right 3 top 4 bottom 5 off
+	this.properties.source = new _p('2K3.THUMBS.SOURCE', 0); // 0 custom folder 1 last.fm
+	this.properties.tf = new _p('2K3.THUMBS.CUSTOM.FOLDER.TF', '$directory_path(%path%)');
+	this.properties.limit = new _p('2K3.THUMBS.DOWNLOAD.LIMIT', 10);
+	this.properties.px = new _p('2K3.THUMBS.PX', 75);
+	this.properties.cycle = new _p('2K3.THUMBS.CYCLE', 5);
+	this.properties.aspect = new _p('2K3.THUMBS.ASPECT', image.crop_top);
+	this.properties.auto_download = new _p('2K3.THUMBS.AUTO.DOWNLOAD', true);
+	this.properties.circular = new _p('2K3.THUMBS.CIRCULAR', false);
+	this.properties.size_limit = new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024);
+	this.properties.double_click_mode = new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 1); // 0 external viewer 1 fb2k viewer 2 explorer
+	this.properties.max_size = new _p('2K3.THUMBS.MAX.SIZE', 1024);
 
 	this.headers = JSON.stringify({
 		'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',

@@ -40,11 +40,11 @@ thumbs.move = function (x, y) {
 }
 
 thumbs.paint = function (gr) {
-	_drawImage(gr, this.blur_img, 0, 0, panel.w, panel.h, image.crop_top);
+	this.draw_blurred_image(gr);
 	_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
 
 	if (this.images.length) {
-		this.image_xywh = _drawImage(gr, thumbs.images[thumbs.image], this.x, this.y, this.w, this.h, this.properties.aspect.value);
+		this.image_xywh = _drawImage(gr, thumbs.images[thumbs.image_index], this.x, this.y, this.w, this.h, this.properties.aspect.value);
 	} else {
 		this.image_xywh = [];
 	}
@@ -53,12 +53,12 @@ thumbs.paint = function (gr) {
 thumbs.wheel = function (s) {
 	if (this.containsXY(this.mx, this.my)) {
 		if (this.images.length > 1) {
-			this.image -= s;
-			if (this.image < 0) {
-				this.image = this.images.length - 1;
+			this.image_index -= s;
+			if (this.image_index < 0) {
+				this.image_index = this.images.length - 1;
 			}
-			if (this.image >= this.images.length) {
-				this.image = 0;
+			if (this.image_index >= this.images.length) {
+				this.image_index = 0;
 			}
 			window.Repaint();
 		}

@@ -330,6 +330,8 @@ function _list(mode, x, y, w, h) {
 					tech : new _p('2K3.LIST.PROPERTIES.TECH', true),
 				};
 			}
+
+			this.properties_value_x = 0;
 			break;
 		}
 	}
@@ -354,7 +356,7 @@ function _list(mode, x, y, w, h) {
 			case this.down_btn.lbtn_up(x, y):
 			case !this.in_range:
 				break;
-			case x > this.x + this.text_x && x < this.x + this.text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
+			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
 				if (_.startsWith(this.data[this.index].url, 'http')) {
 					utils.Run(this.data[this.index].url);
 				} else {
@@ -416,7 +418,7 @@ function _list(mode, x, y, w, h) {
 				break;
 			case !this.in_range:
 				break;
-			case x > this.x + this.text_x && x < this.x + this.text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
+			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
 				window.SetCursor(IDC_HAND);
 				if (_.startsWith(this.data[this.index].url, 'http')) {
 					_tt(this.data[this.index].url);
@@ -439,14 +441,14 @@ function _list(mode, x, y, w, h) {
 		}
 		switch (true) {
 		case this.mode == 'lastfm_info' && this.properties.mode.value == 1 && this.properties.user_mode.value == 0: // charts
-			this.text_x = this.spacer_w + 5;
-			this.text_width = Math.round(this.w / 2) + 30;
-			var lastfm_charts_bar_x = this.x + this.text_x + this.text_width + 10;
+			this.clickable_text_x = this.spacer_w + 5;
+			this.text_width = Math.round(this.w * 0.5);
+			var lastfm_charts_bar_x = this.x + this.clickable_text_x + this.text_width + 10;
 			var unit_width = (this.w - lastfm_charts_bar_x - _scale(50)) / this.data[0].playcount;
 			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				var bar_width = Math.ceil(unit_width * this.data[i + this.offset].playcount);
-				this.draw_row(gr, this.data[i + this.offset].rank + '.', panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_x - 5, panel.row_height, DWRITE_TEXT_ALIGNMENT_TRAILING);
-				this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x + this.text_x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
+				this.draw_row(gr, this.data[i + this.offset].rank + '.', panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.clickable_text_x - 5, panel.row_height, DWRITE_TEXT_ALIGNMENT_TRAILING);
+				this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x + this.clickable_text_x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
 				gr.FillRectangle(lastfm_charts_bar_x, this.y + _scale(13) + (i * panel.row_height), bar_width, panel.row_height - 3, panel.colours.highlight);
 				this.draw_row(gr, _formatNumber(this.data[i + this.offset].playcount, ','), panel.colours.text, lastfm_charts_bar_x + bar_width + 5, this.y + _scale(12) + (i * panel.row_height), _scale(60), panel.row_height);
 			}
@@ -464,18 +466,19 @@ function _list(mode, x, y, w, h) {
 			break;
 		case this.mode == 'properties':
 		case this.mode == 'properties_other_info':
-			this.text_width = this.w - this.text_x;
+			this.clickable_text_x = Math.min(this.w * 0.5, this.properties_value_x);
+			this.text_width = this.w - this.clickable_text_x;
 			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				if (this.data[i + this.offset].value == 'SECTION_HEADER') {
 					this.draw_row(gr, this.data[i + this.offset].name, panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.w, panel.row_height);
 				} else {
-					this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_x - 10, panel.row_height);
-					this.draw_row(gr, this.data[i + this.offset].value, panel.colours.highlight, this.x + this.text_x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
+					this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height), this.clickable_text_x - 10, panel.row_height);
+					this.draw_row(gr, this.data[i + this.offset].value, panel.colours.highlight, this.x + this.clickable_text_x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
 				}
 			}
 			break;
 		default: // other last.fm / musicbrainz links
-			this.text_x = 0;
+			this.clickable_text_x = 0;
 			this.text_width = this.w;
 			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
@@ -631,7 +634,7 @@ function _list(mode, x, y, w, h) {
 		this.index = 0;
 		this.offset = 0;
 		this.rows = Math.floor((this.h - _scale(24)) / panel.row_height);
-		this.up_btn.x = this.x + Math.round((this.w - _scale(12)) / 2);
+		this.up_btn.x = this.x + Math.round((this.w - _scale(12)) * 0.5);
 		this.down_btn.x = this.up_btn.x;
 		this.up_btn.y = this.y;
 		this.down_btn.y = this.y + this.h - _scale(12);
@@ -788,7 +791,7 @@ function _list(mode, x, y, w, h) {
 			break;
 		case 'properties':
 		case 'properties_other_info':
-			this.text_x = 0;
+			this.properties_value_x = 0;
 			this.filename = panel.metadb.Path;
 			var fileinfo = panel.metadb.GetFileInfo();
 			if (this.mode == 'properties') {
@@ -809,7 +812,7 @@ function _list(mode, x, y, w, h) {
 			_.forEach(this.data, function (item) {
 				item.width = panel.calc_text_width(item.value);
 				if (item.value != 'SECTION_HEADER') {
-					this.text_x = Math.max(this.text_x, panel.calc_text_width(item.name) + 20);
+					this.properties_value_x = Math.max(this.properties_value_x, panel.calc_text_width(item.name) + 20);
 				}
 			}, this);
 			if (fileinfo) fileinfo.Dispose();
@@ -852,7 +855,7 @@ function _list(mode, x, y, w, h) {
 	this.index = 0;
 	this.offset = 0;
 	this.count = 0;
-	this.text_x = 0;
+	this.clickable_text_x = 0;
 	this.spacer_w = 0;
 	this.artist = '';
 	this.filename = '';

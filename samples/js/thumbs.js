@@ -102,11 +102,14 @@ function _thumbs() {
 	}
 
 	this.draw_blurred_image = function (gr) {
+		if (!this.images[this.image_index]) return;
+
 		if (!this.blurred_images[this.image_index]) {
 			this.blurred_images[this.image_index] = this.images[this.image_index].Clone();
 			this.blurred_images[this.image_index].StackBlur(120);
 		}
-		_drawImage(gr, this.blurred_images[this.image_index], 0, 0, panel.w, panel.h, image.crop);
+
+		_drawImage(gr, this.blurred_images[this.image_index], 0, 0, panel.w, panel.h, image.crop, this.properties.blur_opacity.value);
 	}
 
 	this.enable_overlay = function (b) {
@@ -708,6 +711,15 @@ function _thumbs() {
 	}
 
 	this.wheel = function (s) {
+		if (!this.is_bio_panel && utils.IsKeyPressed(VK_SHIFT) && this.properties.aspect.value == image.centre) {
+			var value = _clamp(this.properties.blur_opacity.value + (s * 0.05), 0.2, 0.8);
+			if (value != this.properties.blur_opacity.value) {
+				this.properties.blur_opacity.value = value;
+				window.Repaint();
+			}
+			return;
+		}
+
 		var offset = this.offset - s;
 		switch (true) {
 		case !this.containsXY(this.mx, this.my):
@@ -799,6 +811,9 @@ function _thumbs() {
 		window.SetProperty('2K3.THUMBS.SOURCE', 1);
 		this.properties.layout = new _p('2K3.THUMBS.LAYOUT', 0); // 0 horizontal, 1 vertical
 		this.properties.ratio = new _p('2K3.THUMBS.RATIO', 0.5);
+		this.properties.blur_opacity = new _p('2K3.BIO.BLUR.OPACITY', 1);
+	} else {
+		this.properties.blur_opacity = new _p('2K3.THUMBS.BLUR.OPACITY', 0.5);
 	}
 
 	this.properties.mode = new _p('2K3.THUMBS.MODE', 4); // 0 grid 1 left 2 right 3 top 4 bottom 5 off

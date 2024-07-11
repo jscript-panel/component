@@ -2,7 +2,7 @@
 // @import "%fb2k_component_path%helpers.txt"
 // ==/PREPROCESSOR==
 
-// Because parsing $font / $rgb in title format strings is not
+// Because parsing $font in title format strings is not
 // easy, a DrawStyledText method has been added to helpers.txt
 
 // See also: https://jscript-panel.github.io/docs/font-rgb/
@@ -32,6 +32,7 @@ function on_playlist_switch() {
 }
 
 function on_paint(gr) {
+	gr.Clear(RGB(255, 255, 255));
 	// default_font is an empty string, defaulting to Segoe UI, 16px
-	DrawStyledText(gr, str, '', 0, 0, 0, window.Width, window.Height, 2, 2, 2);
+	DrawStyledText(gr, str, '', RGB(0, 0, 0), 0, 0, window.Width, window.Height, 2, 2, 2);
 }

@@ -79,25 +79,6 @@ function DetermineTextColour(background) {
 	return RGB(255, 255, 255);
 }
 
-// text variable can contain $rgb code. Used by JS Playlist, can be reused elsewhere
-function DrawColouredText(gr, text, font, default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity) {
-	if (!text) return;
-
-	if (typeof text_alignment != 'number') text_alignment = DWRITE_TEXT_ALIGNMENT_LEADING;
-	if (typeof paragraph_alignment != 'number') paragraph_alignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
-	if (typeof word_wrapping != 'number') word_wrapping = DWRITE_WORD_WRAPPING_NO_WRAP;
-	if (typeof trimming_granularity != 'number') trimming_granularity = DWRITE_TRIMMING_GRANULARITY_NONE;
-
-	// no $rgb code, WriteText with default_colour and bail
-	if (text.indexOf(chars.etx) == -1) {
-		gr.WriteText(text, font, default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity);
-		return;
-	}
-
-	var colours = GetColourStyles(text, default_colour);
-	gr.WriteText(StripCodes(text), font, JSON.stringify(colours), x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity);
-}
-
 // text variable can contain $rgb and $font code
 function DrawStyledText(gr, text, default_font, default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity) {
 	if (!text) return;
@@ -107,8 +88,8 @@ function DrawStyledText(gr, text, default_font, default_colour, x, y, w, h, text
 	if (typeof word_wrapping != 'number') word_wrapping = DWRITE_WORD_WRAPPING_NO_WRAP;
 	if (typeof trimming_granularity != 'number') trimming_granularity = DWRITE_TRIMMING_GRANULARITY_NONE;
 
-	// no $rgb code or $font code, WriteText with defaults and bail
-	if (text.indexOf(chars.etx) == -1 && text.indexOf(chars.bel) == -1) {
+	// no $font code, WriteText with defaults and bail
+	if (text.indexOf(chars.bel) == -1) {
 		gr.WriteText(text, default_font, default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity);
 		return;
 	}
@@ -119,8 +100,7 @@ function DrawStyledText(gr, text, default_font, default_colour, x, y, w, h, text
 	}
 
 	var fonts = GetFontStyles(text, JSON.parse(default_font));
-	var colours = GetColourStyles(text, default_colour);
-	gr.WriteText(StripCodes(text), JSON.stringify(fonts), JSON.stringify(colours), x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity);
+	gr.WriteText(StripCode(text, chars.bel), JSON.stringify(fonts), default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity);
 }
 
 function StripCode(text, chr) {
@@ -140,45 +120,6 @@ function StripCodes(text) {
 	text = StripCode(text, chars.etx); // $rgb
 	text = StripCode(text, chars.bel); // $font
 	return text;
-}
-
-// $rgb parser
-// generates array for gr.WriteText / gr.WriteTextLayout
-function GetColourStyles(text, default_colour) {
-	var styles = [{
-		Start : 0,
-		Length : UINT_MAX,
-		Colour : default_colour,
-	}];
-
-	if (text.indexOf(chars.etx) == -1) return styles;
-	text = StripCode(text, chars.bel); // Discard $font code if present
-
-	var arr = text.split(chars.etx);
-	var start = text.indexOf(chars.etx) > 0 ? arr[0].length : 0;
-	arr.shift();
-	for (var i = 0; i < arr.length; i += 2) {
-		var len = arr[i + 1].length;
-		var style = {
-			Start : start,
-			Length : len,
-		}
-
-		if (arr[i].length) {
-			// $rgb = BBGGRR
-			var b = Number('0x' + arr[i].substr(0, 2));
-			var g = Number('0x' + arr[i].substr(2, 2));
-			var r = Number('0x' + arr[i].substr(4, 2));
-			style.Colour = RGB(r, g, b);
-		} else {
-			// $rgb() with no values, reset to default
-			style.Colour = default_colour;
-		}
-
-		styles.push(style);
-		start += len;
-	}
-	return styles;
 }
 
 // $font parser for component version 3.1.9 and later

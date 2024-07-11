@@ -157,7 +157,7 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 	this.drawText = function (gr, text, colour, x, y, w, h, align) {
 		if (!text || text == "null") return;
 		if (g_dynamic) text = StripCode(text, chars.etx);
-		DrawColouredText(gr, text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
+		gr.WriteText(text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
 	}
 
 	this.draw = function (gr, x, y, w, h) {

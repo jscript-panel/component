@@ -45,7 +45,7 @@ function _text_display(x, y, w, h, buttons) {
 		}
 
 		if (!this.text_layout) return;
-		gr.WriteTextLayout(this.text_layout, this.colour_string, this.x, this.y, this.w, this.h, this.offset);
+		gr.WriteTextLayout(this.text_layout, this.default_colour, this.x, this.y, this.w, this.h, this.offset);
 	}
 
 	this.rbtn_up = function (x, y) {
@@ -176,12 +176,11 @@ function _text_display(x, y, w, h, buttons) {
 				if (this.text.length) {
 					var font_obj = JSON.parse(panel.fonts.normal);
 					var font_styles = GetFontStyles(this.text, font_obj);
-					var colour_styles = GetColourStyles(this.text, this.default_colour);
-					this.colour_string = JSON.stringify(colour_styles);
+
 					if (this.properties.layout.value == 1) {
-						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), 2, 2);
+						this.text_layout = utils.CreateTextLayout2(StripCode(this.text, chars.bel), JSON.stringify(font_styles), 2, 2);
 					} else {
-						this.text_layout = utils.CreateTextLayout2(StripCodes(this.text), JSON.stringify(font_styles), this.properties.halign.value, this.properties.valign.value);
+						this.text_layout = utils.CreateTextLayout2(StripCode(this.text, chars.bel), JSON.stringify(font_styles), this.properties.halign.value, this.properties.valign.value);
 					}
 				}
 			}
@@ -268,7 +267,6 @@ function _text_display(x, y, w, h, buttons) {
 	this.h = h;
 	this.buttons = buttons;
 	this.default_colour = 0;
-	this.colour_string = '';
 	this.text_layout = null;
 	this.text_height = 0;
 	this.scroll_step = 0;

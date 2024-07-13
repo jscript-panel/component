@@ -153,7 +153,7 @@ function GetFontStyles(text, font_obj) {
 		if (parts.length) {
 			// Extract values from $font function
 			style.Name = utils.CheckFont(parts[0]) ? parts[0] : font_obj.Name;
-			style.Size = Math.round(Number(parts[1] * DPI / 72));
+			style.Size = Math.round(Number(parts[1]));
 			style.Weight = Number(parts[2]);
 			style.Style = Number(parts[3]);
 			style.Underline = Number(parts[4]) == 1;

@@ -20,11 +20,21 @@ function _panel(options) {
 		gr.DrawLine(0, TM + 0.5, this.w, TM + 0.5, 1, setAlpha(this.colours.highlight, 80));
 	}
 
+	this.create_font = function (size, weight) {
+		return JSON.stringify({
+			Name : this.fonts.name,
+			Size : _scale(size),
+			Weight : weight || 400,
+			Style : 0,
+			Stretch : 5
+		});
+	}
+
 	this.font_changed = function () {
 		this.fonts.name = JSON.parse(window.IsDefaultUI ? window.GetFontDUI(0) : window.GetFontCUI(0)).Name;
-		this.fonts.normal = JSON.stringify({Name:this.fonts.name,Size:_scale(this.fonts.size.value)});
-		this.fonts.small = JSON.stringify({Name:this.fonts.name,Size:_scale(this.fonts.size.value - 2)});
-		this.fonts.title = JSON.stringify({Name:this.fonts.name,Size:_scale(this.fonts.size.value),Weight:700});
+		this.fonts.normal = this.create_font(this.fonts.size.value);
+		this.fonts.small = this.create_font(this.fonts.size.value - 2);
+		this.fonts.title = this.create_font(this.fonts.size.value, 700);
 		this.row_height = _scale(this.fonts.size.value + 4);
 		_.invoke(this.text_objects, 'font_changed');
 		_.invoke(this.list_objects, 'size', true);

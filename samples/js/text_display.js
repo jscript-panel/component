@@ -174,13 +174,12 @@ function _text_display(x, y, w, h, buttons) {
 				this.clear_layout()
 				this.text = tmp;
 				if (this.text.length) {
-					var font_obj = JSON.parse(panel.fonts.normal);
-					var font_styles = GetFontStyles(this.text, font_obj);
+					var font = JSON.parse(panel.fonts.normal);
 
 					if (this.properties.layout.value == 1) {
-						this.text_layout = utils.CreateTextLayout2(StripCode(this.text, chars.bel), JSON.stringify(font_styles), 2, 2);
+						this.text_layout = utils.CreateTextLayout(this.text, font.Name, font.Size, font.Weight, font.Style, font.Stretch, 2, 2);
 					} else {
-						this.text_layout = utils.CreateTextLayout2(StripCode(this.text, chars.bel), JSON.stringify(font_styles), this.properties.halign.value, this.properties.valign.value);
+						this.text_layout = utils.CreateTextLayout(this.text, font.Name, font.Size, font.Weight, font.Style, font.Stretch, this.properties.halign.value, this.properties.valign.value);
 					}
 				}
 			}

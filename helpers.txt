@@ -123,7 +123,9 @@ function StripCodes(text) {
 }
 
 // $font parser for component version 3.1.9 and later
-// generates array for gr.WriteText / utils.CreateTextLayout2
+// for use with gr.WriteText only
+// As of component version 3.6.0, it's not needed for
+// utils.CreateTextLayout which handles $font natively
 function GetFontStyles(text, font_obj) {
 	var styles = [{
 		Start : 0,

@@ -79,30 +79,6 @@ function DetermineTextColour(background) {
 	return RGB(255, 255, 255);
 }
 
-// text variable can contain $rgb and $font code
-function DrawStyledText(gr, text, default_font, default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity) {
-	if (!text) return;
-
-	if (typeof text_alignment != 'number') text_alignment = DWRITE_TEXT_ALIGNMENT_LEADING;
-	if (typeof paragraph_alignment != 'number') paragraph_alignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
-	if (typeof word_wrapping != 'number') word_wrapping = DWRITE_WORD_WRAPPING_NO_WRAP;
-	if (typeof trimming_granularity != 'number') trimming_granularity = DWRITE_TRIMMING_GRANULARITY_NONE;
-
-	// no $font code, WriteText with defaults and bail
-	if (text.indexOf(chars.bel) == -1) {
-		gr.WriteText(text, default_font, default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity);
-		return;
-	}
-
-	// gr.WriteText accepts an empty string but GetFontStyles needs a valid font
-	if (default_font.empty()) {
-		default_font = CreateFontString('Segoe UI', 16);
-	}
-
-	var fonts = GetFontStyles(text, JSON.parse(default_font));
-	gr.WriteText(StripCode(text, chars.bel), JSON.stringify(fonts), default_colour, x, y, w, h, text_alignment, paragraph_alignment, word_wrapping, trimming_granularity);
-}
-
 function StripCode(text, chr) {
 	if (!text) return '';
 	if (text.indexOf(chr) == -1) return text;
@@ -120,56 +96,6 @@ function StripCodes(text) {
 	text = StripCode(text, chars.etx); // $rgb
 	text = StripCode(text, chars.bel); // $font
 	return text;
-}
-
-// $font parser for component version 3.1.9 and later
-// for use with gr.WriteText only
-// As of component version 3.6.0, it's not needed for
-// utils.CreateTextLayout which handles $font natively
-function GetFontStyles(text, font_obj) {
-	var styles = [{
-		Start : 0,
-		Length : UINT_MAX,
-		Name : font_obj.Name,
-		Size : font_obj.Size,
-		Weight : font_obj.Weight,
-		Style : typeof font_obj.Style == 'number' ? font_obj.Style : 0,
-	}];
-
-	if (text.indexOf(chars.bel) == -1) return styles;
-	text = StripCode(text, chars.etx); // Discard $rgb code if present
-
-	var arr = text.split(chars.bel);
-	var start = text.indexOf(chars.bel) > 0 ? arr[0].length : 0;
-	arr.shift();
-	for (var i = 0; i < arr.length; i += 2) {
-		var parts = arr[i].length ? arr[i].split(chars.tab) : [];
-		var len = arr[i + 1].length;
-		var style = {
-			Start : start,
-			Length : len,
-		};
-
-		if (parts.length) {
-			// Extract values from $font function
-			style.Name = utils.CheckFont(parts[0]) ? parts[0] : font_obj.Name;
-			style.Size = Math.round(Number(parts[1]));
-			style.Weight = Number(parts[2]);
-			style.Style = Number(parts[3]);
-			style.Underline = Number(parts[4]) == 1;
-			style.Strikethrough = Number(parts[5]) == 1;
-		} else {
-			// $font() with no values, reset to default
-			style.Name = font_obj.Name;
-			style.Size = font_obj.Size;
-			style.Weight = font_obj.Weight;
-			if (typeof font_obj.Style == 'number') style.Style = font_obj.Style;
-		}
-
-		styles.push(style);
-		start += len;
-	}
-	return styles
 }
 
 // fixed line width of 1px

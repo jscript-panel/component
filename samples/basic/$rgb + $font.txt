@@ -7,7 +7,7 @@
 
 // See also: https://jscript-panel.github.io/docs/font-rgb/
 
-var tfo = fb.TitleFormat('$font(Segoe UI,24)$rgb(255,0,0)%artist%$font() $font(Segoe UI,32)$rgb(0,255,0)%title%');
+var tfo = fb.TitleFormat('$font(Segoe UI,24)$rgb(255,0,0)%artist% $font(Segoe UI,32)$rgb(0,255,0)%title%');
 var str = '';
 
 var default_font = CreateFontString('Segoe UI', 16);

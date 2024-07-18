@@ -36,8 +36,13 @@ function _text_display(x, y, w, h, buttons) {
 
 	this.paint = function (gr) {
 		if (this.properties.albumart.enabled) {
-			_drawImage(gr, this.properties.albumart_blur.enabled ? albumart.blur_img : albumart.img, 0, 0, panel.w, panel.h, image.crop);
-			_drawOverlay(gr, 0, 0, panel.w, panel.h, 120);
+			if (this.properties.albumart_blur.enabled) {
+				_drawImage(gr, albumart.blur_img, 0, 0, panel.w, panel.h, image.crop);
+				_drawOverlay(gr, 0, 0, panel.w, panel.h, 120);
+			} else {
+				_drawImage(gr, albumart.img, 0, 0, panel.w, panel.h, image.crop);
+				_drawOverlay(gr, 0, 0, panel.w, panel.h, 160);
+			}
 		}
 
 		if (this.properties.layout.value > 0) {
@@ -62,10 +67,11 @@ function _text_display(x, y, w, h, buttons) {
 			panel.m.AppendMenuItem(MF_STRING, 1206, 'Album Art left, Text right');
 			panel.m.CheckMenuRadioItem(1204, 1206, this.properties.layout.value + 1204);
 			panel.m.AppendMenuSeparator();
-			panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
-			panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
-			panel.m.AppendMenuSeparator();
 		}
+
+		panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
+		panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
+		panel.m.AppendMenuSeparator();
 
 		if (this.properties.layout.value != 1) {
 			panel.s10.AppendMenuItem(MF_STRING, 1210, 'Left');
@@ -275,8 +281,6 @@ function _text_display(x, y, w, h, buttons) {
 	this.text = '';
 
 	if (this.buttons) {
-		window.SetProperty('2K3.TEXT.ALBUMART', true);
-		window.SetProperty('2K3.TEXT.ALBUMART.BLUR', true);
 		window.SetProperty('2K3.TEXT.LAYOUT', 1);
 	}
 

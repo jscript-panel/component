@@ -6,10 +6,9 @@
 
 /*
 This sample splits a string in to whole words and then randomly
-styles each one and updates itself twice a second. Every element
-of the array which is used for styling must have a valid
-start/length value. You can see how the start value is
-incremented for each word.
+styles each one. Every element of the array which is used for
+styling must have a valid start/length value. You can see
+how the start value is incremented for each word.
 */
 
 var installed_fonts = utils.ListFonts().toArray();
@@ -22,11 +21,6 @@ var font_string = '';
 var words = text.split(' ');
 
 refresh();
-
-window.SetInterval(function () {
-	refresh();
-	window.Repaint();
-}, 500);
 
 function refresh() {
 	var fonts = [], colours = [];

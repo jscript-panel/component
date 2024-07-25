@@ -1,5 +1,3 @@
-window.SetProperty('2K3.ARTREADER.ID', 0);
-
 function _text_display(x, y, w, h, buttons) {
 	this.clear_layout = function () {
 		if (this.text_layout) {
@@ -68,6 +66,12 @@ function _text_display(x, y, w, h, buttons) {
 			panel.m.CheckMenuRadioItem(1204, 1206, this.properties.layout.value + 1204);
 			panel.m.AppendMenuSeparator();
 		}
+
+		albumart.ids.forEach(function (item, i) {
+			panel.m.AppendMenuItem(MF_STRING, i + 1300, item);
+		});
+		panel.m.CheckMenuRadioItem(1300, 1304, albumart.properties.id.value + 1300);
+		panel.m.AppendMenuSeparator();
 
 		panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
 		panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
@@ -148,6 +152,14 @@ function _text_display(x, y, w, h, buttons) {
 				this.size();
 				window.Repaint();
 			}
+			break;
+		case 1300:
+		case 1301:
+		case 1302:
+		case 1303:
+		case 1304:
+			albumart.properties.id.value = idx - 1300;
+			albumart.metadb_changed();
 			break;
 		}
 	}

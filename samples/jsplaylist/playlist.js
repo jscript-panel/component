@@ -146,21 +146,21 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 					gr.WriteTextSimple(chars.rating_on.repeat(this.rating), g_font_fluent_20.str, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
 					break;
 				default:
-					this.drawText(gr, tf_arr[j], txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);
-					if (cList.enableExtraLine) this.drawText(gr, tf2_arr[j], fader_txt, cx, tf2_y, cw, tf2_h, p.headerBar.columns[j].align);
+					this.drawText(gr, tf_arr[j], g_font_12.str, txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);
+					if (cList.enableExtraLine) this.drawText(gr, tf2_arr[j], g_font_12.str, fader_txt, cx, tf2_y, cw, tf2_h, p.headerBar.columns[j].align);
 					break;
 				}
 			}
 		}
 	}
 
-	this.drawText = function (gr, text, colour, x, y, w, h, align) {
+	this.drawText = function (gr, text, font, colour, x, y, w, h, align) {
 		if (!text || text == "null") return;
 		if (g_dynamic) {
 			// WriteTextSimple ignores $rgb code
-			gr.WriteTextSimple(text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
+			gr.WriteTextSimple(text, font, colour, x, y, w, h, align, 2, 1, 1);
 		} else {
-			gr.WriteText(text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
+			gr.WriteText(text, font, colour, x, y, w, h, align, 2, 1, 1);
 		}
 	}
 
@@ -216,14 +216,14 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 			var group_text_colour_fader = setAlpha(group_text_colour, 180);
 
 			if (this.heightInRow == 1) {
-				gr.WriteText(this.l1 + " / " + this.l2, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) - 1, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, this.h, 0, 2, 1, 1);
-				gr.WriteText(this.r1, g_font_group1, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) - 1, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, this.h, 1, 2, 1, 1);
+				this.drawText(gr, this.l1 + " / " + this.l2, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) - 1, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, this.h, 0);
+				this.drawText(gr, this.r1, g_font_group1, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) - 1, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, this.h, 1);
 				gr.FillRectangle(this.x + cover_size + text_left_padding, Math.round(this.y + cRow.playlist_h * 1 - groupDelta - 5), this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, 1, group_text_colour);
 			} else {
-				gr.WriteText(this.l1, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 2, 1, 1);
-				gr.WriteText(this.l2, g_font_group2.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg2_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 2, 1, 1);
-				gr.WriteText(this.r1, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, cRow.playlist_h, 1, 2, 1, 1);
-				gr.WriteText(this.r2, g_font_group2.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 5 + 1 - scrollbar_gap, cRow.playlist_h, 1, 2, 1, 1);
+				this.drawText(gr, this.l1, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 4 - lg1_right_field_w - scrollbar_gap, cRow.playlist_h, 0);
+				this.drawText(gr, this.l2, g_font_group2.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg2_right_field_w - scrollbar_gap, cRow.playlist_h, 0);
+				this.drawText(gr, this.r1, g_font_group1.str, group_text_colour, this.x + cover_size + text_left_padding, (this.y - groupDelta) + 3, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, cRow.playlist_h, 1);
+				this.drawText(gr, this.r2, g_font_group2.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h - groupDelta) - 4, this.w - cover_size - text_left_padding * 5 + 1 - scrollbar_gap, cRow.playlist_h, 1);
 				gr.FillRectangle(this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h * 2 - groupDelta) - 8, this.w - cover_size - text_left_padding * 5 + 2 - scrollbar_gap, 1, group_text_colour);
 
 				if (this.obj && this.heightInRow > 2) {

@@ -72,7 +72,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 			this.text_selected = "";
 		}
 
-		gr.WriteText(this.text.length > 0 ? this.text.substr(this.offset) : this.empty_text, g_font.str, g_colour_text, this.x, this.y, this.w, this.h, 0, 2, 1, this.edit ? 0 : 1);
+		gr.WriteTextSimple(this.text.length > 0 ? this.text.substr(this.offset) : this.empty_text, g_font.str, g_colour_text, this.x, this.y, this.w, this.h, 0, 2, 1, this.edit ? 0 : 1);
 
 		if (this.edit && !this.select)
 			this.drawcursor(gr);

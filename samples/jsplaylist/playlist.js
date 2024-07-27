@@ -91,15 +91,15 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 
 					if (is_playing) {
 						if (fb.IsPaused) {
-							gr.WriteText(chars.pause, g_font_fluent_20.str, txt_color, cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
+							gr.WriteTextSimple(chars.pause, g_font_fluent_20.str, txt_color, cx, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
 						} else {
-							gr.WriteText(chars.play, g_font_fluent_20.str, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
+							gr.WriteTextSimple(chars.play, g_font_fluent_20.str, g_seconds % 2 == 0 ? txt_color : setAlpha(txt_color, 60), cx + 2, this.y + 2, g_queue_width, cRow.playlist_h - 4, 2, 2);
 						}
 					} else {
 						var queue_index = tf_arr[j];
 						if (queue_index.length) {
 							DrawRectangle(gr, cx, this.y + 2, g_queue_width, cRow.playlist_h - 5, txt_color);
-							gr.WriteText(queue_index, g_font_20_bold.str, txt_color, cx + 1, this.y + 1, g_queue_width, cRow.playlist_h - 4, 2, 2, 1, 1);
+							gr.WriteTextSimple(queue_index, g_font_20_bold.str, txt_color, cx + 1, this.y + 1, g_queue_width, cRow.playlist_h - 4, 2, 2, 1, 1);
 						}
 					}
 					break;
@@ -124,7 +124,7 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 						this.mood = StripCode(tf_arr[j], chars.etx) || 0;
 					}
 
-					gr.WriteText(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_fluent_20.str, mood_colour, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
+					gr.WriteTextSimple(this.mood == 0 ? chars.heart_off : chars.heart_on, g_font_fluent_20.str, mood_colour, columns.mood_x, this.y, columns.mood_w, cRow.playlist_h, 2, 2);
 					break;
 				case "Rating":
 					cw = p.headerBar.columns[j].w - g_z5;
@@ -142,8 +142,8 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 					}
 
 					this.rating = StripCode(tf_arr[j], chars.etx) || 0;
-					gr.WriteText(chars.rating_off.repeat(5), g_font_fluent_20.str, rating_colour & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
-					gr.WriteText(chars.rating_on.repeat(this.rating), g_font_fluent_20.str, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteTextSimple(chars.rating_off.repeat(5), g_font_fluent_20.str, rating_colour & 0x20ffffff, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
+					gr.WriteTextSimple(chars.rating_on.repeat(this.rating), g_font_fluent_20.str, rating_colour, columns.rating_x, this.y, columns.rating_w, cRow.playlist_h, 0, 2);
 					break;
 				default:
 					this.drawText(gr, tf_arr[j], txt_color, cx, tf1_y, cw, tf1_h, p.headerBar.columns[j].align);
@@ -156,8 +156,12 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 
 	this.drawText = function (gr, text, colour, x, y, w, h, align) {
 		if (!text || text == "null") return;
-		if (g_dynamic) text = StripCode(text, chars.etx);
-		gr.WriteText(text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
+		if (g_dynamic) {
+			// WriteTextSimple ignores $rgb code
+			gr.WriteTextSimple(text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
+		} else {
+			gr.WriteText(text, g_font_12.str, colour, x, y, w, h, align, 2, 1, 1);
+		}
 	}
 
 	this.draw = function (gr, x, y, w, h) {
@@ -226,7 +230,7 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 					var lg3_left_field = this.obj.count + (this.obj.count > 1 ? " tracks. " : " track. ") + this.obj.total_group_duration_txt + ".";
 					var lg3_right_field = (this.group_index + 1) + " / " + p.list.groups.length;
 					var lg3_right_field_w = lg3_right_field.calc_width(g_font_12.obj) + cList.borderWidth * 2;
-					gr.WriteText(lg3_left_field, g_font_12.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h * 2 - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg3_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 0, 1);
+					gr.WriteTextSimple(lg3_left_field, g_font_12.str, group_text_colour_fader, this.x + cover_size + text_left_padding, (this.y + cRow.playlist_h * 2 - groupDelta) - 4, this.w - cover_size - text_left_padding * 4 - lg3_right_field_w - scrollbar_gap, cRow.playlist_h, 0, 0, 1);
 				}
 			}
 

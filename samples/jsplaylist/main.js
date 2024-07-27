@@ -746,9 +746,9 @@ function on_paint(gr) {
 					var text_bot = "Create a playlist to start!";
 				}
 				var y = Math.floor(wh / 2);
-				gr.WriteText(text_top, g_font_20_bold.str, g_colour_text, 0, y - g_z5 - height(g_font_20_bold.obj), ww, height(g_font_20_bold.obj), 2, 1, 1);
+				gr.WriteTextSimple(text_top, g_font_20_bold.str, g_colour_text, 0, y - g_z5 - height(g_font_20_bold.obj), ww, height(g_font_20_bold.obj), 2, 1, 1);
 				gr.FillRectangle(40, Math.floor(wh / 2), ww - 80, 1, g_colour_text & 0x40ffffff);
-				gr.WriteText(text_bot, g_font_12_bold.str, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold.obj), 2, 0, 1);
+				gr.WriteTextSimple(text_bot, g_font_12_bold.str, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold.obj), 2, 0, 1);
 			} else {
 				p.headerBar.calculateColumns();
 

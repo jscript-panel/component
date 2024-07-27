@@ -7,7 +7,7 @@ function _artistFolder(artist) {
 function _button(x, y, w, h, normal, hover, fn, tiptext) {
 	this.paint = function (gr) {
 		if (this.current.char) {
-			gr.WriteText(this.current.char, this.font, this.current.colour, this.x, this.y, this.w, this.h, 2, 2);
+			gr.WriteTextSimple(this.current.char, this.font, this.current.colour, this.x, this.y, this.w, this.h, 2, 2);
 		} else if (this.current.img) {
 			_drawImage(gr, this.current.img, this.x, this.y, this.w, this.h, image.centre);
 		}
@@ -353,7 +353,7 @@ function _save(file, value) {
 function _sb(ch, x, y, w, h, v, fn) {
 	this.paint = function (gr, colour) {
 		if (this.v()) {
-			gr.WriteText(this.ch, this.font, colour, this.x, this.y, this.w, this.h, 2, 2);
+			gr.WriteTextSimple(this.ch, this.font, colour, this.x, this.y, this.w, this.h, 2, 2);
 		}
 	}
 

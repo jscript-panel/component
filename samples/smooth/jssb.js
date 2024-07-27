@@ -124,7 +124,7 @@ function on_paint(gr) {
 		if (brw.inputbox.text.length > 0) {
 			brw.reset_bt.draw(gr, 0, 0);
 		} else {
-			gr.WriteText(chars.search, g_font_fluent_20.str, g_colour_text, 0, -2, size, size, 2, 2);
+			gr.WriteTextSimple(chars.search, g_font_fluent_20.str, g_colour_text, 0, -2, size, size, 2, 2);
 		}
 
 		brw.inputbox.draw(gr, size + 4, 2);
@@ -387,15 +387,15 @@ function oBrowser() {
 				}
 
 				if (ppt.tagMode == 0) { // album
-					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + text_left, ay + (fh * 0.2), text_width, fh, 0, 0, 1, 1);
+					gr.WriteTextSimple(group.album, g_font_bold.str, normal_text, ax + text_left, ay + (fh * 0.2), text_width, fh, 0, 0, 1, 1);
 
 					if (str.length) str += "\r\n";
 					str += group.count + " track";
 					if (group.count > 1) str += "s";
 					str += ". " + group.duration + ".";
-					gr.WriteText(str, g_font.str, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);
+					gr.WriteTextSimple(str, g_font.str, fader_txt, ax + text_left, ay + (fh * 0.2) + fh, text_width, fh * 3, 0, 0, 1, 1);
 				} else { // artist/album artist, 1 line
-					gr.WriteText(group.artist, g_font.str, normal_text, ax + text_left, ay, text_width, ah, 0, 2, 1, 1);
+					gr.WriteTextSimple(group.artist, g_font.str, normal_text, ax + text_left, ay, text_width, ah, 0, 2, 1, 1);
 				}
 				break;
 			case 1:
@@ -420,10 +420,10 @@ function oBrowser() {
 				}
 
 				if (ppt.tagMode == 0) {
-					gr.WriteText(group.album, g_font_bold.str, normal_text, ax + margin, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
-					gr.WriteText(str, g_font.str, fader_txt, ax + margin, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
+					gr.WriteTextSimple(group.album, g_font_bold.str, normal_text, ax + margin, ay + cover_size + (fh * 0.7), cover_size, fh, 2, 0, 1, 1);
+					gr.WriteTextSimple(str, g_font.str, fader_txt, ax + margin, ay + cover_size + (fh * 0.7) + fh, cover_size, fh * 2, 2, 0, 1, 1);
 				} else {
-					gr.WriteText(group.artist, g_font_bold.str, normal_text, ax + margin, ay + cover_size + margin, cover_size, fh * 3, 2, 2, 3, 1);
+					gr.WriteTextSimple(group.artist, g_font_bold.str, normal_text, ax + margin, ay + cover_size + margin, cover_size, fh * 3, 2, 2, 3, 1);
 				}
 
 				break;

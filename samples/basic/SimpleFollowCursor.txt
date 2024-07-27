@@ -22,6 +22,6 @@ function on_paint(gr) {
 	gr.Clear(RGB(255, 255, 255));
 	if (handle) {
 		// empty font, defaults of Segoe UI, 16px will be used
-		gr.WriteText(tfo.EvalWithMetadb(handle), '', RGB(0, 0, 0), 0, 0, window.Width, window.Height, 2, 2);
+		gr.WriteTextSimple(tfo.EvalWithMetadb(handle), '', RGB(0, 0, 0), 0, 0, window.Width, window.Height, 2, 2);
 	}
 }

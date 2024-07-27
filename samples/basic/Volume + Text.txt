@@ -39,7 +39,7 @@ function on_paint(gr) {
 
 	FillGradientRectangle(gr, 0, 0, pos, wh, 0, RGB(240, 240, 240), RGB(100, 230, 100));
 	FillGradientRectangle(gr, pos, 0, ww - pos, wh, 0, RGB(240, 240, 240), RGB(190, 190, 190));
-	gr.WriteText(txt, font_string, RGB(64, 64, 128), 0, 0, ww, wh, 2, 2);
+	gr.WriteTextSimple(txt, font_string, RGB(64, 64, 128), 0, 0, ww, wh, 2, 2);
 	gr.DrawRectangle(0, 0, ww - 1, wh - 1, 1.0, RGB(150, 150, 150));
 }
 

@@ -66,7 +66,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		if (!this.spectrogram_mode) return;
 
 		if (this.working) {
-			gr.WriteText(chars.working, JSON.stringify({Name:'Segoe Fluent Icons',Size:this.h - _scale(16)}), this.properties.marker_colour.value, this.x, this.y, this.w, this.h, 2, 2);
+			gr.WriteTextSimple(chars.working, JSON.stringify({Name:'Segoe Fluent Icons',Size:this.h - _scale(16)}), this.properties.marker_colour.value, this.x, this.y, this.w, this.h, 2, 2);
 		} else if (this.image) {
 			_drawImage(gr, this.image, this.x, this.y, this.w, this.h, image.stretch);
 		}

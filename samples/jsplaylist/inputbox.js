@@ -85,9 +85,9 @@ function oInputbox(w, h, default_text, empty_text, func) {
 
 		// draw text
 		if (this.text.length > 0) {
-			gr.WriteText(this.text.substr(this.offset), g_font_12.str, this.edit ? this.textcolor : blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
+			gr.WriteTextSimple(this.text.substr(this.offset), g_font_12.str, this.edit ? this.textcolor : blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
 		} else {
-			gr.WriteText(this.empty_text, g_font_12.str, blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
+			gr.WriteTextSimple(this.empty_text, g_font_12.str, blendColours(this.textcolor, this.backcolor, 0.5), this.x, this.y, this.w, this.h, 0, 2, this.edit ? 0 : 1);
 		}
 		// draw cursor
 		if (this.edit && !this.select)

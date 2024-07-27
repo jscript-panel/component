@@ -34,8 +34,8 @@ function oPlaylistManager() {
 		this.bt_sortAz_normal = utils.CreateImage(Az_w, Az_h);
 		var gb = this.bt_sortAz_normal.GetGraphics();
 		gb.FillRectangle(0, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
-		gb.WriteText(chars.up, g_font_fluent_12.str, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
-		gb.WriteText("Az", g_font_12.str, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
+		gb.WriteTextSimple(chars.up, g_font_fluent_12.str, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
+		gb.WriteTextSimple("Az", g_font_12.str, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
 		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
 		this.bt_sortAz_normal.ReleaseGraphics();
 
@@ -44,8 +44,8 @@ function oPlaylistManager() {
 		// normal sort Za playlist Image
 		this.bt_sortZa_normal = utils.CreateImage(Az_w, Az_h);
 		var gb = this.bt_sortZa_normal.GetGraphics();
-		gb.WriteText(chars.down, g_font_fluent_12.str, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
-		gb.WriteText("Za", g_font_12.str, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
+		gb.WriteTextSimple(chars.down, g_font_fluent_12.str, blendColours(g_colour_background, g_colour_text, 0.5), left_padding, 1, Az_w, Az_h, 0, 2);
+		gb.WriteTextSimple("Za", g_font_12.str, blendColours(g_colour_background, g_colour_text, 0.5), 0, 0, Az_w - right_padding, Az_h, 1, 2);
 		gb.FillRectangle(Az_w - 1, 0, 1, Az_h, blendColours(g_colour_background, g_colour_text, 0.35));
 		this.bt_sortZa_normal.ReleaseGraphics();
 
@@ -115,18 +115,18 @@ function oPlaylistManager() {
 			if (g_drag_drop_playlist_manager_hover) {
 				gr.FillRectangle(this.x - this.woffset + this.border, this.y, this.w - this.border, ch - 1, g_colour_text & 0x25ffffff);
 				gr.DrawRectangle(this.x - this.woffset + this.border + 1, this.y + 1, this.w - this.border - 2, ch - 1 - 2, 2, g_colour_text);
-				gr.WriteText("TO A NEW PLAYLIST", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx + g_z5, this.y, cw - g_z10, ch, 0, 2, 1);
+				gr.WriteTextSimple("TO A NEW PLAYLIST", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx + g_z5, this.y, cw - g_z10, ch, 0, 2, 1);
 			} else {
 				gr.FillRectangle(this.x - this.woffset + this.border, this.y, this.w - this.border, ch - 1, g_colour_text & 0x15ffffff);
-				gr.WriteText("PLAYLISTS", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx, this.y, cw - g_z5, ch, 0, 2, 1);
+				gr.WriteTextSimple("PLAYLISTS", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx, this.y, cw - g_z5, ch, 0, 2, 1);
 			}
 		} else {
 			if (g_drag_drop_playlist_manager_hover) {
 				gr.FillRectangle(this.x - this.woffset + this.border, this.y, this.w - this.border, ch - 1, g_colour_text & 0x15ffffff);
-				gr.WriteText("TO A NEW PLAYLIST", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx + g_z5, this.y, cw - g_z10, ch, 0, 2, 1);
+				gr.WriteTextSimple("TO A NEW PLAYLIST", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx + g_z5, this.y, cw - g_z10, ch, 0, 2, 1);
 			} else {
 				gr.FillRectangle(this.x - this.woffset + this.border, this.y, this.w - this.border, ch - 1, g_colour_text & 0x15ffffff);
-				gr.WriteText("PLAYLISTS", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx, this.y, cw - g_z5, ch, 0, 2, 1);
+				gr.WriteTextSimple("PLAYLISTS", g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), cx, this.y, cw - g_z5, ch, 0, 2, 1);
 			}
 		}
 
@@ -154,7 +154,7 @@ function oPlaylistManager() {
 				gr.DrawRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, 2, g_colour_text);
 			}
 
-			gr.WriteText(plman.IsPlaylistLocked(this.playlists[i].idx) ? chars.lock : chars.list, g_font_fluent_12.str, txt_color, cx, cy, ch, ch, 2, 2);
+			gr.WriteTextSimple(plman.IsPlaylistLocked(this.playlists[i].idx) ? chars.lock : chars.list, g_font_fluent_12.str, txt_color, cx, cy, ch, ch, 2, 2);
 
 			// draw INPUTBOX if rename requested
 			if (this.inputboxID == i) {
@@ -162,11 +162,11 @@ function oPlaylistManager() {
 			} else {
 				// playlist total items
 				var count = plman.GetPlaylistItemCount(this.playlists[i].idx);
-				gr.WriteText(count, g_font_12.str, txt_color, cx + g_z10, cy, cw - g_z5, ch, 1, 2, 1);
+				gr.WriteTextSimple(count, g_font_12.str, txt_color, cx + g_z10, cy, cw - g_z5, ch, 1, 2, 1);
 
 				var count_width = "99999".calc_width(g_font_12.obj);
 				// draw playlist name
-				gr.WriteText(this.playlists[i].name, g_font_12.str, txt_color, cx + g_z10 + height(g_font_12.obj), cy, cw - (g_z10 * 3) - count_width, ch, 0, 2, 1);
+				gr.WriteTextSimple(this.playlists[i].name, g_font_12.str, txt_color, cx + g_z10 + height(g_font_12.obj), cy, cw - (g_z10 * 3) - count_width, ch, 0, 2, 1);
 			}
 
 			// draw "drag destination bar" on dragging playlist item
@@ -195,7 +195,7 @@ function oPlaylistManager() {
 			gr.FillRectangle(fx, fy, fw, fh, g_colour_text & 0x15ffffff);
 			gr.FillRectangle(fx, fy, fw, 1, g_colour_text & 0x50ffffff);
 			var status_txt = this.playlists.length + (this.playlists.length > 1 ? " PLAYLISTS" : " PLAYLIST");
-			gr.WriteText(status_txt, g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), fx + 5, fy, fw - 10, fh, 1, 2, 1);
+			gr.WriteTextSimple(status_txt, g_font_12.str, blendColours(g_colour_text, g_colour_background, 0.25), fx + 5, fy, fw - 10, fh, 1, 2, 1);
 			// draw sort buttons
 			this.sortAz_button.draw(gr, fx, fy);
 			this.sortZa_button.draw(gr, fx + this.sortAz_button.img[0].Width, fy);

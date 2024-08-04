@@ -591,10 +591,9 @@ function oBrowser() {
 
 		for (var i = 0; i < this.list.Count; i++) {
 			var handle = this.list.GetItem(i);
-			var pos = arr[i].lastIndexOf(" ^^ ");
-			var cachekey = arr[i].substr(pos + 4);
-			var meta = arr[i].substr(0, pos);
+			var meta = arr[i];
 			var current = meta.toLowerCase();
+			var cachekey = utils.HashString(handle.Path);
 
 			if (current != previous) {
 				if (g > 0) {
@@ -1476,7 +1475,7 @@ var tfo = {
 	artist_title : fb.TitleFormat("%artist% ^^ %title%"),
 	track : fb.TitleFormat("[%artist%] ^^ [%title%] ^^ [[%discnumber%.]%tracknumber%.] ^^ [%length%] ^^ $if2(%rating%,0)"),
 	time : fb.TitleFormat("$if3(-%playback_time_remaining%,%playback_time%,)"),
-	groupkey : fb.TitleFormat(ppt.groupkey_tf + " ^^ $crc32(%path%)"),
+	groupkey : fb.TitleFormat(ppt.groupkey_tf),
 }
 
 var foo_playcount = fb.CheckComponent("foo_playcount");

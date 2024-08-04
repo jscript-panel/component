@@ -377,7 +377,7 @@ var ppt = {
 	rowScrollStep: 3,
 };
 
-var CACHE_FOLDER = fb.ProfilePath + "js_smooth_cache\\";
+var CACHE_FOLDER = fb.ProfilePath + "js_data\\smooth_cache\\";
 utils.CreateFolder(CACHE_FOLDER);
 
 var g_font;

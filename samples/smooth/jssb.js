@@ -243,62 +243,76 @@ function oBrowser() {
 	this.populate = function () {
 		this.groups = [];
 		this.list.RemoveAll();
+		var obj;
 
 		if (ppt.library) {
 			this.list = fb.GetLibraryItems(g_filter_text);
+			obj = group_objects[ppt.tagMode];
+			this.list.SortByFormat(obj.sort_tf, 1);
 		} else {
 			this.list = plman.GetPlaylistItems(g_active_playlist);
+			obj = group_objects[0];
 		}
 
 		if (this.list.Count > 0) {
-			if (ppt.library) {
-				var obj = group_objects[ppt.tagMode];
-				this.list.SortByFormat(obj.sort_tf, 1);
-			} else {
-				ppt.tagMode = 0;
-				var obj = group_objects[ppt.tagMode];
-			}
-
-			var track_tfs = obj.group_tfo.EvalWithMetadbs(this.list).toArray();
-			var previous = "";
 			var g = 0;
-			var handles = fb.CreateHandleList();
 
-			track_tfs.forEach((function (track_tf, i) {
-				var handle = this.list.GetItem(i);
-				var pos = track_tf.indexOf(" ^^ ");
-				var cachekey = track_tf.substr(0, pos);
-				var meta = track_tf.substr(pos + 4);
-				var current = meta.toLowerCase();
+			if (ppt.library && ppt.tagMode == 1) { // multi value artist
+				var arr = this.list.GroupByTag("artist").toArray();
 
-				if (current != previous) {
-					previous = current;
-					if (g > 0) {
-						this.groups[g - 1].finalise(handles);
-						handles.RemoveAll();
-					}
+				for (var i = 0; i < arr.length; i += 2) {
+					var artist = arr[i];
+					if (artist.empty()) continue;
+					var cachekey = utils.HashString(artist);
+
+					var handles = arr[i + 1];
+					handles.SortByFormat(obj.sort_tf, 1);
+
+					this.groups.push(new oGroup(g, i, handles.GetItem(0), artist, cachekey));
+					this.groups[g].finalise(handles);
 					g++;
-					this.groups.push(new oGroup(g, i, handle, meta, cachekey));
 				}
-				handles.AddItem(handle);
-			}).bind(this));
+			} else {
+				var track_tfs = obj.group_tfo.EvalWithMetadbs(this.list).toArray();
+				var previous = "";
+				var handles = fb.CreateHandleList();
 
-			if (g > 0) {
-				this.groups[g - 1].finalise(handles);
+				track_tfs.forEach((function (track_tf, i) {
+					var parts = track_tf.split(" ^^^ ");
+					var cachekey = utils.HashString(parts[0]);
+					var meta = parts[1];
+					var current = meta.toLowerCase();
+					var handle = this.list.GetItem(i);
 
-				if (ppt.showAllItem) {
-					var meta = "All items";
-					if (ppt.tagMode == 0) {
-						var name = obj.name;
-						if (this.groups.length > 1) name += "s";
-						var all_items = "(" + this.groups.length + " " + name + ")"
-						meta += " ^^ " + all_items;
+					if (current != previous) {
+						previous = current;
+						if (g > 0) {
+							this.groups[g - 1].finalise(handles);
+							handles.RemoveAll();
+						}
+						g++;
+						this.groups.push(new oGroup(g, i, handle, meta, cachekey));
 					}
-					this.groups.unshift(new oGroup(0, 0, null, meta, 0));
-					this.groups[0].finalise(this.list);
-				}
+					handles.AddItem(handle);
+				}).bind(this));
+			
+				this.groups[g - 1].finalise(handles);
+				handles.Dispose();
 			}
-			handles.Dispose();
+
+			if (ppt.showAllItem) {
+				var meta = "All items";
+
+				if (ppt.tagMode == 0) {
+					var name = obj.name;
+					if (this.groups.length > 1) name += "s";
+					var all_items = "(" + this.groups.length + " " + name + ")"
+					meta += " ^^ " + all_items;
+				}
+
+				this.groups.unshift(new oGroup(0, 0, null, meta, 0));
+				this.groups[0].finalise(this.list);
+			}
 		}
 
 		get_metrics();
@@ -951,14 +965,14 @@ function group_object(name, group, group_hash, sort_property, default_sort, play
 	this.sort_property = sort_property;
 	this.sort_tf = window.GetProperty(sort_property, default_sort);
 
-	this.group_tfo = fb.TitleFormat(group_hash + " ^^ " + group);
+	this.group_tfo = fb.TitleFormat(group_hash + " ^^^ " + group);
 	this.playlist_tfo = fb.TitleFormat(playlist);
 }
 
 var album_obj = new group_object(
 	"album",
 	"$if(%album%,$if2(%album artist%,Unknown Artist),%directory%) ^^ $if2(%album%,'('Singles')') ^^ [%date%]",
-	"$crc32(%path%)",
+	"%path%",
 	"SMOOTH.SORT.ALBUM2",
 	"$if(%album%,%album% | %album artist% | %date% | %discnumber% | %tracknumber% | %title%,zzz%path_sort%)",
 	"%album artist% - %album%"
@@ -967,7 +981,7 @@ var album_obj = new group_object(
 var artist_obj = new group_object(
 	"artist",
 	"$if2($meta(artist,0),Unknown Artist)",
-	"$crc32(artists$meta(artist,0))",
+	"artists$meta(artist,0)",
 	"SMOOTH.SORT.ARTIST",
 	"$meta(artist,0) | %date% | %album% | %discnumber% | %tracknumber% | %title%",
 	"%artist%"
@@ -976,7 +990,7 @@ var artist_obj = new group_object(
 var album_artist_obj = new group_object(
 	"album artist",
 	"%album artist%",
-	"$crc32(artists%album artist%)",
+	"artists%album artist%",
 	"SMOOTH.SORT.ALBUM.ARTIST",
 	"%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%",
 	"%album artist%"

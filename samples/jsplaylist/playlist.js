@@ -155,7 +155,7 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 	}
 
 	this.drawText = function (gr, text, font, colour, x, y, w, h, align) {
-		if (!text || text == "null") return;
+		if (!text) return;
 		if (g_dynamic) {
 			// WriteTextSimple ignores $rgb code
 			gr.WriteTextSimple(text, font, colour, x, y, w, h, align, 2, 1, 1);

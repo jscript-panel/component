@@ -881,11 +881,11 @@ function oPage(id, objectName, label, nbrows) {
 			var txtbox_value = p.headerBar.columns[listBoxCurrentId].label;
 			this.elements.push(new oTextBox(1, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 6.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Label", txtbox_value, this.id));
 			txtbox_value = p.headerBar.columns[listBoxCurrentId].tf;
-			this.elements.push(new oTextBox(2, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 8.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Title Format (enter 'null' for nothing)", txtbox_value, this.id));
+			this.elements.push(new oTextBox(2, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 8.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Title Format", txtbox_value, this.id));
 			txtbox_value = p.headerBar.columns[listBoxCurrentId].tf2;
-			this.elements.push(new oTextBox(3, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 10.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Extra Line Title Format (enter 'null' for nothing)", txtbox_value, this.id));
+			this.elements.push(new oTextBox(3, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 10.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Extra Line Title Format", txtbox_value, this.id));
 			txtbox_value = p.headerBar.columns[listBoxCurrentId].sortOrder;
-			this.elements.push(new oTextBox(4, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 12.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Sort Order (enter 'null' for nothing)", txtbox_value, this.id));
+			this.elements.push(new oTextBox(4, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 12.25), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Sort Order", txtbox_value, this.id));
 
 			// Create radio buttons
 			var spaceBetween_w = scale(80);
@@ -914,7 +914,7 @@ function oPage(id, objectName, label, nbrows) {
 			var txtbox_value = p.list.groupby[listBoxCurrentId].label;
 			this.elements.push(new oTextBox(1, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 4.5), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Label", txtbox_value, this.id));
 			txtbox_value = p.list.groupby[listBoxCurrentId].tf;
-			this.elements.push(new oTextBox(2, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 6.5), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Title Format (enter 'null' for nothing)", txtbox_value, this.id));
+			this.elements.push(new oTextBox(2, txtbox_x, Math.ceil(cSettings.topBarHeight + rh * 6.5), ww - txtbox_x - 20 - this.scrollbarWidth, cHeaderBar.height, "Title Format", txtbox_value, this.id));
 
 			var spaceBetween_w = scale(50);
 			// force value if set to an unauthirized one [1;4]
@@ -1087,7 +1087,7 @@ function oPage(id, objectName, label, nbrows) {
 					}
 				}
 
-				p.headerBar.columns.push(new oColumn("Custom " + num(no_user, 2), "null", "null", 0, "Custom " + num(no_user, 2), 0, "null"));
+				p.headerBar.columns.push(new oColumn("Custom " + num(no_user, 2), "", "", 0, "Custom " + num(no_user, 2), 0, ""));
 				p.headerBar.totalColumns++;
 				var arr = [];
 				for (var i = 0; i < p.headerBar.columns.length; i++) {
@@ -1187,7 +1187,7 @@ function oPage(id, objectName, label, nbrows) {
 		switch (event) {
 		case "lbtn_up":
 			if (state == ButtonStates.hover) {
-				p.list.groupby.push(new oGroupBy("Custom", "Pattern to customise", "null", "0", "2", "3", "1", "0", "0", "-", "-", "-", "-"));
+				p.list.groupby.push(new oGroupBy("Custom", "Pattern to customise", "", "0", "2", "3", "1", "0", "0", "-", "-", "-", "-"));
 				p.list.totalGroupBy++;
 				var arr = [];
 				for (var i = 0; i < p.list.groupby.length; i++) {

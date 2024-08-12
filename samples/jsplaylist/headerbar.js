@@ -245,7 +245,7 @@ function oHeaderBar() {
 		this.columns = [];
 		this.borders = [];
 
-		var label = window.GetProperty("JSPLAYLIST.HEADERBAR2.label", [
+		var default_label = [
 			"State",
 			"Index",
 			"#",
@@ -259,9 +259,9 @@ function oHeaderBar() {
 			"Plays",
 			"Bitrate",
 			"Time"
-		].join("^^")).split("^^");
+		].join("^^");
 
-		g_tf_pattern = window.GetProperty("JSPLAYLIST.HEADERBAR2.tf", [
+		var default_tf = [
 			"[%queue_index%]",
 			"$num(%list_index%,$len(%list_total%))",
 			"$if2($num(%discnumber%,1).,)$if2($num(%tracknumber%,2),-)",
@@ -275,50 +275,30 @@ function oHeaderBar() {
 			"$if2(%play_count%,0)",
 			"[%__bitrate% kbps]",
 			"$if(%isplaying%,[-%playback_time_remaining%],[%length%])"
-		].join("^^"));
+		].join("^^");
 
-		g_tf2_pattern = window.GetProperty("JSPLAYLIST.HEADERBAR2.tf2", [
-			"null",
-			"null",
-			"null",
+		var default_tf2 = [
+			"",
+			"",
+			"",
 			"[%artist%]",
-			"null",
-			"null",
-			"null",
-			"null",
-			"null",
-			"null",
-			"null",
-			"null",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
 			"[%__bitrate% kbps]"
-		].join("^^"));
+		].join("^^")
 
-		var tf = g_tf_pattern.split("^^");
-		var tf2 = g_tf2_pattern.split("^^");
-
-		var percent = window.GetProperty("JSPLAYLIST.HEADERBAR2.percent", [8000, 0, 7000, 50000, 0, 0, 0, 0, 0, 20000, 0, 0, 15000].join("^^")).split("^^");
-
-		var ref = window.GetProperty("JSPLAYLIST.HEADERBAR2.ref", [
-			"State",
-			"Index",
-			"Tracknumber",
-			"Title",
-			"Date",
-			"Artist",
-			"Album",
-			"Genre",
-			"Mood",
-			"Rating",
-			"Plays",
-			"Bitrate",
-			"Time"
-		].join("^^")).split("^^");
-
-		var align = window.GetProperty("JSPLAYLIST.HEADERBAR2.align", ["2", "2", "1", "0", "1", "0", "0", "0", "2", "2", "1", "2", "1"].join("^^")).split("^^");
-
-		var sortOrder = window.GetProperty("JSPLAYLIST.HEADERBAR2.sortOrder", [
+		var default_percent = [8000, 0, 7000, 50000, 0, 0, 0, 0, 0, 20000, 0, 0, 15000].join("^^");
+		var default_ref = ["State", "Index", "Tracknumber", "Title", "Date", "Artist", "Album", "Genre", "Mood", "Rating", "Plays", "Bitrate", "Time"].join("^^");
+		var default_align = ["2", "2", "1", "0", "1", "0", "0", "0", "2", "2", "1", "2", "1"].join("^^");
+		var default_sortOrder = [
 			"%album artist% | $if(%album%,%date%,9999) | %album% | %discnumber% | %tracknumber% | %title%",
-			"null",
+			"",
 			"%tracknumber% | %album artist% | $if(%album%,%date%,9999) | %album% | %discnumber% | %title%",
 			"%title% | %album artist% | $if(%album%,%date%,9999) | %album% | %discnumber% | %tracknumber%",
 			"%date% | %album artist% | %album% | %discnumber% | %tracknumber% | %title%",
@@ -330,7 +310,22 @@ function oHeaderBar() {
 			"$if2(%play_count%,0) | %album artist% | $if(%album%,%date%,9999) | %album% | %discnumber% | %tracknumber% | %title%",
 			"%__bitrate% | %album artist% | $if(%album%,%date%,9999) | %album% | %discnumber% | %tracknumber% | %title%",
 			"%length_seconds%"
-		].join("^^")).split("^^");
+		].join("^^");
+
+		var label = window.GetProperty("JSPLAYLIST.HEADERBAR2.label", default_label).split("^^");
+		g_tf_pattern = window.GetProperty("JSPLAYLIST.HEADERBAR2.tf", default_tf);
+		g_tf2_pattern = window.GetProperty("JSPLAYLIST.HEADERBAR2.tf2", default_tf2);
+
+		// strip null from old config
+		var tf = this.split(g_tf_pattern);
+		var tf2 = this.split(g_tf2_pattern);
+		g_tf_pattern = tf.join("^^");
+		g_tf2_pattern = tf2.join("^^");
+
+		var percent = window.GetProperty("JSPLAYLIST.HEADERBAR2.percent", default_percent).split("^^");
+		var ref = window.GetProperty("JSPLAYLIST.HEADERBAR2.ref", default_ref).split("^^");
+		var align = window.GetProperty("JSPLAYLIST.HEADERBAR2.align", default_align).split("^^");
+		var sortOrder = window.GetProperty("JSPLAYLIST.HEADERBAR2.sortOrder", default_sortOrder).split("^^");
 
 		this.totalColumns = label.length;
 		for (var i = 0; i < this.totalColumns; i++) {
@@ -345,6 +340,13 @@ function oHeaderBar() {
 		}
 
 		this.calculateColumns();
+	}
+
+	this.split = function (str) {
+		return str.split("^^").map(function (item) {
+			if (item == "null") return "";
+			return item;
+		});
 	}
 
 	this.buttonCheck = function (event, x, y) {
@@ -392,7 +394,7 @@ function oHeaderBar() {
 								this.columns[i].on_mouse(event, x, y);
 								if (this.columns[i].drag) {
 									this.clickX = x - this.columns[i].x;
-									if (this.columns[i].tf != "null" || this.columns[i].sortOrder != "null") {
+									if (this.columns[i].tf || this.columns[i].sortOrder) {
 										this.columnDragged = 1;
 										window.SetCursor(IDC_ARROW);
 									} else {
@@ -436,7 +438,7 @@ function oHeaderBar() {
 								this.columnDragged_saved = 3;
 								cHeaderBar.sortRequested = true;
 								plman.UndoBackup(g_active_playlist);
-								if (this.columns[this.columnDraggedId].sortOrder != "null") {
+								if (this.columns[this.columnDraggedId].sortOrder) {
 									plman.SortByFormatV2(g_active_playlist, this.columns[this.columnDraggedId].sortOrder, this.sortedColumnDirection);
 								} else {
 									plman.SortByFormatV2(g_active_playlist, this.columns[this.columnDraggedId].tf, this.sortedColumnDirection);

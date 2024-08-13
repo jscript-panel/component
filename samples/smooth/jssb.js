@@ -295,7 +295,7 @@ function oBrowser() {
 					}
 					handles.AddItem(handle);
 				}).bind(this));
-			
+
 				this.groups[g - 1].finalise(handles);
 				handles.Dispose();
 			}

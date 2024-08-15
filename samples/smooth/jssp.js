@@ -811,7 +811,7 @@ function oBrowser() {
 
 		if (hover) {
 			var tmp = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
-			if (tmp < this.rows.length) {
+			if (tmp < this.rows.length && this.rows[tmp]) {
 				this.activeRow = tmp;
 				playlistTrackId = this.rows[tmp].playlistTrackId;
 				rowType = this.rows[tmp].type;

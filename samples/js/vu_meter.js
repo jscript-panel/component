@@ -1,7 +1,17 @@
 var font_t = CreateFontString("Segoe UI", 8);
 var colour_mode = window.GetProperty("2K3.METER.COLOUR.MODE", 1); // 0 UI, 1 Rainbow
-var meter_style = window.GetProperty("2K3.METER.STYLE", 0); // 0: smooth, 1: blocks-by-count, 2: blocks-by-dB
+var meter_style = window.GetProperty("2K3.METER.STYLE", 0); // 0: smooth, 1: blocks-by-dB
+var rms_block_db2 = window.GetProperty("2K3.METER.BLOCK.DB", 0.625);
+var rms_3db2 = window.GetProperty("2K3.METER.AES", false);
+
+// blocks by count style has been removed
+if (meter_style > 1) {
+	meter_style = 1;
+	window.SetProperty("2K3.METER.STYLE", meter_style);
+}
+
 var solid_colour = false;
+var rms_block_dbs = [0.625, 1.25, 2.5];
 var RMS_levels = [], Peak_levels = [], Peak_falldown = [];
 var ch_count = 2; //prevent script error on init with nothing playing and empty playlist
 var ch_config = 0;
@@ -22,12 +32,12 @@ var brush = {
 	Start : [0, 0], // x and y values
 	End : [0, 0], // x and y values
 };
-var brush_str = "";
 
 var colours = {
 	text : 0,
 	highlight : 0,
 	background : 0,
+	bar : 0,
 };
 
 var ChannelNames = [ "FL", "FR", "FC", "LFE", "BL", "BR", "FCL", "FCR", "BC", "SL", "SR", "TC", "TFL", "TFC", "TFR", "TBL", "TBC", "TBR" ];
@@ -35,14 +45,19 @@ var ChannelNames = [ "FL", "FR", "FC", "LFE", "BL", "BR", "FCL", "FCR", "BC", "S
 function init() {
 	dBrange = maxDB - minDB
 
-	if (rms_3db) {
-		rms_db_offset = 20 * Math.log(Math.sqrt(2)) / Math.LN10; // 3.01029995663981 dB
-	}
-
+	update_rms_offset();
 	update_colours();
 
 	if (fb.IsPlaying) start_timer();
 	else get_initial_track_info();
+}
+
+function update_rms_offset() {
+	if (rms_3db2) {
+		rms_db_offset = 20 * Math.log(Math.sqrt(2)) / Math.LN10; // 3.01029995663981 dB
+	} else {
+		rms_db_offset = 0;
+	}
 }
 
 function update_colours() {
@@ -59,17 +74,19 @@ function update_colours() {
 	if (colour_mode == 0) {
 		solid_colour = colours.text == colours.highlight;
 
-		if (!solid_colour) {
+		if (solid_colour) {
+			colours.bar = colours.text;
+		} else {
 			brush.Stops = [
 				[0.0, colours.text],
 				[1.0, colours.highlight],
 			]
-			brush_str = JSON.stringify(brush);
+			colours.bar = JSON.stringify(brush);
 		}
 	} else {
 		solid_colour = false;
 		brush.Stops = rainbow_stops;
-		brush_str = JSON.stringify(brush);
+		colours.bar = JSON.stringify(brush);
 	}
 }
 
@@ -150,7 +167,7 @@ function stop_timer() {
 function get_initial_track_info() {
 	var handle = fb.GetFocusItem();
 	if (!handle) return;
-	
+
 	var info = handle.GetFileInfo();
 	var idx_ch_count = info.InfoFind("channels");
 	var idx_ch_config = info.InfoFind("WAVEFORMATEXTENSIBLE_CHANNEL_MASK");
@@ -198,11 +215,23 @@ function on_mouse_rbtn_up(x, y) {
 	colour_menu.CheckMenuRadioItem(1, 2, colour_mode + 1);
 	colour_menu.AppendTo(menu, MF_STRING, 'Bar colours');
 	style_menu.AppendMenuItem(MF_STRING, 3, 'Smooth');
-	style_menu.AppendMenuItem(MF_STRING, 4, 'Blocks (simple)');
-	style_menu.AppendMenuItem(MF_STRING, 5, 'Blocks (per dB range)');
-	style_menu.CheckMenuRadioItem(3, 5, meter_style + 3);
+	style_menu.AppendMenuItem(MF_STRING, 4, 'Blocks');
+	style_menu.CheckMenuRadioItem(3, 4, meter_style + 3);
+
+	if (meter_style == 1) {
+		style_menu.AppendMenuSeparator();
+		style_menu.AppendMenuItem(MF_GRAYED, 4, 'Block width (db)');
+		rms_block_dbs.forEach(function (item, index) {
+			style_menu.AppendMenuItem(MF_STRING, 20 + index, item);
+		});
+		var rms_block_db_index = rms_block_dbs.indexOf(rms_block_db2);
+		style_menu.CheckMenuRadioItem(20, 20 + rms_block_dbs.length, 20 + rms_block_db_index);
+	}
+
 	style_menu.AppendTo(menu, MF_STRING, 'Meter style');
 
+	menu.AppendMenuSeparator();
+	menu.AppendMenuItem(CheckMenuIf(rms_3db2), 30, 'Use AES +3dB RMS');
 	menu.AppendMenuSeparator();
 	menu.AppendMenuItem(MF_STRING, 10, 'Configure...');
 
@@ -230,6 +259,19 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 10:
 		window.ShowConfigure();
+		break;
+	case 20:
+	case 21:
+	case 22:
+		rms_block_db2 = rms_block_dbs[idx - 20];
+		window.SetProperty("2K3.METER.BLOCK.DB", rms_block_db2);
+		window.Repaint();
+		break;
+	case 30:
+		rms_3db2 = !rms_3db2;
+		window.SetProperty("2K3.METER.AES", rms_3db2);
+		update_rms_offset();
+		window.Repaint();
 		break;
 	}
 
@@ -289,6 +331,14 @@ function on_paint(gr) {
 
 	bar_width = ww - bar_pad_left - bar_pad_right;
 
+	if (bar_width != brush.End[0]) {
+		brush.End[0] = bar_width;
+
+		if (!solid_colour) {
+			colours.bar = JSON.stringify(brush);
+		}
+	}
+
 	// labels
 	if (!hide_db_labels) {
 		var db_spacing = 5;
@@ -298,27 +348,28 @@ function on_paint(gr) {
 			db_spacing -= (db_spacing % 5);
 		}
 
-		gr.FillRectangle(bar_pad_left, bar_pad_top + (bar_height * ch_count) + 5, bar_width, 1, colours.text);
+		var y = bar_pad_top + (bar_height * ch_count) + 5;
+		gr.FillRectangle(bar_pad_left, y, bar_width, 1, colours.text);
 
 		for (var i = minDB, j = 0; i <= maxDB; i += db_spacing, j++) {
-			gr.WriteText(i + "dB", font_t, colours.text, bar_pad_left / 2 + bar_width * j / (dBrange/db_spacing), wh - 20, ww, wh);
+			var x = bar_pad_left + (bar_width * j / (dBrange / db_spacing));
+			gr.WriteTextSimple(i + "dB", font_t, colours.text, x - (bar_pad_left / 2), wh - 20, ww, wh);
+			gr.DrawLine(x, y - 2, x, y + 2, 1, colours.text);
 		}
 	}
 
 	if (!hide_ch_labels) {
 		for (var c = 0; c < ch_count; ++c) {
-			gr.WriteText(channel_name(c), font_t, colours.text, 4, bar_pad_top + (bar_height * c) + bar_height / 2 - 8, ww, wh);
+			gr.WriteTextSimple(channel_name(c), font_t, colours.text, 4, bar_pad_top + (bar_height * c) + bar_height / 2 - 8, ww, wh);
 		}
 	}
 
 	// bars
-	var bar_colour = solid_colour ? colours.text : brush_str;
-	var block_count = rms_block_count;
-	if (meter_style == 2 && rms_block_db > 0) block_count = Math.floor(dBrange / rms_block_db);
-	if (block_count < 1) block_count = 1;
-	var block_width = Math.floor(bar_width / block_count);
-	var block_pad = Math.ceil(block_width * 0.05);
-	if (block_pad < 1) block_pad = 1;
+	if (meter_style == 1) {
+		var block_count = Math.max(Math.floor(dBrange / rms_block_db2), 1);
+		var block_width = bar_width / block_count;
+		var block_pad = Math.max(Math.ceil(block_width * 0.05), 1);
+	}
 
 	for (var c = 0; c < ch_count; ++c) {
 		if (RMS_levels[c]) {
@@ -326,14 +377,14 @@ function on_paint(gr) {
 
 			if (meter_style == 0) { // smooth mode
 				var width = Math.round(bar_width * (rms_db - minDB) / dBrange);
-				gr.FillRectangle(bar_pad_left, bar_pad_top + (bar_height * c), width, bar_height - 1, bar_colour);
+				gr.FillRectangle(bar_pad_left, bar_pad_top + (bar_height * c), width, bar_height - 1, colours.bar);
 			} else { // block mode
 				var blocks = Math.round(block_count * (rms_db - minDB) / dBrange);
 				var width = blocks * block_width;
-				gr.FillRectangle(bar_pad_left, bar_pad_top + (bar_height * c), width, bar_height - 1, bar_colour);
-				
-				for (var i = 0; i < blocks; ++i) {
-					gr.FillRectangle(bar_pad_left + (i * block_width), bar_pad_top + (bar_height * c), block_pad, bar_height - 1, colours.background);
+				gr.FillRectangle(bar_pad_left, bar_pad_top + (bar_height * c), width, bar_height - 1, colours.bar);
+
+				for (var i = 1; i < blocks; ++i) {
+					gr.FillRectangle(bar_pad_left - Math.ceil(block_pad / 2) + (i * block_width), bar_pad_top + (bar_height * c), block_pad, bar_height - 1, colours.background);
 				}
 			}
 		}
@@ -342,7 +393,7 @@ function on_paint(gr) {
 			var peak_db = clamp(to_db(Peak_levels[c]), minDB, maxDB);
 			if (peak_db > minDB) {
 				var peak_pos = Math.round(bar_width * (peak_db - minDB) / dBrange);
-				gr.FillRectangle(bar_pad_left + peak_pos - peak_bar_width / 2, bar_pad_top + (bar_height * c), peak_bar_width, bar_height - 1, bar_colour);
+				gr.FillRectangle(bar_pad_left + peak_pos - peak_bar_width / 2, bar_pad_top + (bar_height * c), peak_bar_width, bar_height - 1, colours.bar);
 			}
 		}
 	}
@@ -366,7 +417,4 @@ function on_playback_stop(reason) {
 function on_size() {
 	ww = window.Width;
 	wh = window.Height;
-
-	brush.End = [ww, 0];
-	brush_str = JSON.stringify(brush);
 }

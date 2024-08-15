@@ -75,5 +75,5 @@ function on_size() {
 	seekbar.x = _scale(60);
 	seekbar.y = (window.Height / 2) - _scale(3);
 	seekbar.w = window.Width - (seekbar.x * 2);
-	seekbar.h  = _scale(6);
+	seekbar.h = _scale(6);
 }

@@ -129,5 +129,5 @@ function on_size() {
 	seekbar.x = _scale(60);
 	seekbar.y = _scale(12);
 	seekbar.w = panel.w - (seekbar.x * 2);
-	seekbar.h  = _scale(6);
+	seekbar.h = _scale(6);
 }

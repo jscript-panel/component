@@ -182,11 +182,6 @@ function get_initial_track_info() {
 	handle.Dispose();
 }
 
-function on_colours_changed() {
-	update_colours();
-	window.Repaint();
-}
-
 function channel_name(ch) {
 	if (ch < ChannelNames.length) {
 		if (ch_config) {
@@ -205,6 +200,11 @@ function channel_name(ch) {
 	return name;
 }
 
+function on_colours_changed() {
+	update_colours();
+	window.Repaint();
+}
+
 function on_mouse_rbtn_up(x, y) {
 	var menu = window.CreatePopupMenu();
 	var colour_menu = window.CreatePopupMenu();
@@ -220,7 +220,7 @@ function on_mouse_rbtn_up(x, y) {
 
 	if (meter_style == 1) {
 		style_menu.AppendMenuSeparator();
-		style_menu.AppendMenuItem(MF_GRAYED, 4, 'Block width (db)');
+		style_menu.AppendMenuItem(MF_GRAYED, 0, 'Block width (dB)');
 		rms_block_dbs.forEach(function (item, index) {
 			style_menu.AppendMenuItem(MF_STRING, 20 + index, item);
 		});
@@ -282,54 +282,30 @@ function on_paint(gr) {
 	gr.Clear(colours.background);
 	if (wh < 1 || ww < 1) return;
 
-	var hide_ch_labels = false;
-	var hide_db_labels = false;
-	var bar_pad_left = 3*8;
-	var bar_pad_right = 3*8;
+	var show_ch_labels = true;
+	var show_db_labels = true;
+	var bar_pad_left = 24;
+	var bar_pad_right = 24;
 	var bar_pad_top = 5;
 	var bar_pad_bottom = 30;
-	var bar_height = 0;
-	var bar_width = 0;
-
-	bar_height = Math.floor((wh - bar_pad_top - bar_pad_bottom) / ch_count);
+	var bar_width = ww - bar_pad_left - bar_pad_right;
+	var bar_height = Math.floor((wh - bar_pad_top - bar_pad_bottom) / ch_count);
 
 	// bars are too thin for channel labels, hide them
-	if (bar_height < 8) {
-		hide_ch_labels = true;
-	}
+	if (bar_height < 12) {
+		show_ch_labels = false;
 
-	// bars are too thin for dB scale too
-	if (bar_height < 4) {
-		hide_ch_labels = true;
-		hide_db_labels = true;
-		bar_pad_top = 0;
-		bar_pad_bottom = 0;
-		bar_pad_left = 0;
-		bar_pad_right = 0;
-		bar_height = Math.floor(wh / ch_count);
-	}
-
-	// bars won't fit in the window, downmix to mono
-	if (bar_height < 2 || bar_height * ch_count > wh) {
-		var rms_sum = 0;
-		var peak_sum = 0;
-		for (var c = 0; c < ch_count; ++c) {
-			rms_sum += RMS_levels[c] * RMS_levels[c];
-			peak_sum += Peak_levels[c];
+		// bars are too thin for dB scale too
+		if (bar_height < 4) {
+			show_db_labels = false;
+			bar_pad_left = 0;
+			bar_pad_right = 0;
+			bar_pad_top = 0;
+			bar_pad_bottom = 0;
+			bar_width = ww;
+			bar_height = Math.floor(wh / ch_count);
 		}
-		RMS_levels[0] = Math.sqrt(rms_sum/ch_count);
-		Peak_levels[0] = peak_sum/ch_count;
-		ch_count = 1;
-		hide_ch_labels = true;
-		hide_db_labels = true;
-		bar_pad_top = 0;
-		bar_pad_bottom = 0;
-		bar_pad_left = 0;
-		bar_pad_right = 0;
-		bar_height = Math.floor(wh / ch_count);
 	}
-
-	bar_width = ww - bar_pad_left - bar_pad_right;
 
 	if (bar_width != brush.End[0]) {
 		brush.End[0] = bar_width;
@@ -340,7 +316,13 @@ function on_paint(gr) {
 	}
 
 	// labels
-	if (!hide_db_labels) {
+	if (show_ch_labels) {
+		for (var c = 0; c < ch_count; ++c) {
+			gr.WriteTextSimple(channel_name(c), font_t, colours.text, 0, bar_pad_top + (bar_height * c), bar_pad_left, bar_height, 2, 2);
+		}
+	}
+
+	if (show_db_labels) {
 		var db_spacing = 5;
 		if (dBrange < db_spacing) db_spacing = 1;
 		if (ww * db_spacing / dBrange < 10*8) {
@@ -353,19 +335,13 @@ function on_paint(gr) {
 
 		for (var i = minDB, j = 0; i <= maxDB; i += db_spacing, j++) {
 			var x = bar_pad_left + (bar_width * j / (dBrange / db_spacing));
-			gr.WriteTextSimple(i + "dB", font_t, colours.text, x - (bar_pad_left / 2), wh - 20, ww, wh);
+			gr.WriteTextSimple(i + "dB", font_t, colours.text, x - (bar_pad_left / 2), y, 100, wh - y, 0, 2);
 			gr.DrawLine(x, y - 2, x, y + 2, 1, colours.text);
 		}
 	}
 
-	if (!hide_ch_labels) {
-		for (var c = 0; c < ch_count; ++c) {
-			gr.WriteTextSimple(channel_name(c), font_t, colours.text, 4, bar_pad_top + (bar_height * c) + bar_height / 2 - 8, ww, wh);
-		}
-	}
-
 	// bars
-	if (meter_style == 1) {
+	if (meter_style == 1) { // block mode
 		var block_count = Math.max(Math.floor(dBrange / rms_block_db2), 1);
 		var block_width = bar_width / block_count;
 		var block_pad = Math.max(Math.ceil(block_width * 0.05), 1);
@@ -383,7 +359,7 @@ function on_paint(gr) {
 				var width = blocks * block_width;
 				gr.FillRectangle(bar_pad_left, bar_pad_top + (bar_height * c), width, bar_height - 1, colours.bar);
 
-				for (var i = 1; i < blocks; ++i) {
+				for (var i = 1; i <= blocks; ++i) {
 					gr.FillRectangle(bar_pad_left - Math.ceil(block_pad / 2) + (i * block_width), bar_pad_top + (bar_height * c), block_pad, bar_height - 1, colours.background);
 				}
 			}

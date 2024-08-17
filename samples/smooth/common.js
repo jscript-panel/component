@@ -94,7 +94,7 @@ function get_images() {
 }
 
 function validate_indexes(playlist, item) {
-	return playlist >=0 && playlist < plman.PlaylistCount && item >= 0 && item < plman.GetPlaylistItemCount(playlist);
+	return playlist >= 0 && playlist < plman.PlaylistCount && item >= 0 && item < plman.GetPlaylistItemCount(playlist);
 }
 
 function play(playlist, item) {

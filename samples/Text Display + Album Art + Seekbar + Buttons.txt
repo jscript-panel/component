@@ -81,8 +81,7 @@ function on_mouse_lbtn_down(x, y) {
 function on_mouse_lbtn_up(x, y) {
 	if (seekbar.lbtn_up(x, y)) {
 		return;
-	}
-	if (buttons.lbtn_up(x, y)) {
+	} else if (buttons.lbtn_up(x, y)) {
 		return;
 	}
 	text.lbtn_up(x, y);
@@ -93,10 +92,11 @@ function on_mouse_leave() {
 }
 
 function on_mouse_move(x, y) {
-	if (seekbar.move(x, y)) {
+	if (albumart.move(x, y)) {
 		return;
-	}
-	if (buttons.move(x, y)) {
+	} else if (seekbar.move(x, y)) {
+		return;
+	} else if (buttons.move(x, y)) {
 		return;
 	}
 	text.move(x, y);
@@ -111,7 +111,9 @@ function on_mouse_rbtn_up(x, y) {
 }
 
 function on_mouse_wheel(s) {
-	if (seekbar.wheel(s)) {
+	if (albumart.wheel(s)) {
+		return;
+	} else if (seekbar.wheel(s)) {
 		return;
 	}
 	text.wheel(s);

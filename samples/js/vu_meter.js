@@ -1,8 +1,10 @@
 var properties = {
 	colour_mode : new _p("2K3.METER.COLOURS.MODE", 0), // 0 UI, 1 custom
-	bar_mode : new _p("2K3.METER.BAR.MODE", 0), // 0 rainbow, 1 custom
+	bar_mode : new _p("2K3.METER.BAR.MODE", 0), // 0 rainbow, 1 solid, 2 gradient
 	custom_background : new _p("2K3.METER.BACKGROUND.COLOUR", RGB(30, 30, 30)),
 	custom_bar : new _p("2K3.METER.BAR.COLOUR", RGB(200, 200, 200)),
+	custom_bar_g1 : new _p("2K3.METER.BAR.G1.COLOUR", RGB(0, 128, 255)),
+	custom_bar_g2 : new _p("2K3.METER.BAR.G2.COLOUR", RGB(255, 50, 10)),
 	custom_text : new _p("2K3.METER.TEXT.COLOUR", RGB(240, 240, 240)),
 	meter_style : new _p("2K3.METER.STYLE", 0), // 0: smooth, 1: blocks
 	rms_block_db : new _p("2K3.METER.BLOCK.DB", 0.625),
@@ -18,24 +20,12 @@ var font_t = CreateFontString("Segoe UI", 8);
 var solid_colour = false;
 var rms_block_dbs = [0.625, 1.25, 2.5];
 var RMS_levels = [], Peak_levels = [], Peak_falldown = [];
-var ch_count = 2; //prevent script error on init with nothing playing and empty playlist
-var ch_config = 0;
-var ww = 0, wh = 0;
-var timer_id = 0;
-var rms_db_offset = 0;
-var dBrange = 0;
+var ChannelNames = [ "FL", "FR", "FC", "LFE", "BL", "BR", "FCL", "FCR", "BC", "SL", "SR", "TC", "TFL", "TFC", "TFR", "TBL", "TBC", "TBR" ];
+var ww = 0, wh = 0, timer_id = 0, rms_db_offset = 0, dBrange = 0;
 
-var rainbow_stops = [
-	[ 1.0, RGB(227, 9, 64) ],
-	[ 0.66, RGB(231, 215, 2) ],
-	[ 0.33, RGB(15, 168, 149) ],
-	[ 0.0, RGB(19, 115, 232) ]
-];
-
-var brush = {
-	Stops : [],
-	Start : [0, 0], // x and y values
-	End : [0, 0], // x and y values
+var channels = {
+	count : 2,
+	config : 0,
 };
 
 var colours = {
@@ -45,7 +35,18 @@ var colours = {
 	bar : 0,
 };
 
-var ChannelNames = [ "FL", "FR", "FC", "LFE", "BL", "BR", "FCL", "FCR", "BC", "SL", "SR", "TC", "TFL", "TFC", "TFR", "TBL", "TBC", "TBR" ];
+var brush = {
+	Stops : [],
+	Start : [0, 0], // x and y values
+	End : [0, 0], // x and y values
+};
+
+var rainbow_stops = [
+	[ 0.0, RGB(19, 115, 232) ],
+	[ 0.33, RGB(15, 168, 149) ],
+	[ 0.66, RGB(231, 215, 2) ],
+	[ 1.0, RGB(227, 9, 64) ],
+];
 
 function init() {
 	dBrange = maxDB - minDB
@@ -96,15 +97,22 @@ function update_colours() {
 			solid_colour = false;
 			brush.Stops = rainbow_stops;
 			colours.bar = JSON.stringify(brush);
-		} else { // custom
+		} else if (properties.bar_mode.value == 1) { // solid colour
 			solid_colour = true;
 			colours.bar = properties.custom_bar.value;
+		} else { // 2 colour gradient
+			solid_colour = false;
+			brush.Stops = [
+				[0.0, properties.custom_bar_g1.value],
+				[1.0, properties.custom_bar_g2.value],
+			]
+			colours.bar = JSON.stringify(brush);
 		}
 	}
 }
 
 function clear_graph() {
-	for (var c = 0; c < ch_count; ++c) {
+	for (var c = 0; c < channels.count; ++c) {
 		RMS_levels[c] = 0;
 		Peak_levels[c] = 0;
 		Peak_falldown[c] = 0;
@@ -117,24 +125,24 @@ function update_graph() {
 	if (cur_time > rms_window) {
 		var chunk = fb.GetAudioChunk(rms_window);
 		if (chunk) {
-			ch_count = chunk.ChannelCount;
-			ch_config = chunk.ChannelConfig;
+			channels.count = chunk.ChannelCount;
+			channels.config = chunk.ChannelConfig;
 			var data = chunk.Data.toArray();
 			var frame_len = chunk.SampleCount;
-			if (data && ch_count > 0 && frame_len > 0) {
+			if (data && channels.count > 0 && frame_len > 0) {
 				var old_count = Peak_levels.length;
-				RMS_levels.length = ch_count;
-				Peak_levels.length = ch_count;
-				Peak_falldown.length = ch_count;
-				if (old_count < ch_count) {
-					for (var c = old_count; c < ch_count; ++c) {
+				RMS_levels.length = channels.count;
+				Peak_levels.length = channels.count;
+				Peak_falldown.length = channels.count;
+				if (old_count < channels.count) {
+					for (var c = old_count; c < channels.count; ++c) {
 						Peak_levels[c] = 0;
 						Peak_falldown[c] = 0;
 					}
 				}
-				for (var c = 0; c < ch_count; ++c) {
+				for (var c = 0; c < channels.count; ++c) {
 					var sum = 0, peak = 0;
-					for (var i = c; i < data.length; i += ch_count) {
+					for (var i = c; i < data.length; i += channels.count) {
 						var s = Math.abs(data[i]);
 						if (s > peak) peak = s;
 						sum += s * s;
@@ -176,14 +184,12 @@ function get_initial_track_info() {
 	if (!handle) return;
 
 	var info = handle.GetFileInfo();
-	var idx_ch_count = info.InfoFind("channels");
-	var idx_ch_config = info.InfoFind("WAVEFORMATEXTENSIBLE_CHANNEL_MASK");
-	if (idx_ch_count >= 0) {
-		ch_count = Number(info.InfoValue(idx_ch_count));
-	}
-	if (idx_ch_config >= 0) {
-		ch_config = Number(info.InfoValue(idx_ch_config));
-	}
+
+	var idx = info.InfoFind("channels");
+	if (idx >= 0) channels.count = Number(info.InfoValue(idx));
+
+	idx = info.InfoFind("WAVEFORMATEXTENSIBLE_CHANNEL_MASK");
+	if (idx >= 0) channels.config = Number(info.InfoValue(idx));
 
 	info.Dispose();
 	handle.Dispose();
@@ -191,9 +197,9 @@ function get_initial_track_info() {
 
 function channel_name(ch) {
 	if (ch < ChannelNames.length) {
-		if (ch_config) {
+		if (channels.config) {
 			for (var i = 0, idx = 0; i < ChannelNames.length; ++i) {
-				if (ch_config & (1 << i)) {
+				if (channels.config & (1 << i)) {
 					if (idx == ch) return ChannelNames[i];
 					idx++;
 				}
@@ -203,8 +209,7 @@ function channel_name(ch) {
 		}
 	}
 
-	var name = "Ch" + (ch+1).toString();
-	return name;
+	return "Ch" + (ch + 1);
 }
 
 function on_colours_changed() {
@@ -215,24 +220,34 @@ function on_colours_changed() {
 function on_mouse_rbtn_up(x, y) {
 	var menu = window.CreatePopupMenu();
 	var colour_menu = window.CreatePopupMenu();
+	var bars_menu = window.CreatePopupMenu();
 	var style_menu = window.CreatePopupMenu();
 
 	colour_menu.AppendMenuItem(MF_STRING, 1, 'UI');
 	colour_menu.AppendMenuItem(MF_STRING, 2, 'Custom');
 	colour_menu.CheckMenuRadioItem(1, 2, properties.colour_mode.value + 1);
+	colour_menu.AppendMenuSeparator();
 
 	if (properties.colour_mode.value == 1) {
-		colour_menu.AppendMenuSeparator();
-		colour_menu.AppendMenuItem(MF_GRAYED, 0, 'Bars');
-		colour_menu.AppendMenuItem(MF_STRING, 3, 'Rainbow');
-		colour_menu.AppendMenuItem(MF_STRING, 4, 'Custom');
-		colour_menu.CheckMenuRadioItem(3, 4, properties.bar_mode.value + 3);
-		colour_menu.AppendMenuItem(EnableMenuIf(properties.bar_mode.value == 1), 5, 'Edit...');
-		colour_menu.AppendMenuSeparator();
-		colour_menu.AppendMenuItem(MF_STRING, 6, 'Background...');
-		colour_menu.AppendMenuItem(MF_STRING, 7, 'Text...');
+		bars_menu.AppendMenuItem(MF_STRING, 100, 'Rainbow');
+		bars_menu.AppendMenuItem(MF_STRING, 101, 'Solid colour');
+		bars_menu.AppendMenuItem(MF_STRING, 102, 'Gradient');
+		bars_menu.CheckMenuRadioItem(100, 102, properties.bar_mode.value + 100);
+
+		if (properties.bar_mode.value == 1) { // solid colour
+			bars_menu.AppendMenuSeparator();
+			bars_menu.AppendMenuItem(MF_STRING, 110, 'Edit...');
+		} else if (properties.bar_mode.value == 2) { // 2 colour gradient
+			bars_menu.AppendMenuSeparator();
+			bars_menu.AppendMenuItem(MF_STRING, 111, 'Gradient 1...');
+			bars_menu.AppendMenuItem(MF_STRING, 112, 'Gradient 2...');
+		}
+
+		bars_menu.AppendTo(colour_menu, MF_STRING, 'Bars');
 	}
 
+	colour_menu.AppendMenuItem(MF_STRING, 3, 'Background...');
+	colour_menu.AppendMenuItem(MF_STRING, 4, 'Text...');
 	colour_menu.AppendTo(menu, MF_STRING, 'Colours');
 
 	style_menu.AppendMenuItem(MF_STRING, 10, 'Smooth');
@@ -260,6 +275,7 @@ function on_mouse_rbtn_up(x, y) {
 	menu.Dispose();
 	colour_menu.Dispose();
 	style_menu.Dispose();
+	bars_menu.Dispose();
 
 	switch (idx) {
 	case 0:
@@ -271,20 +287,6 @@ function on_mouse_rbtn_up(x, y) {
 		window.Repaint();
 		break;
 	case 3:
-	case 4:
-		properties.bar_mode.value = idx - 3;
-		update_colours();
-		window.Repaint();
-		break;
-	case 5:
-		var tmp = utils.ColourPicker(properties.custom_bar.value);
-		if (tmp != properties.custom_bar.value) {
-			properties.custom_bar.value = tmp;
-			update_colours();
-			window.Repaint();
-		}
-		break;
-	case 6:
 		var tmp = utils.ColourPicker(properties.custom_background.value);
 		if (tmp != properties.custom_background.value) {
 			properties.custom_background.value = tmp;
@@ -292,7 +294,7 @@ function on_mouse_rbtn_up(x, y) {
 			window.Repaint();
 		}
 		break;
-	case 7:
+	case 4:
 		var tmp = utils.ColourPicker(properties.custom_text.value);
 		if (tmp != properties.custom_text.value) {
 			properties.custom_text.value = tmp;
@@ -319,6 +321,37 @@ function on_mouse_rbtn_up(x, y) {
 	case 50:
 		window.ShowConfigure();
 		break;
+	case 100:
+	case 101:
+	case 102:
+		properties.bar_mode.value = idx - 100;
+		update_colours();
+		window.Repaint();
+		break;
+	case 110:
+		var tmp = utils.ColourPicker(properties.custom_bar.value);
+		if (tmp != properties.custom_bar.value) {
+			properties.custom_bar.value = tmp;
+			update_colours();
+			window.Repaint();
+		}
+		break;
+	case 111:
+		var tmp = utils.ColourPicker(properties.custom_bar_g1.value);
+		if (tmp != properties.custom_bar_g1.value) {
+			properties.custom_bar_g1.value = tmp;
+			update_colours();
+			window.Repaint();
+		}
+		break;
+	case 112:
+		var tmp = utils.ColourPicker(properties.custom_bar_g2.value);
+		if (tmp != properties.custom_bar_g2.value) {
+			properties.custom_bar_g2.value = tmp;
+			update_colours();
+			window.Repaint();
+		}
+		break;
 	}
 
 	return true;
@@ -335,7 +368,7 @@ function on_paint(gr) {
 	var bar_pad_top = _scale(4);
 	var bar_pad_bottom = _scale(24);
 	var bar_width = ww - bar_pad_left - bar_pad_right;
-	var bar_height = Math.floor((wh - bar_pad_top - bar_pad_bottom) / ch_count);
+	var bar_height = Math.floor((wh - bar_pad_top - bar_pad_bottom) / channels.count);
 
 	// bars are too thin for channel labels, hide them
 	if (bar_height < 12) {
@@ -349,7 +382,7 @@ function on_paint(gr) {
 			bar_pad_top = 0;
 			bar_pad_bottom = 0;
 			bar_width = ww;
-			bar_height = Math.floor(wh / ch_count);
+			bar_height = Math.floor(wh / channels.count);
 		}
 	}
 
@@ -363,7 +396,7 @@ function on_paint(gr) {
 
 	// labels
 	if (show_ch_labels) {
-		for (var c = 0; c < ch_count; ++c) {
+		for (var c = 0; c < channels.count; ++c) {
 			gr.WriteTextSimple(channel_name(c), font_t, colours.text, 0, bar_pad_top + (bar_height * c), bar_pad_left, bar_height, 2, 2);
 		}
 	}
@@ -376,7 +409,7 @@ function on_paint(gr) {
 			db_spacing -= (db_spacing % 5);
 		}
 
-		var y = bar_pad_top + (bar_height * ch_count) + _scale(4);
+		var y = bar_pad_top + (bar_height * channels.count) + _scale(4);
 		gr.FillRectangle(bar_pad_left, y, bar_width, 1, colours.text);
 
 		for (var i = minDB, j = 0; i <= maxDB; i += db_spacing, j++) {
@@ -393,7 +426,7 @@ function on_paint(gr) {
 		var block_pad = Math.max(Math.ceil(block_width * 0.05), 1);
 	}
 
-	for (var c = 0; c < ch_count; ++c) {
+	for (var c = 0; c < channels.count; ++c) {
 		if (RMS_levels[c]) {
 			var rms_db = _clamp(to_db(RMS_levels[c]) + rms_db_offset, minDB, maxDB);
 

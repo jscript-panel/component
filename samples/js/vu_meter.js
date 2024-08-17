@@ -1,13 +1,12 @@
 var font_t = CreateFontString("Segoe UI", 8);
-var colour_mode = window.GetProperty("2K3.METER.COLOUR.MODE", 1); // 0 UI, 1 Rainbow
-var meter_style = window.GetProperty("2K3.METER.STYLE", 0); // 0: smooth, 1: blocks-by-dB
-var rms_block_db2 = window.GetProperty("2K3.METER.BLOCK.DB", 0.625);
-var rms_3db2 = window.GetProperty("2K3.METER.AES", false);
+var colour_mode = new _p("2K3.METER.COLOUR.MODE", 1); // 0 UI, 1 Rainbow
+var meter_style = new _p("2K3.METER.STYLE", 0); // 0: smooth, 1: blocks-by-dB
+var rms_block_db2 = new _p("2K3.METER.BLOCK.DB", 0.625);
+var rms_3db2 = new _p("2K3.METER.AES", false);
 
 // blocks by count style has been removed
-if (meter_style > 1) {
-	meter_style = 1;
-	window.SetProperty("2K3.METER.STYLE", meter_style);
+if (meter_style.value > 1) {
+	meter_style.value = 1;
 }
 
 var solid_colour = false;
@@ -53,7 +52,7 @@ function init() {
 }
 
 function update_rms_offset() {
-	if (rms_3db2) {
+	if (rms_3db2.enabled) {
 		rms_db_offset = 20 * Math.log(Math.sqrt(2)) / Math.LN10; // 3.01029995663981 dB
 	} else {
 		rms_db_offset = 0;
@@ -71,7 +70,7 @@ function update_colours() {
 		colours.background = window.GetColourCUI(ColourTypeCUI.background);
 	}
 
-	if (colour_mode == 0) {
+	if (colour_mode.value == 0) {
 		solid_colour = colours.text == colours.highlight;
 
 		if (solid_colour) {
@@ -144,12 +143,6 @@ function to_db(num) {
 	return 20 * Math.log(num) / Math.LN10;
 }
 
-function clamp(value, min, max) {
-	if (value < min) return min;
-	if (value > max) return max;
-	return value;
-}
-
 function start_timer() {
 	if (!timer_id) {
 		timer_id = window.SetInterval(update_graph, timer_interval);
@@ -212,26 +205,26 @@ function on_mouse_rbtn_up(x, y) {
 
 	colour_menu.AppendMenuItem(MF_STRING, 1, 'UI');
 	colour_menu.AppendMenuItem(MF_STRING, 2, 'Rainbow');
-	colour_menu.CheckMenuRadioItem(1, 2, colour_mode + 1);
+	colour_menu.CheckMenuRadioItem(1, 2, colour_mode.value + 1);
 	colour_menu.AppendTo(menu, MF_STRING, 'Bar colours');
 	style_menu.AppendMenuItem(MF_STRING, 3, 'Smooth');
 	style_menu.AppendMenuItem(MF_STRING, 4, 'Blocks');
-	style_menu.CheckMenuRadioItem(3, 4, meter_style + 3);
+	style_menu.CheckMenuRadioItem(3, 4, meter_style.value + 3);
 
-	if (meter_style == 1) {
+	if (meter_style.value == 1) {
 		style_menu.AppendMenuSeparator();
 		style_menu.AppendMenuItem(MF_GRAYED, 0, 'Block width (dB)');
 		rms_block_dbs.forEach(function (item, index) {
 			style_menu.AppendMenuItem(MF_STRING, 20 + index, item);
 		});
-		var rms_block_db_index = rms_block_dbs.indexOf(rms_block_db2);
+		var rms_block_db_index = rms_block_dbs.indexOf(rms_block_db2.value);
 		style_menu.CheckMenuRadioItem(20, 20 + rms_block_dbs.length, 20 + rms_block_db_index);
 	}
 
 	style_menu.AppendTo(menu, MF_STRING, 'Meter style');
 
 	menu.AppendMenuSeparator();
-	menu.AppendMenuItem(CheckMenuIf(rms_3db2), 30, 'Use AES +3dB RMS');
+	menu.AppendMenuItem(CheckMenuIf(rms_3db2.enabled), 30, 'Use AES +3dB RMS');
 	menu.AppendMenuSeparator();
 	menu.AppendMenuItem(MF_STRING, 10, 'Configure...');
 
@@ -245,16 +238,14 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 1:
 	case 2:
-		colour_mode = idx -1;
-		window.SetProperty("2K3.METER.COLOUR.MODE", colour_mode);
+		colour_mode.value = idx -1;
 		update_colours();
 		window.Repaint();
 		break;
 	case 3:
 	case 4:
 	case 5:
-		meter_style = idx -3;
-		window.SetProperty("2K3.METER.STYLE", meter_style);
+		meter_style.value = idx -3;
 		window.Repaint();
 		break;
 	case 10:
@@ -263,13 +254,11 @@ function on_mouse_rbtn_up(x, y) {
 	case 20:
 	case 21:
 	case 22:
-		rms_block_db2 = rms_block_dbs[idx - 20];
-		window.SetProperty("2K3.METER.BLOCK.DB", rms_block_db2);
+		rms_block_db2.value = rms_block_dbs[idx - 20];
 		window.Repaint();
 		break;
 	case 30:
-		rms_3db2 = !rms_3db2;
-		window.SetProperty("2K3.METER.AES", rms_3db2);
+		rms_3db2.toggle();
 		update_rms_offset();
 		window.Repaint();
 		break;
@@ -284,10 +273,10 @@ function on_paint(gr) {
 
 	var show_ch_labels = true;
 	var show_db_labels = true;
-	var bar_pad_left = 24;
-	var bar_pad_right = 24;
-	var bar_pad_top = 5;
-	var bar_pad_bottom = 30;
+	var bar_pad_left = _scale(20);
+	var bar_pad_right = _scale(20);
+	var bar_pad_top = _scale(4);
+	var bar_pad_bottom = _scale(24);
 	var bar_width = ww - bar_pad_left - bar_pad_right;
 	var bar_height = Math.floor((wh - bar_pad_top - bar_pad_bottom) / ch_count);
 
@@ -325,33 +314,33 @@ function on_paint(gr) {
 	if (show_db_labels) {
 		var db_spacing = 5;
 		if (dBrange < db_spacing) db_spacing = 1;
-		if (ww * db_spacing / dBrange < 10*8) {
-			db_spacing = ((10*8 * dBrange) / ww);
+		if (ww * db_spacing / dBrange < _scale(64)) {
+			db_spacing = ((_scale(64) * dBrange) / ww);
 			db_spacing -= (db_spacing % 5);
 		}
 
-		var y = bar_pad_top + (bar_height * ch_count) + 5;
+		var y = bar_pad_top + (bar_height * ch_count) + _scale(4);
 		gr.FillRectangle(bar_pad_left, y, bar_width, 1, colours.text);
 
 		for (var i = minDB, j = 0; i <= maxDB; i += db_spacing, j++) {
 			var x = bar_pad_left + (bar_width * j / (dBrange / db_spacing));
-			gr.WriteTextSimple(i + "dB", font_t, colours.text, x - (bar_pad_left / 2), y, 100, wh - y, 0, 2);
-			gr.DrawLine(x, y - 2, x, y + 2, 1, colours.text);
+			gr.WriteTextSimple(i + "dB", font_t, colours.text, x - (bar_pad_left / 2), y, _scale(100), wh - y, 0, 2);
+			gr.DrawLine(x, y - _scale(2), x, y + _scale(2), 1, colours.text);
 		}
 	}
 
 	// bars
-	if (meter_style == 1) { // block mode
-		var block_count = Math.max(Math.floor(dBrange / rms_block_db2), 1);
+	if (meter_style.value == 1) { // block mode
+		var block_count = Math.max(Math.floor(dBrange / rms_block_db2.value), 1);
 		var block_width = bar_width / block_count;
 		var block_pad = Math.max(Math.ceil(block_width * 0.05), 1);
 	}
 
 	for (var c = 0; c < ch_count; ++c) {
 		if (RMS_levels[c]) {
-			var rms_db = clamp(to_db(RMS_levels[c]) + rms_db_offset, minDB, maxDB);
+			var rms_db = _clamp(to_db(RMS_levels[c]) + rms_db_offset, minDB, maxDB);
 
-			if (meter_style == 0) { // smooth mode
+			if (meter_style.value == 0) { // smooth mode
 				var width = Math.round(bar_width * (rms_db - minDB) / dBrange);
 				gr.FillRectangle(bar_pad_left, bar_pad_top + (bar_height * c), width, bar_height - 1, colours.bar);
 			} else { // block mode
@@ -366,7 +355,7 @@ function on_paint(gr) {
 		}
 
 		if (peak_bar_width > 0 && Peak_levels[c] > 0) {
-			var peak_db = clamp(to_db(Peak_levels[c]), minDB, maxDB);
+			var peak_db = _clamp(to_db(Peak_levels[c]), minDB, maxDB);
 			if (peak_db > minDB) {
 				var peak_pos = Math.round(bar_width * (peak_db - minDB) / dBrange);
 				gr.FillRectangle(bar_pad_left + peak_pos - peak_bar_width / 2, bar_pad_top + (bar_height * c), peak_bar_width, bar_height - 1, colours.bar);

@@ -2,6 +2,8 @@
 // @name "JSP3 VU Meter"
 // @author "Case"
 // @import "%fb2k_component_path%helpers.txt"
+// @import "%fb2k_component_path%samples\js\lodash.min.js"
+// @import "%fb2k_component_path%samples\js\common.js"
 // @import "%fb2k_component_path%samples\js\vu_meter.js"
 // ==/PREPROCESSOR==
 

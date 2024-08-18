@@ -73,9 +73,11 @@ function _text_display(x, y, w, h, buttons) {
 		panel.m.CheckMenuRadioItem(1300, 1304, albumart.properties.id.value + 1300);
 		panel.m.AppendMenuSeparator();
 
-		panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
-		panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
-		panel.m.AppendMenuSeparator();
+		if (!this.buttons) {
+			panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
+			panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
+			panel.m.AppendMenuSeparator();
+		}
 
 		if (this.properties.layout.value != 1) {
 			panel.s10.AppendMenuItem(MF_STRING, 1210, 'Left');
@@ -292,10 +294,6 @@ function _text_display(x, y, w, h, buttons) {
 	this.offset = 0;
 	this.text = '';
 
-	if (this.buttons) {
-		window.SetProperty('2K3.TEXT.LAYOUT', 1);
-	}
-
 	this.properties = {
 		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '$font(Segoe UI,24,700)\r\n[%title%$crlf()]\r\n$font(Segoe UI,18)\r\n[%artist%$crlf()]\r\n$font(Segoe UI,14)\r\n[%album% \'(\'%date%\')\'$crlf()]\r\n$font(Segoe UI,10)\r\n[%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype%]]'),
 		halign : new _p('2K3.TEXT.HALIGN', 2),
@@ -305,6 +303,12 @@ function _text_display(x, y, w, h, buttons) {
 		albumart_blur : new _p('2K3.TEXT.ALBUMART.BLUR', true),
 		layout : new _p('2K3.TEXT.LAYOUT', 0), // 0 text only, 1 album art top text bottom 2 album art left text right
 		margin : new _p('2K3.TEXT.MARGIN', 6),
+	}
+
+	if (this.buttons) {
+		this.properties.layout.value = 1;
+		this.properties.albumart.enabled = true;
+		this.properties.albumart_blur.enabled = true;
 	}
 
 	if (this.properties.albumart.enabled) {

@@ -109,6 +109,7 @@ function _thumbs() {
 			this.blurred_images[this.image_index].StackBlur(120);
 		}
 
+		gr.Clear(RGB(30, 30, 30));
 		_drawImage(gr, this.blurred_images[this.image_index], 0, 0, panel.w, panel.h, image.crop, this.properties.blur_opacity.value);
 	}
 
@@ -804,30 +805,32 @@ function _thumbs() {
 	this.time = 0;
 	this.counter = 0;
 	this.using_stub = false;
-
 	this.is_bio_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'lastfm_bio';
+
+	this.properties = {
+		mode : new _p('2K3.THUMBS.MODE', 4), // 0 grid 1 left 2 right 3 top 4 bottom 5 off
+		source : new _p('2K3.THUMBS.SOURCE', 0), // 0 custom folder 1 last.fm
+		tf : new _p('2K3.THUMBS.CUSTOM.FOLDER.TF', '$directory_path(%path%)'),
+		limit : new _p('2K3.THUMBS.DOWNLOAD.LIMIT', 10),
+		px : new _p('2K3.THUMBS.PX', 75),
+		cycle : new _p('2K3.THUMBS.CYCLE', 5),
+		aspect : new _p('2K3.THUMBS.ASPECT', image.crop_top),
+		auto_download : new _p('2K3.THUMBS.AUTO.DOWNLOAD', true),
+		circular : new _p('2K3.THUMBS.CIRCULAR', false),
+		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
+		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer
+		max_size : new _p('2K3.THUMBS.MAX.SIZE', 1024),
+	};
+
 	if (this.is_bio_panel) {
-		window.SetProperty('2K3.THUMBS.MODE', 5);
-		window.SetProperty('2K3.THUMBS.SOURCE', 1);
+		this.properties.mode.value = 5;
+		this.properties.source.value = 1;
 		this.properties.layout = new _p('2K3.THUMBS.LAYOUT', 0); // 0 horizontal, 1 vertical
 		this.properties.ratio = new _p('2K3.THUMBS.RATIO', 0.5);
 		this.properties.blur_opacity = new _p('2K3.BIO.BLUR.OPACITY', 1);
 	} else {
 		this.properties.blur_opacity = new _p('2K3.THUMBS.BLUR.OPACITY', 0.5);
 	}
-
-	this.properties.mode = new _p('2K3.THUMBS.MODE', 4); // 0 grid 1 left 2 right 3 top 4 bottom 5 off
-	this.properties.source = new _p('2K3.THUMBS.SOURCE', 0); // 0 custom folder 1 last.fm
-	this.properties.tf = new _p('2K3.THUMBS.CUSTOM.FOLDER.TF', '$directory_path(%path%)');
-	this.properties.limit = new _p('2K3.THUMBS.DOWNLOAD.LIMIT', 10);
-	this.properties.px = new _p('2K3.THUMBS.PX', 75);
-	this.properties.cycle = new _p('2K3.THUMBS.CYCLE', 5);
-	this.properties.aspect = new _p('2K3.THUMBS.ASPECT', image.crop_top);
-	this.properties.auto_download = new _p('2K3.THUMBS.AUTO.DOWNLOAD', true);
-	this.properties.circular = new _p('2K3.THUMBS.CIRCULAR', false);
-	this.properties.size_limit = new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024);
-	this.properties.double_click_mode = new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 1); // 0 external viewer 1 fb2k viewer 2 explorer
-	this.properties.max_size = new _p('2K3.THUMBS.MAX.SIZE', 1024);
 
 	this.headers = JSON.stringify({
 		'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',

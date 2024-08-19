@@ -1,4 +1,4 @@
-function _text_display(x, y, w, h, buttons) {
+function _text_display(x, y, w, h, buttons_or_rating) {
 	this.clear_layout = function () {
 		if (this.text_layout) {
 			this.text_layout.Dispose();
@@ -58,7 +58,7 @@ function _text_display(x, y, w, h, buttons) {
 		panel.m.AppendMenuItem(MF_STRING, 1202, 'Custom colours and fonts explained');
 		panel.m.AppendMenuSeparator();
 
-		if (!this.buttons) {
+		if (!this.buttons_or_rating) {
 			panel.m.AppendMenuItem(MF_GRAYED, 1203, 'Layout');
 			panel.m.AppendMenuItem(MF_STRING, 1204, 'Text only');
 			panel.m.AppendMenuItem(MF_STRING, 1205, 'Album Art top, Text bottom');
@@ -73,7 +73,7 @@ function _text_display(x, y, w, h, buttons) {
 		panel.m.CheckMenuRadioItem(1300, 1304, albumart.properties.id.value + 1300);
 		panel.m.AppendMenuSeparator();
 
-		if (!this.buttons) {
+		if (!this.buttons_or_rating) {
 			panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
 			panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
 			panel.m.AppendMenuSeparator();
@@ -228,7 +228,7 @@ function _text_display(x, y, w, h, buttons) {
 			this.w = panel.w - (margin * 2);
 			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
 
-			if (this.buttons) {
+			if (this.buttons_or_rating) {
 				this.y = panel.h - _scale(30) - this.text_height - (margin * 2);
 				this.h = this.text_height;
 			} else {
@@ -240,7 +240,7 @@ function _text_display(x, y, w, h, buttons) {
 			albumart.y = margin;
 			albumart.w = panel.w - (margin * 2);
 
-			if (this.buttons) {
+			if (this.buttons_or_rating) {
 				albumart.h = panel.h - this.h - margin - _scale(60);
 			} else {
 				albumart.h = panel.h - this.h - margin;
@@ -284,7 +284,7 @@ function _text_display(x, y, w, h, buttons) {
 	this.y = y;
 	this.w = w;
 	this.h = h;
-	this.buttons = buttons;
+	this.buttons_or_rating = buttons_or_rating;
 	this.default_colour = 0;
 	this.text_layout = null;
 	this.text_height = 0;
@@ -305,7 +305,7 @@ function _text_display(x, y, w, h, buttons) {
 		margin : new _p('2K3.TEXT.MARGIN', 6),
 	}
 
-	if (this.buttons) {
+	if (this.buttons_or_rating) {
 		this.properties.layout.value = 1;
 		this.properties.albumart.enabled = true;
 		this.properties.albumart_blur.enabled = true;

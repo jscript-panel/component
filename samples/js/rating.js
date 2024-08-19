@@ -30,7 +30,7 @@ function _rating(x, y, h, colour) {
 			this.properties.mode.value = 0;
 		}
 		if (this.properties.mode.value == 0) {
-			utils.ShowPopupMessage('This script supports 2 different modes.\n\nYou can use foo_playcount which is limited to 5 stars or you can choose to write to your file tags. You can choose the tag name and a max value via the right click menu.', window.Name);
+			utils.ShowPopupMessage('Rating supports 2 different modes.\n\nYou can use foo_playcount which is limited to 5 stars or you can choose to write to your file tags. You can choose the tag name and a max value via the right click menu.', window.Name);
 		}
 	}, this);
 
@@ -114,6 +114,8 @@ function _rating(x, y, h, colour) {
 		}
 		this.w = this.h * this.get_max();
 		this.metadb_changed();
+		on_size();
+		window.Repaint();
 	}
 
 	this.set_rating = function () {

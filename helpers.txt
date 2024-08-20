@@ -667,9 +667,22 @@ var colours = {
 	YellowGreen : 0xFF9ACD32,
 };
 
+Number.prototype.calc_width = function (font_obj) {
+	return utils.CalcTextWidth(this.toString(), font_obj.Name, font_obj.Size, font_obj.Weight || 400);
+}
+
+Number.prototype.calc_width2 = function (font) {
+	return utils.CalcTextWidth2(this.toString(), font);
+}
+
 String.prototype.calc_width = function (font_obj) {
 	if (this.empty()) return 0;
 	return utils.CalcTextWidth(this, font_obj.Name, font_obj.Size, font_obj.Weight || 400);
+}
+
+String.prototype.calc_width2 = function (font) {
+	if (this.empty()) return 0;
+	return utils.CalcTextWidth2(this, font);
 }
 
 String.prototype.empty = function () {
@@ -681,8 +694,4 @@ String.prototype.repeat = function (num) {
 		return new Array(Math.round(num) + 1).join(this);
 	}
 	return "";
-}
-
-Number.prototype.calc_width = function (font_obj) {
-	return utils.CalcTextWidth(this.toString(), font_obj.Name, font_obj.Size, font_obj.Weight || 400);
 }

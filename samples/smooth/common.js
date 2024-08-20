@@ -41,7 +41,7 @@ function draw_header_bar(gr, text, obj) {
 	gr.FillRectangle(0, 0, ww, obj.y - 1, g_colour_background);
 	gr.FillRectangle(obj.x, 0, obj.w + cScrollBar.width, ppt.headerBarHeight - 1, g_colour_background & 0x20ffffff);
 	gr.FillRectangle(obj.x, ppt.headerBarHeight - 2, obj.w + cScrollBar.width, 1, g_colour_text & 0x22ffffff);
-	gr.WriteTextSimple(text, g_font_box.str, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
+	gr.WriteTextSimple(text, g_font_box, g_colour_text, 0, 0, ww - 5, ppt.headerBarHeight - 1, 1, 2, 1, 1);
 }
 
 function update_extra_font_size(step) {
@@ -86,7 +86,7 @@ function get_images() {
 
 	images.reset = utils.CreateImage(button_size, button_size);
 	gb = images.reset.GetGraphics();
-	gb.WriteTextSimple(chars.close, g_font_fluent_12.str, g_colour_text, 0, 0, button_size, button_size, 2, 2);
+	gb.WriteTextSimple(chars.close, g_font_fluent_12, g_colour_text, 0, 0, button_size, button_size, 2, 2);
 	images.reset.ReleaseGraphics();
 
 	// force re-creation of buttons with new colours
@@ -260,15 +260,11 @@ function scale(size) {
 }
 
 function smooth_font(name, size, bold) {
-	var obj = {
+	return JSON.stringify({
 		Name : name,
 		Size : scale(size),
 		Weight : bold ? 700 : 400,
-	};
-	return {
-		obj : obj,
-		str : JSON.stringify(obj),
-	};
+	});
 }
 
 function get_font() {
@@ -291,8 +287,8 @@ function get_font() {
 	g_font_fluent_12 = smooth_font("Segoe Fluent Icons", 12);
 	g_font_fluent_20 = smooth_font("Segoe Fluent Icons", 20);
 
-	g_time_width = "00:00:00".calc_width(g_font.obj) + 20;
-	g_rating_width = chars.rating_off.repeat(5).calc_width(g_font_fluent_20.obj) + 4;
+	g_time_width = "00:00:00".calc_width2(g_font) + 20;
+	g_rating_width = chars.rating_off.repeat(5).calc_width2(g_font_fluent_20) + 4;
 
 	g_font_height = g_fsize + 4;
 }

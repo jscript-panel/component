@@ -34,10 +34,10 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 		gr.FillRectangle(this.x, this.y, this.w, this.h, g_colour_background);
 
 		if (!this.drag && !this.select) {
-			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
+			this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width2(g_font);
 			while (this.Cx >= this.w) {
 				this.offset++;
-				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
+				this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width2(g_font);
 			}
 		}
 
@@ -72,7 +72,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 			this.text_selected = "";
 		}
 
-		gr.WriteTextSimple(this.text.length > 0 ? this.text.substr(this.offset) : this.empty_text, g_font.str, g_colour_text, this.x, this.y, this.w, this.h, 0, 2, 1, this.edit ? 0 : 1);
+		gr.WriteTextSimple(this.text.length > 0 ? this.text.substr(this.offset) : this.empty_text, g_font, g_colour_text, this.x, this.y, this.w, this.h, 0, 2, 1, this.edit ? 0 : 1);
 
 		if (this.edit && !this.select)
 			this.drawcursor(gr);
@@ -97,12 +97,12 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 	}
 
 	this.CalcText = function () {
-		this.TWidth = this.text.substr(this.offset).calc_width(g_font.obj);
+		this.TWidth = this.text.substr(this.offset).calc_width2(g_font);
 	}
 
 	this.GetCx = function (pos) {
 		if (pos >= this.offset) {
-			return this.text.substr(this.offset, pos - this.offset).calc_width(g_font.obj);
+			return this.text.substr(this.offset, pos - this.offset).calc_width2(g_font);
 		}
 		return 0;
 	}
@@ -111,7 +111,7 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 		var tx = x - this.x;
 		var pos = 0;
 		for (var i = this.offset; i < this.text.length; i++) {
-			pos += this.text.substr(i, 1).calc_width(g_font.obj);
+			pos += this.text.substr(i, 1).calc_width2(g_font);
 			if (pos >= tx + 3) {
 				break;
 			}
@@ -522,10 +522,10 @@ function oInputbox(w, h, live_update, default_text, empty_text, func) {
 							}
 						}
 
-						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
+						this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width2(g_font);
 						while (this.Cx >= this.w) {
 							this.offset++;
-							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width(g_font.obj);
+							this.Cx = this.text.substr(this.offset, this.Cpos - this.offset).calc_width2(g_font);
 						}
 
 						this.repaint();

@@ -1,8 +1,4 @@
 function _panel(options) {
-	this.calc_text_width = function (text) {
-		return utils.CalcTextWidth(text, this.fonts.name, _scale(this.fonts.size.value));
-	}
-
 	this.colours_changed = function () {
 		if (window.IsDefaultUI) {
 			this.colours.background = window.GetColourDUI(1);

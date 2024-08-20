@@ -746,9 +746,9 @@ function on_paint(gr) {
 					var text_bot = "Create a playlist to start!";
 				}
 				var y = Math.floor(wh / 2);
-				gr.WriteTextSimple(text_top, g_font_20_bold.str, g_colour_text, 0, y - g_z5 - height(g_font_20_bold.obj), ww, height(g_font_20_bold.obj), 2, 1, 1);
+				gr.WriteTextSimple(text_top, g_font_20_bold, g_colour_text, 0, y - g_z5 - height(g_font_20_bold), ww, height(g_font_20_bold), 2, 1, 1);
 				gr.FillRectangle(40, Math.floor(wh / 2), ww - 80, 1, g_colour_text & 0x40ffffff);
-				gr.WriteTextSimple(text_bot, g_font_12_bold.str, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold.obj), 2, 0, 1);
+				gr.WriteTextSimple(text_bot, g_font_12_bold, blendColours(g_colour_text, g_colour_background, 0.35), 0, y + g_z5, ww, height(g_font_12_bold), 2, 0, 1);
 			} else {
 				p.headerBar.calculateColumns();
 
@@ -1232,7 +1232,7 @@ function update_playlist() {
 }
 
 function height(font) {
-	return font.Size + scale(4);
+	return JSON.parse(font).Size + scale(4)
 }
 
 function scale(size) {
@@ -1240,15 +1240,11 @@ function scale(size) {
 }
 
 function js_font(name, size, bold) {
-	var obj = {
+	return JSON.stringify({
 		Name : name,
 		Size : scale(size),
 		Weight : bold ? 700 : 400,
-	};
-	return {
-		obj : obj,
-		str : JSON.stringify(obj),
-	};
+	});
 }
 
 function get_font() {
@@ -1291,8 +1287,8 @@ function get_font() {
 	g_font_group1 = js_font(name, 16, true);
 	g_font_group2 = js_font(name, 14);
 
-	columns.rating_w = (chars.rating_off.calc_width(g_font_fluent_20.obj) * 5) + 4;
-	g_queue_width = "0000".calc_width(g_font_20_bold.obj);
+	columns.rating_w = (chars.rating_off.calc_width2(g_font_fluent_20) * 5) + 4;
+	g_queue_width = "0000".calc_width2(g_font_20_bold);
 }
 
 function get_colours() {

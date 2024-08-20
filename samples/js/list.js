@@ -643,7 +643,7 @@ function _list(mode, x, y, w, h) {
 
 	this.update = function () {
 		this.data = [];
-		this.spacer_w = panel.calc_text_width('0000');
+		this.spacer_w = '0000'.calc_width2(panel.fonts.normal);
 		switch (this.mode) {
 		case 'lastfm_info':
 			this.filename = '';
@@ -655,7 +655,7 @@ function _list(mode, x, y, w, h) {
 						.map(function (item) {
 							return {
 								name : item.name,
-								width : panel.calc_text_width(item.name),
+								width : item.name.calc_width2(panel.fonts.normal),
 								url : item.url
 							};
 						}, this)
@@ -687,7 +687,7 @@ function _list(mode, x, y, w, h) {
 							}
 							this.data[i] = {
 								name : name,
-								width : panel.calc_text_width(name),
+								width : name.calc_width2(panel.fonts.normal),
 								url : url,
 								playcount : data[i].playcount,
 								rank : i > 0 && data[i].playcount == data[i - 1].playcount ? this.data[i - 1].rank : i + 1
@@ -708,7 +708,7 @@ function _list(mode, x, y, w, h) {
 								var name = item.artist['#text'] + ' - ' + item.name;
 								return {
 									name : name,
-									width : panel.calc_text_width(name),
+									width : name.calc_width2(panel.fonts.normal),
 									url : item.url
 								};
 							})
@@ -732,7 +732,7 @@ function _list(mode, x, y, w, h) {
 						.map(function (item) {
 							return {
 								name : item.title,
-								width : panel.calc_text_width(item.title),
+								width : item.title.calc_width2(panel.fonts.normal),
 								url : 'https://musicbrainz.org/release-group/' + item.id,
 								date : item['first-release-date'].substring(0, 4),
 								primary : item['primary-type'],
@@ -769,7 +769,7 @@ function _list(mode, x, y, w, h) {
 							return {
 								name : url,
 								url : url,
-								width : panel.calc_text_width(url)
+								width : url.calc_width2(panel.fonts.normal)
 							};
 						})
 						.sortBy(function (item) {
@@ -779,7 +779,7 @@ function _list(mode, x, y, w, h) {
 					this.data.unshift({
 						name : url,
 						url : url,
-						width : panel.calc_text_width(url)
+						width : url.calc_width2(panel.fonts.normal)
 					});
 					if (_fileExpired(this.filename, ONE_DAY)) {
 						this.get();
@@ -810,9 +810,9 @@ function _list(mode, x, y, w, h) {
 			}
 			this.data.pop();
 			_.forEach(this.data, function (item) {
-				item.width = panel.calc_text_width(item.value);
+				item.width = item.value.calc_width2(panel.fonts.normal);
 				if (item.value != 'SECTION_HEADER') {
-					this.properties_value_x = Math.max(this.properties_value_x, panel.calc_text_width(item.name) + 20);
+					this.properties_value_x = Math.max(this.properties_value_x, item.name.calc_width2(panel.fonts.normal) + 20);
 				}
 			}, this);
 			if (fileinfo) fileinfo.Dispose();

@@ -12,7 +12,6 @@ var wh = 0;
 var right_text = '';
 var right_text_width = 0;
 var font = CreateFontString('Segoe UI', 10);
-var font_obj = JSON.parse(font);
 var starting = false;
 var stop_reason;
 
@@ -55,7 +54,7 @@ function refresh() {
 	}
 
 	right_text = tmp.join(' :: ');
-	right_text_width = right_text.calc_width(font_obj);
+	right_text_width = right_text.calc_width2(font);
 	window.Repaint();
 }
 

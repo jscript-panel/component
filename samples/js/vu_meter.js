@@ -1,5 +1,5 @@
 var properties = {
-	colour_mode : new _p("2K3.METER.COLOURS.MODE", 0), // 0 UI, 1 custom
+	colour_mode : new _p("2K3.METER.COLOURS.MODE", 1), // 0 UI, 1 custom
 	bar_mode : new _p("2K3.METER.BAR.MODE", 0), // 0 rainbow, 1 solid, 2 gradient
 	custom_background : new _p("2K3.METER.BACKGROUND.COLOUR", RGB(30, 30, 30)),
 	custom_bar : new _p("2K3.METER.BAR.COLOUR", RGB(200, 200, 200)),
@@ -7,7 +7,7 @@ var properties = {
 	custom_bar_g2 : new _p("2K3.METER.BAR.G2.COLOUR", RGB(255, 50, 10)),
 	custom_peak : new _p("2K3.METER.PEAK.COLOUR"), // no default
 	custom_text : new _p("2K3.METER.TEXT.COLOUR", RGB(240, 240, 240)),
-	meter_style : new _p("2K3.METER.STYLE", 0), // 0: smooth, 1: blocks
+	meter_style : new _p("2K3.METER.STYLE", 1), // 0: smooth, 1: blocks
 	rms_block_db : new _p("2K3.METER.BLOCK.DB", 0.625),
 	rms_3db : new _p("2K3.METER.AES", false),
 };

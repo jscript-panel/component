@@ -5,6 +5,7 @@ var properties = {
 	custom_bar : new _p("2K3.METER.BAR.COLOUR", RGB(200, 200, 200)),
 	custom_bar_g1 : new _p("2K3.METER.BAR.G1.COLOUR", RGB(0, 128, 255)),
 	custom_bar_g2 : new _p("2K3.METER.BAR.G2.COLOUR", RGB(255, 50, 10)),
+	custom_peak : new _p("2K3.METER.PEAK.COLOUR"), // no default
 	custom_text : new _p("2K3.METER.TEXT.COLOUR", RGB(240, 240, 240)),
 	meter_style : new _p("2K3.METER.STYLE", 0), // 0: smooth, 1: blocks
 	rms_block_db : new _p("2K3.METER.BLOCK.DB", 0.625),
@@ -79,6 +80,7 @@ function update_colours() {
 		}
 
 		solid_colour = colours.text == colours.highlight;
+		colours.peak = colours.text;
 
 		if (solid_colour) {
 			colours.bar = colours.text;
@@ -92,6 +94,7 @@ function update_colours() {
 	} else { // custom
 		colours.background = properties.custom_background.value;
 		colours.text = properties.custom_text.value;
+		colours.peak = properties.custom_peak.value || colours.text;
 
 		if (properties.bar_mode.value == 0) { // rainbow
 			solid_colour = false;
@@ -226,7 +229,6 @@ function on_mouse_rbtn_up(x, y) {
 	colour_menu.AppendMenuItem(MF_STRING, 1, 'UI');
 	colour_menu.AppendMenuItem(MF_STRING, 2, 'Custom');
 	colour_menu.CheckMenuRadioItem(1, 2, properties.colour_mode.value + 1);
-	colour_menu.AppendMenuSeparator();
 
 	if (properties.colour_mode.value == 1) {
 		bars_menu.AppendMenuItem(MF_STRING, 100, 'Rainbow');
@@ -244,10 +246,13 @@ function on_mouse_rbtn_up(x, y) {
 		}
 
 		bars_menu.AppendTo(colour_menu, MF_STRING, 'Bars');
+
+		colour_menu.AppendMenuSeparator();
+		colour_menu.AppendMenuItem(MF_STRING, 3, 'Background...');
+		colour_menu.AppendMenuItem(MF_STRING, 4, 'Text...');
+		colour_menu.AppendMenuItem(EnableMenuIf(peak_bar_width > 0), 5, 'Peak...');
 	}
 
-	colour_menu.AppendMenuItem(MF_STRING, 3, 'Background...');
-	colour_menu.AppendMenuItem(MF_STRING, 4, 'Text...');
 	colour_menu.AppendTo(menu, MF_STRING, 'Colours');
 
 	style_menu.AppendMenuItem(MF_STRING, 10, 'Smooth');
@@ -298,6 +303,14 @@ function on_mouse_rbtn_up(x, y) {
 		var tmp = utils.ColourPicker(properties.custom_text.value);
 		if (tmp != properties.custom_text.value) {
 			properties.custom_text.value = tmp;
+			update_colours();
+			window.Repaint();
+		}
+		break;
+	case 5:
+		var tmp = utils.ColourPicker(colours.peak);
+		if (tmp != colours.peak) {
+			properties.custom_peak.value = tmp;
 			update_colours();
 			window.Repaint();
 		}
@@ -448,7 +461,7 @@ function on_paint(gr) {
 			var peak_db = _clamp(to_db(Peak_levels[c]), minDB, maxDB);
 			if (peak_db > minDB) {
 				var peak_pos = Math.round(bar_width * (peak_db - minDB) / dBrange);
-				gr.FillRectangle(bar_pad_left + peak_pos - peak_bar_width / 2, bar_pad_top + (bar_height * c), peak_bar_width, bar_height - 1, colours.bar);
+				gr.FillRectangle(bar_pad_left + peak_pos - peak_bar_width / 2, bar_pad_top + (bar_height * c), peak_bar_width, bar_height - 1, colours.peak);
 			}
 		}
 	}

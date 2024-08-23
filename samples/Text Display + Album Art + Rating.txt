@@ -103,10 +103,6 @@ function on_playback_pause() {
 	window.Repaint();
 }
 
-function on_playback_seek() {
-	seekbar.playback_seek();
-}
-
 function on_playback_stop(reason) {
 	if (reason != 2) {
 		panel.item_focus_change();

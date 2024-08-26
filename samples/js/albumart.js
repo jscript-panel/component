@@ -46,7 +46,9 @@ function _albumart(x, y, w, h) {
 					}
 					break;
 				case 1:
-					panel.metadb.ShowAlbumArtViewer(this.properties.id.value);
+					if (this.properties.mode.value == 0) {
+						panel.metadb.ShowAlbumArtViewer(this.properties.id.value);
+					}
 					break;
 				case 2:
 					if (utils.IsFile(this.path)) _explorer(this.path);
@@ -60,8 +62,60 @@ function _albumart(x, y, w, h) {
 
 	this.metadb_changed = function () {
 		var img = null;
+
 		if (panel.metadb) {
-			img = panel.metadb.GetAlbumArt(this.properties.id.value);
+			if (this.properties.mode.value == 0) {
+				img = panel.metadb.GetAlbumArt(this.properties.id.value);
+			} else {
+				_stringToArray(this.properties.edit.value, '\r\n').forEach(function (item) {
+					if (img)
+						return;
+
+					switch (item) {
+					case 'front_embedded':
+						img = panel.metadb.GetAlbumArtEmbedded(0);
+						break;
+					case 'front_default':
+						img = panel.metadb.GetAlbumArt(0, false);
+						break;
+					case 'front_stub':
+						img = fb.GetAlbumArtStub(0);
+						break;
+					case 'back_embedded':
+						img = panel.metadb.GetAlbumArtEmbedded(1);
+						break;
+					case 'back_default':
+						img = panel.metadb.GetAlbumArt(1, false);
+						break;
+					case 'back_stub':
+						img = fb.GetAlbumArtStub(1);
+						break;
+					case 'disc_embedded':
+						img = panel.metadb.GetAlbumArtEmbedded(2);
+						break;
+					case 'disc_default':
+						img = panel.metadb.GetAlbumArt(2, false);
+						break;
+					case 'disc_stub':
+						img = fb.GetAlbumArtStub(2);
+						break;
+					case 'artist_embedded':
+						img = panel.metadb.GetAlbumArtEmbedded(4);
+						break;
+					case 'artist_default':
+						img = panel.metadb.GetAlbumArt(4, false);
+						break;
+					case 'artist_stub':
+						img = fb.GetAlbumArtStub(4);
+						break;
+
+					// no stub or default
+					case 'icon_embedded':
+						img = panel.metadb.GetAlbumArtEmbedded(3);
+						break;
+					}
+				});
+			}
 		}
 
 		if (this.img) this.img.Dispose();
@@ -77,6 +131,7 @@ function _albumart(x, y, w, h) {
 				this.tooltip += '\nPath: ' + this.path;
 			}
 		}
+
 		window.Repaint();
 	}
 
@@ -113,10 +168,22 @@ function _albumart(x, y, w, h) {
 
 		panel.m.AppendMenuItem(MF_STRING, 1000, 'Refresh');
 		panel.m.AppendMenuSeparator();
-		this.ids.forEach(function (item, i) {
-			panel.m.AppendMenuItem(MF_STRING, i + 1010, item);
-		});
-		panel.m.CheckMenuRadioItem(1010, 1014, this.properties.id.value + 1010);
+		panel.m.AppendMenuItem(MF_GRAYED, 0, 'Mode');
+		panel.m.AppendMenuItem(MF_STRING, 1100, 'Default');
+		panel.m.AppendMenuItem(MF_STRING, 1101, 'Custom');
+		panel.m.AppendMenuSeparator();
+		panel.m.CheckMenuRadioItem(1100, 1101, this.properties.mode.value + 1100);
+
+		if (this.properties.mode.value == 0) {
+			this.ids.forEach(function (item, i) {
+				panel.m.AppendMenuItem(MF_STRING, i + 1010, item);
+			});
+			panel.m.CheckMenuRadioItem(1010, 1014, this.properties.id.value + 1010);
+		} else {
+			panel.m.AppendMenuItem(MF_STRING, 1110, 'Edit...');
+			panel.m.AppendMenuItem(MF_STRING, 1111, 'Help');
+		}
+
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(MF_STRING, 1020, 'Crop (focus on centre)');
 		panel.m.AppendMenuItem(MF_STRING, 1021, 'Crop (focus on top)');
@@ -167,6 +234,23 @@ function _albumart(x, y, w, h) {
 		case 1052:
 			this.properties.double_click_mode.value = idx - 1050;
 			break;
+		case 1100:
+		case 1101:
+			this.properties.mode.value = idx - 1100;
+			this.metadb_changed();
+			break;
+		case 1110:
+			try {
+				var tmp = utils.TextBox('Enter image types here. Each one will checked in order until a valid image is found. See Help.', window.Name, this.properties.edit.value);
+				if (tmp != this.properties.edit.value) {
+					this.properties.edit.value = tmp;
+					this.metadb_changed();
+				}
+			} catch (e) {}
+			break;
+		case 1111:
+			utils.ShowPopupMessage(this.help_text, window.Name);
+			break;
 		case 1600:
 		case 1601:
 			this.properties.layout.value = idx - 1600;
@@ -177,7 +261,7 @@ function _albumart(x, y, w, h) {
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
+		if (this.properties.mode.value == 0 && this.containsXY(this.mx, this.my)) {
 			var id = this.properties.id.value - s;
 			if (id < 0) {
 				id = 4;
@@ -204,13 +288,17 @@ function _albumart(x, y, w, h) {
 	this.tooltip = '';
 	this.img = null;
 	this.blur_img = null;
+	this.image_index = 0;
 	this.path = null;
 	this.hover = false;
 	this.ids = ['Front', 'Back', 'Disc', 'Icon', 'Artist'];
+	this.help_text = utils.ReadUTF8(fb.ComponentPath + 'samples\\text\\albumart_help');
 	this.properties = {
-		aspect : new _p('2K3.ARTREADER.ASPECT', image.crop),
+		aspect : new _p('2K3.ARTREADER.ASPECT', image.centre),
 		id : new _p('2K3.ARTREADER.ID', 0),
 		double_click_mode : new _p('2K3.ARTREADER.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer
+		mode : new _p('2K3.ARTREADER.MODE', 0), // 0 default, 1 custom
+		edit : new _p('2K3.ARTREADER.EDIT', 'front_default\r\ndisc_default\r\nartist_default\r\nfront_stub\r\n'),
 	};
 
 	if (this.is_review_panel) {

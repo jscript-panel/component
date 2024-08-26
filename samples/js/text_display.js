@@ -295,7 +295,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 	this.text = '';
 
 	this.properties = {
-		text_tf : new _p('2K3.TEXT.DISPLAY.TF', '$font(Segoe UI,24,700)\r\n[%title%$crlf()]\r\n$font(Segoe UI,18)\r\n[%artist%$crlf()]\r\n$font(Segoe UI,14)\r\n[%album% \'(\'%date%\')\'$crlf()]\r\n$font(Segoe UI,10)\r\n[%__bitrate% kbps %codec% [%codec_profile% ][%__tool% ][%__tagtype%]]'),
+		text_tf : new _p('2K3.TEXT.DISPLAY.TF', ''),
 		halign : new _p('2K3.TEXT.HALIGN', 2),
 		valign : new _p('2K3.TEXT.VALIGN', 2),
 		per_second : new _p('2K3.TEXT.PER.SECOND', false),
@@ -303,6 +303,10 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 		albumart_blur : new _p('2K3.TEXT.ALBUMART.BLUR', true),
 		layout : new _p('2K3.TEXT.LAYOUT', 0), // 0 text only, 1 album art top text bottom 2 album art left text right
 		margin : new _p('2K3.TEXT.MARGIN', 6),
+	}
+
+	if (this.properties.text_tf.value.empty()) {
+		this.properties.text_tf.value = utils.ReadUTF8(fb.ComponentPath + 'samples\\text\\text_display_default');
 	}
 
 	if (this.buttons_or_rating) {

@@ -6,7 +6,7 @@
 // @import "%fb2k_component_path%samples\js\common.js"
 // @import "%fb2k_component_path%samples\js\panel.js"
 // @import "%fb2k_component_path%samples\js\lastfm.js"
-// @import "%fb2k_component_path%samples\js\thumbs.js"
+// @import "%fb2k_component_path%samples\js\images.js"
 // @import "%fb2k_component_path%samples\js\text.js"
 // ==/PREPROCESSOR==
 
@@ -15,11 +15,11 @@ var margin = _scale(12);
 var panel = new _panel();
 var lastfm = new _lastfm();
 var text = new _text('lastfm_bio', 0, 0, 0, 0);
-var thumbs = new _thumbs();
+var images = new _images();
 var white = RGB(255, 255, 255);
 
 text.paint = function (gr) {
-	var y = thumbs.properties.layout.value == 0 ? margin : this.y - margin;
+	var y = images.properties.layout.value == 0 ? margin : this.y - margin;
 	gr.WriteText2(this.header_text(), panel.fonts.title, white, this.x, y, this.w, TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (this.text_layout) {
@@ -27,44 +27,6 @@ text.paint = function (gr) {
 		this.up_btn.paint(gr, white);
 		this.down_btn.paint(gr, white);
 	}
-}
-
-thumbs.image_containsxXY = function (x, y) {
-	return this.images.length && this.containsXY(x, y);
-}
-
-thumbs.move = function (x, y) {
-	this.mx = x;
-	this.my = y;
-	return this.containsXY(x, y);
-}
-
-thumbs.paint = function (gr) {
-	this.draw_blurred_image(gr);
-	_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
-
-	if (this.images.length) {
-		this.image_xywh = _drawImage(gr, thumbs.images[thumbs.image_index], this.x, this.y, this.w, this.h, this.properties.aspect.value);
-	} else {
-		this.image_xywh = [];
-	}
-}
-
-thumbs.wheel = function (s) {
-	if (this.containsXY(this.mx, this.my)) {
-		if (this.images.length > 1) {
-			this.image_index -= s;
-			if (this.image_index < 0) {
-				this.image_index = this.images.length - 1;
-			}
-			if (this.image_index >= this.images.length) {
-				this.image_index = 0;
-			}
-			window.Repaint();
-		}
-		return true;
-	}
-	return false;
 }
 
 panel.item_focus_change();
@@ -84,7 +46,7 @@ function on_font_changed() {
 }
 
 function on_http_request_done(task_id, success, response_text) {
-	thumbs.http_request_done(task_id, success, response_text);
+	images.http_request_done(task_id, success, response_text);
 	text.http_request_done(task_id, success, response_text);
 }
 
@@ -95,13 +57,13 @@ function on_item_focus_change() {
 
 function on_key_down(k) {
 	text.key_down(k);
-	thumbs.key_down(k);
+	images.key_down(k);
 }
 
 function on_metadb_changed(handles, fromhook) {
 	if (fromhook) return;
 	text.metadb_changed();
-	thumbs.metadb_changed();
+	images.metadb_changed();
 }
 
 function on_mouse_lbtn_up(x, y) {
@@ -110,50 +72,50 @@ function on_mouse_lbtn_up(x, y) {
 
 function on_mouse_move(x, y) {
 	text.move(x, y);
-	thumbs.move(x, y);
+	images.move(x, y);
 }
 
 function on_mouse_lbtn_dblclk(x, y) {
-	thumbs.lbtn_dblclk(x, y);
+	images.lbtn_dblclk(x, y);
 }
 
 function on_mouse_rbtn_up(x, y) {
 	if (text.containsXY(x, y)) {
 		return panel.rbtn_up(x, y, text);
 	}
-	return panel.rbtn_up(x, y, thumbs);
+	return panel.rbtn_up(x, y, images);
 }
 
 function on_mouse_wheel(s) {
 	if (utils.IsKeyPressed(VK_CONTROL)) {
-		var value = _clamp(thumbs.properties.ratio.value - (s * 0.05), 0.2, 0.8);
-		if (value != thumbs.properties.ratio.value) {
-			thumbs.properties.ratio.value = value;
+		var value = _clamp(images.properties.ratio.value - (s * 0.05), 0.2, 0.8);
+		if (value != images.properties.ratio.value) {
+			images.properties.ratio.value = value;
 			on_size();
 			window.Repaint();
 		}
 	} else {
-		thumbs.wheel(s);
+		images.wheel(s);
 		text.wheel(s);
 	}
 }
 
 function on_paint(gr) {
 	panel.paint(gr);
-	thumbs.paint(gr);
+	images.paint(gr);
 	text.paint(gr);
 }
 
 function on_playback_dynamic_info_track(type) {
 	if (type == 0) {
 		text.metadb_changed();
-		thumbs.playback_new_track();
+		images.playback_new_track();
 	}
 }
 
 function on_playback_new_track() {
 	panel.item_focus_change();
-	thumbs.playback_new_track();
+	images.playback_new_track();
 }
 
 function on_playback_stop(reason) {
@@ -163,7 +125,7 @@ function on_playback_stop(reason) {
 }
 
 function on_playback_time() {
-	thumbs.playback_time();
+	images.playback_time();
 }
 
 function on_playlist_switch() {
@@ -173,27 +135,27 @@ function on_playlist_switch() {
 function on_size() {
 	panel.size();
 
-	thumbs.x = margin;
-	thumbs.y = margin;
+	images.x = margin;
+	images.y = margin;
 
-	switch (thumbs.properties.layout.value) {
+	switch (images.properties.layout.value) {
 	case 0: // Image left, Text right
-		thumbs.w = panel.w * thumbs.properties.ratio.value;
-		thumbs.h = panel.h - (margin * 2);
+		images.w = panel.w * images.properties.ratio.value;
+		images.h = panel.h - (margin * 2);
 
-		text.x = thumbs.w + (margin * 2);
+		text.x = images.w + (margin * 2);
 		text.y = margin * 2
-		text.w = panel.w - thumbs.w - (margin * 3);
+		text.w = panel.w - images.w - (margin * 3);
 		text.h = panel.h - text.y;
 		break;
 	case 1: // Image top, text bottom
-		thumbs.w = panel.w - (margin * 2);
-		thumbs.h = panel.h * thumbs.properties.ratio.value;
+		images.w = panel.w - (margin * 2);
+		images.h = panel.h * images.properties.ratio.value;
 
 		text.x = margin;
-		text.y = thumbs.h + (margin * 3);
+		text.y = images.h + (margin * 3);
 		text.w = panel.w - (margin * 2);
-		text.h = panel.h - thumbs.h - (margin * 3);
+		text.h = panel.h - images.h - (margin * 3);
 		break;
 	}
 

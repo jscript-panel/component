@@ -118,10 +118,6 @@ function _thumbs() {
 		window.Repaint();
 	}
 
-	this.get_count = function () {
-		return this.using_stub ? 0 : this.images.length;
-	}
-
 	this.get_defaults = function () {
 		var defaults = _jsonParseFile(this.json_file);
 		if (_.isArray(defaults)) return {};
@@ -210,7 +206,7 @@ function _thumbs() {
 			window.Repaint();
 		}
 
-		if (this.properties.source.value == 1 && this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.get_count()) {
+		if (this.properties.source.value == 1 && this.time % 3 == 0 && _getFiles(this.folder, this.exts).length != this.images.length) {
 			this.update();
 		}
 	}, this);
@@ -398,24 +394,17 @@ function _thumbs() {
 
 	this.playback_time = function () {
 		this.counter++;
-		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.get_count() == 0 && !this.history[this.artist]) {
+		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.length == 0 && !this.history[this.artist]) {
 			this.history[this.artist] = true;
 			this.download();
 		}
 	}
 
 	this.rbtn_up = function (x, y) {
-		if (this.is_bio_panel) {
-			panel.m.AppendMenuItem(MF_STRING, 1600, 'Image left, Text right');
-			panel.m.AppendMenuItem(MF_STRING, 1601, 'Image top, Text bottom');
-			panel.m.CheckMenuRadioItem(1600, 1601, this.properties.layout.value + 1600);
-			panel.m.AppendMenuSeparator();
-		} else {
-			panel.m.AppendMenuItem(MF_STRING, 1000, 'Custom folder');
-			panel.m.AppendMenuItem(MF_STRING, 1001, 'Last.fm artist art');
-			panel.m.CheckMenuRadioItem(1000, 1001, this.properties.source.value + 1000);
-			panel.m.AppendMenuSeparator();
-		}
+		panel.m.AppendMenuItem(MF_STRING, 1000, 'Custom folder');
+		panel.m.AppendMenuItem(MF_STRING, 1001, 'Last.fm artist art');
+		panel.m.CheckMenuRadioItem(1000, 1001, this.properties.source.value + 1000);
+		panel.m.AppendMenuSeparator();
 
 		if (this.properties.source.value == 0) { // custom folder
 			panel.m.AppendMenuItem(MF_STRING, 1002, 'Set custom folder...');
@@ -478,9 +467,13 @@ function _thumbs() {
 				panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.default_file)), 1521, 'Clear default');
 				panel.m.AppendMenuSeparator();
 			}
-			panel.m.AppendMenuItem(MF_STRING, 1530, 'Open image');
-			panel.m.AppendMenuItem(EnableMenuIf(this.get_count() > 0), 1531, 'Delete image');
-			panel.m.AppendMenuSeparator();
+
+			if (this.image_index < this.images.length) {
+				panel.m.AppendMenuItem(MF_STRING, 1530, 'Open image');
+				panel.m.AppendMenuItem(EnableMenuIf(), 1531, 'Delete image');
+				panel.m.AppendMenuSeparator();
+			}
+
 			panel.s13.AppendMenuItem(MF_STRING, 1540, 'Opens image in external viewer');
 			panel.s13.AppendMenuItem(MF_STRING, 1541, 'Opens image using fb2k viewer');
 			panel.s13.AppendMenuItem(MF_STRING, 1542, 'Opens containing folder');
@@ -623,8 +616,6 @@ function _thumbs() {
 	}
 
 	this.size = function (f) {
-		if (this.is_bio_panel) return;
-
 		this.nc = f || this.nc;
 		this.close_btn.x = panel.w - this.close_btn.w;
 		this.offset = 0;
@@ -685,7 +676,6 @@ function _thumbs() {
 
 	this.update = function () {
 		this.reset();
-		this.using_stub = false;
 
 		_.forEach(this.get_files(), function (item) {
 			var image = utils.LoadImage(item, this.properties.max_size.value);
@@ -693,14 +683,6 @@ function _thumbs() {
 				this.images.push(image);
 			}
 		}, this);
-
-		if (this.images.length == 0 && this.properties.source.value == 1) {
-			var stub_img = fb.GetAlbumArtStub(4);
-			if (stub_img) {
-				this.using_stub = true;
-				this.images.push(stub_img);
-			}
-		}
 
 		this.blurred_images = new Array(this.images.length);
 
@@ -712,7 +694,7 @@ function _thumbs() {
 	}
 
 	this.wheel = function (s) {
-		if (!this.is_bio_panel && utils.IsKeyPressed(VK_SHIFT) && this.properties.aspect.value == image.centre) {
+		if (utils.IsKeyPressed(VK_SHIFT) && this.properties.aspect.value == image.centre) {
 			var value = _clamp(this.properties.blur_opacity.value + (s * 0.05), 0.2, 0.8);
 			if (value != this.properties.blur_opacity.value) {
 				this.properties.blur_opacity.value = value;
@@ -804,8 +786,6 @@ function _thumbs() {
 	this.image_index = 0;
 	this.time = 0;
 	this.counter = 0;
-	this.using_stub = false;
-	this.is_bio_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'lastfm_bio';
 
 	this.properties = {
 		mode : new _p('2K3.THUMBS.MODE', 4), // 0 grid 1 left 2 right 3 top 4 bottom 5 off
@@ -820,17 +800,8 @@ function _thumbs() {
 		size_limit : new _p('2K3.THUMBS.SIZE.LIMIT', 64 * 1024 * 1024),
 		double_click_mode : new _p('2K3.THUMBS.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer
 		max_size : new _p('2K3.THUMBS.MAX.SIZE', 1024),
+		blur_opacity : new _p('2K3.THUMBS.BLUR.OPACITY', 0.5),
 	};
-
-	if (this.is_bio_panel) {
-		this.properties.mode.value = 5;
-		this.properties.source.value = 1;
-		this.properties.layout = new _p('2K3.THUMBS.LAYOUT', 0); // 0 horizontal, 1 vertical
-		this.properties.ratio = new _p('2K3.THUMBS.RATIO', 0.5);
-		this.properties.blur_opacity = new _p('2K3.BIO.BLUR.OPACITY', 1);
-	} else {
-		this.properties.blur_opacity = new _p('2K3.THUMBS.BLUR.OPACITY', 0.5);
-	}
 
 	this.headers = JSON.stringify({
 		'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',

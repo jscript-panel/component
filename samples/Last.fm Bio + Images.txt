@@ -7,18 +7,18 @@
 // @import "%fb2k_component_path%samples\js\panel.js"
 // @import "%fb2k_component_path%samples\js\lastfm.js"
 // @import "%fb2k_component_path%samples\js\images.js"
-// @import "%fb2k_component_path%samples\js\text.js"
+// @import "%fb2k_component_path%samples\js\lastfm_bio.js"
 // ==/PREPROCESSOR==
 
 var margin = _scale(12);
 
 var panel = new _panel();
 var lastfm = new _lastfm();
-var text = new _text('lastfm_bio', 0, 0, 0, 0);
+var lastfm_bio = new _lastfm_bio(0, 0, 0, 0);
 var images = new _images();
 var white = RGB(255, 255, 255);
 
-text.paint = function (gr) {
+lastfm_bio.paint = function (gr) {
 	var y = images.properties.layout.value == 0 ? margin : this.y - margin;
 	gr.WriteText2(this.header_text(), panel.fonts.title, white, this.x, y, this.w, TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
@@ -37,7 +37,7 @@ function on_colours_changed() {
 }
 
 function on_download_file_done(path, success, error_text) {
-	text.download_file_done(path, success, error_text);
+	lastfm_bio.download_file_done(path, success, error_text);
 }
 
 function on_font_changed() {
@@ -47,7 +47,7 @@ function on_font_changed() {
 
 function on_http_request_done(task_id, success, response_text) {
 	images.http_request_done(task_id, success, response_text);
-	text.http_request_done(task_id, success, response_text);
+	lastfm_bio.http_request_done(task_id, success, response_text);
 }
 
 function on_item_focus_change() {
@@ -56,22 +56,22 @@ function on_item_focus_change() {
 }
 
 function on_key_down(k) {
-	text.key_down(k);
+	lastfm_bio.key_down(k);
 	images.key_down(k);
 }
 
 function on_metadb_changed(handles, fromhook) {
 	if (fromhook) return;
-	text.metadb_changed();
+	lastfm_bio.metadb_changed();
 	images.metadb_changed();
 }
 
 function on_mouse_lbtn_up(x, y) {
-	text.lbtn_up(x, y);
+	lastfm_bio.lbtn_up(x, y);
 }
 
 function on_mouse_move(x, y) {
-	text.move(x, y);
+	lastfm_bio.move(x, y);
 	images.move(x, y);
 }
 
@@ -80,8 +80,8 @@ function on_mouse_lbtn_dblclk(x, y) {
 }
 
 function on_mouse_rbtn_up(x, y) {
-	if (text.containsXY(x, y)) {
-		return panel.rbtn_up(x, y, text);
+	if (lastfm_bio.containsXY(x, y)) {
+		return panel.rbtn_up(x, y, lastfm_bio);
 	}
 	return panel.rbtn_up(x, y, images);
 }
@@ -96,19 +96,19 @@ function on_mouse_wheel(s) {
 		}
 	} else {
 		images.wheel(s);
-		text.wheel(s);
+		lastfm_bio.wheel(s);
 	}
 }
 
 function on_paint(gr) {
 	panel.paint(gr);
 	images.paint(gr);
-	text.paint(gr);
+	lastfm_bio.paint(gr);
 }
 
 function on_playback_dynamic_info_track(type) {
 	if (type == 0) {
-		text.metadb_changed();
+		lastfm_bio.metadb_changed();
 		images.playback_new_track();
 	}
 }
@@ -143,21 +143,21 @@ function on_size() {
 		images.w = panel.w * images.properties.ratio.value;
 		images.h = panel.h - (margin * 2);
 
-		text.x = images.w + (margin * 2);
-		text.y = margin * 2
-		text.w = panel.w - images.w - (margin * 3);
-		text.h = panel.h - text.y;
+		lastfm_bio.x = images.w + (margin * 2);
+		lastfm_bio.y = margin * 2
+		lastfm_bio.w = panel.w - images.w - (margin * 3);
+		lastfm_bio.h = panel.h - lastfm_bio.y;
 		break;
 	case 1: // Image top, text bottom
 		images.w = panel.w - (margin * 2);
 		images.h = panel.h * images.properties.ratio.value;
 
-		text.x = margin;
-		text.y = images.h + (margin * 3);
-		text.w = panel.w - (margin * 2);
-		text.h = panel.h - images.h - (margin * 3);
+		lastfm_bio.x = margin;
+		lastfm_bio.y = images.h + (margin * 3);
+		lastfm_bio.w = panel.w - (margin * 2);
+		lastfm_bio.h = panel.h - images.h - (margin * 3);
 		break;
 	}
 
-	text.size();
+	lastfm_bio.size();
 }

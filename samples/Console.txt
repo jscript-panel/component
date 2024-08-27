@@ -5,20 +5,20 @@
 // @import "%fb2k_component_path%samples\js\lodash.min.js"
 // @import "%fb2k_component_path%samples\js\common.js"
 // @import "%fb2k_component_path%samples\js\panel.js"
-// @import "%fb2k_component_path%samples\js\text.js"
+// @import "%fb2k_component_path%samples\js\console.js"
 // ==/PREPROCESSOR==
 
 var panel = new _panel();
-var text = new _text('console', LM, TM, 0, 0);
+var con = new _console(LM, TM, 0, 0);
 
 function on_colours_changed() {
 	panel.colours_changed();
-	text.console_refresh();
+	con.console_refresh();
 	window.Repaint();
 }
 
 function on_console_refresh() {
-	text.console_refresh();
+	con.console_refresh();
 	window.Repaint();
 }
 
@@ -28,34 +28,34 @@ function on_font_changed() {
 }
 
 function on_key_down(k) {
-	text.key_down(k);
+	con.key_down(k);
 }
 
 function on_mouse_lbtn_up(x, y) {
-	text.lbtn_up(x, y);
+	con.lbtn_up(x, y);
 }
 
 function on_mouse_move(x, y) {
-	text.move(x, y);
+	con.move(x, y);
 }
 
 function on_mouse_rbtn_up(x, y) {
-	return panel.rbtn_up(x, y, text);
+	return panel.rbtn_up(x, y, con);
 }
 
 function on_mouse_wheel(s) {
-	text.wheel(s);
+	con.wheel(s);
 }
 
 function on_paint(gr) {
 	panel.paint(gr);
-	panel.draw_header(gr, text.header_text());
-	text.paint(gr);
+	panel.draw_header(gr, con.header_text());
+	con.paint(gr);
 }
 
 function on_size() {
 	panel.size();
-	text.w = panel.w - (LM * 2);
-	text.h = panel.h - TM;
-	text.size();
+	con.w = panel.w - (LM * 2);
+	con.h = panel.h - TM;
+	con.size();
 }

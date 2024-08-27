@@ -388,7 +388,7 @@ function _images() {
 	this.image_index = 0;
 	this.time = 0;
 	this.counter = 0;
-	this.is_bio_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'lastfm_bio';
+	this.is_bio_panel = panel.text_objects.length == 1 && panel.text_objects[0].name == 'lastfm_bio';
 
 	this.properties = {
 		source : new _p('2K3.IMAGES.SOURCE', 0), // 0 custom folder 1 last.fm

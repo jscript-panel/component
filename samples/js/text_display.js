@@ -47,8 +47,9 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			_drawImage(gr, albumart.img, albumart.x, albumart.y, albumart.w, albumart.h, image.centre);
 		}
 
-		if (!this.text_layout) return;
-		gr.WriteTextLayout(this.text_layout, this.default_colour, this.x, this.y, this.w, this.h, this.offset);
+		if (this.text_layout) {
+			gr.WriteTextLayout(this.text_layout, this.default_colour, this.x, this.y, this.w, this.h, this.offset);
+		}
 	}
 
 	this.rbtn_up = function (x, y) {

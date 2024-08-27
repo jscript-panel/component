@@ -118,10 +118,8 @@ function _albumart(x, y, w, h) {
 			}
 		}
 
-		if (this.img) this.img.Dispose();
-		if (this.blur_img) this.blur_img.Dispose();
-		this.img = this.blur_img = null;
-		this.tooltip = this.path = '';
+		this.reset_images();
+
 		if (img) {
 			this.img = img;
 			this.blur_it();
@@ -156,6 +154,19 @@ function _albumart(x, y, w, h) {
 
 	this.paint = function (gr) {
 		_drawImage(gr, this.img, this.x, this.y, this.w, this.h, this.properties.aspect.value);
+	}
+
+	this.reset_images = function () {
+		if (this.img) {
+			this.img.Dispose();
+		}
+
+		if (this.blur_img) {
+			this.blur_img.Dispose();
+		}
+
+		this.img = this.blur_img = null;
+		this.tooltip = this.path = '';
 	}
 
 	this.rbtn_up = function (x, y) {
@@ -277,7 +288,7 @@ function _albumart(x, y, w, h) {
 		return false;
 	}
 
-	this.is_review_panel = panel.text_objects.length == 1 && panel.text_objects[0].mode == 'allmusic';
+	this.is_review_panel = panel.text_objects.length == 1 && panel.text_objects[0].name == 'allmusic';
 
 	this.x = x;
 	this.y = y;
@@ -293,6 +304,7 @@ function _albumart(x, y, w, h) {
 	this.hover = false;
 	this.ids = ['Front', 'Back', 'Disc', 'Icon', 'Artist'];
 	this.help_text = utils.ReadUTF8(fb.ComponentPath + 'samples\\text\\albumart_help');
+
 	this.properties = {
 		aspect : new _p('2K3.ARTREADER.ASPECT', image.centre),
 		id : new _p('2K3.ARTREADER.ID', 0),

@@ -19,6 +19,30 @@ function _albumart(x, y, w, h) {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
 
+	this.get_custom = function (id, type) {
+		var img = null;
+
+		switch (type) {
+		case 0:
+			img = panel.metadb.GetAlbumArtEmbedded(id);
+			break;
+		case 1:
+			img = panel.metadb.GetAlbumArt(id, false);
+			break;
+		case 2:
+			img = fb.GetAlbumArtStub(id);
+			break;
+		}
+
+		if (img) {
+			// if valid, store the id/type for ShowAlbumArtViewer2
+			this.custom_id = id;
+			this.custom_type = type;
+		}
+
+		return img;
+	}
+
 	this.key_down = function (k) {
 		switch (k) {
 		case VK_LEFT:
@@ -48,6 +72,10 @@ function _albumart(x, y, w, h) {
 				case 1:
 					if (this.properties.mode.value == 0) {
 						panel.metadb.ShowAlbumArtViewer(this.properties.id.value);
+					} else {
+						if (this.custom_id > -1 && this.custom_type > -1) {
+							panel.metadb.ShowAlbumArtViewer2(this.custom_id, this.custom_type);
+						}
 					}
 					break;
 				case 2:
@@ -62,59 +90,27 @@ function _albumart(x, y, w, h) {
 
 	this.metadb_changed = function () {
 		var img = null;
+		this.custom_id = -1;
+		this.custom_type = -1;
 
 		if (panel.metadb) {
 			if (this.properties.mode.value == 0) {
 				img = panel.metadb.GetAlbumArt(this.properties.id.value);
 			} else {
-				_stringToArray(this.properties.edit.value, '\r\n').forEach(function (item) {
+				_stringToArray(this.properties.edit.value, '\r\n').forEach((function (item) {
 					if (img)
 						return;
 
-					switch (item) {
-					case 'front_embedded':
-						img = panel.metadb.GetAlbumArtEmbedded(0);
-						break;
-					case 'front_default':
-						img = panel.metadb.GetAlbumArt(0, false);
-						break;
-					case 'front_stub':
-						img = fb.GetAlbumArtStub(0);
-						break;
-					case 'back_embedded':
-						img = panel.metadb.GetAlbumArtEmbedded(1);
-						break;
-					case 'back_default':
-						img = panel.metadb.GetAlbumArt(1, false);
-						break;
-					case 'back_stub':
-						img = fb.GetAlbumArtStub(1);
-						break;
-					case 'disc_embedded':
-						img = panel.metadb.GetAlbumArtEmbedded(2);
-						break;
-					case 'disc_default':
-						img = panel.metadb.GetAlbumArt(2, false);
-						break;
-					case 'disc_stub':
-						img = fb.GetAlbumArtStub(2);
-						break;
-					case 'artist_embedded':
-						img = panel.metadb.GetAlbumArtEmbedded(4);
-						break;
-					case 'artist_default':
-						img = panel.metadb.GetAlbumArt(4, false);
-						break;
-					case 'artist_stub':
-						img = fb.GetAlbumArtStub(4);
-						break;
+					var id_type = _stringToArray(item, '_');
+					if (id_type.length == 2) {
+						var id = this.custom_ids.indexOf(id_type[0]);
+						var type = this.custom_types.indexOf(id_type[1]);
 
-					// no stub or default
-					case 'icon_embedded':
-						img = panel.metadb.GetAlbumArtEmbedded(3);
-						break;
+						if (id > -1 && type > -1) {
+							img = this.get_custom(id, type);
+						}
 					}
-				});
+				}).bind(this));
 			}
 		}
 
@@ -303,6 +299,10 @@ function _albumart(x, y, w, h) {
 	this.path = null;
 	this.hover = false;
 	this.ids = ['Front', 'Back', 'Disc', 'Icon', 'Artist'];
+	this.custom_ids = ['front', 'back', 'disc', 'icon', 'artist'];
+	this.custom_types = ['embedded', 'default', 'stub'];
+	this.custom_id = -1;
+	this.custom_type = -1;
 	this.help_text = utils.ReadUTF8(fb.ComponentPath + 'samples\\text\\albumart_help');
 
 	this.properties = {

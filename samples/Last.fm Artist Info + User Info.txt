@@ -5,7 +5,7 @@
 // @import "%fb2k_component_path%samples\js\lodash.min.js"
 // @import "%fb2k_component_path%samples\js\common.js"
 // @import "%fb2k_component_path%samples\js\panel.js"
-// @import "%fb2k_component_path%samples\js\list.js"
+// @import "%fb2k_component_path%samples\js\lastfm_info.js"
 // @import "%fb2k_component_path%samples\js\lastfm.js"
 // ==/PREPROCESSOR==
 
@@ -13,7 +13,7 @@
 
 var panel = new _panel();
 var lastfm = new _lastfm();
-var list = new _list('lastfm_info', LM, TM, 0, 0);
+var lastfm_info = new _lastfm_info(LM, TM, 0, 0);
 
 panel.item_focus_change();
 
@@ -28,7 +28,7 @@ function on_font_changed() {
 }
 
 function on_http_request_done(task_id, success, response_text) {
-	list.http_request_done(task_id, success, response_text);
+	lastfm_info.http_request_done(task_id, success, response_text);
 }
 
 function on_item_focus_change() {
@@ -37,28 +37,28 @@ function on_item_focus_change() {
 }
 
 function on_key_down(k) {
-	list.key_down(k);
+	lastfm_info.key_down(k);
 }
 
 function on_metadb_changed(handles, fromhook) {
 	if (fromhook) return;
-	list.metadb_changed();
+	lastfm_info.metadb_changed();
 }
 
 function on_mouse_lbtn_up(x, y) {
-	list.lbtn_up(x, y);
+	lastfm_info.lbtn_up(x, y);
 }
 
 function on_mouse_move(x, y) {
-	list.move(x, y);
+	lastfm_info.move(x, y);
 }
 
 function on_mouse_rbtn_up(x, y) {
-	return panel.rbtn_up(x, y, list);
+	return panel.rbtn_up(x, y, lastfm_info);
 }
 
 function on_mouse_wheel(s) {
-	list.wheel(s);
+	lastfm_info.wheel(s);
 }
 
 function on_notify_data(name, data) {
@@ -67,16 +67,18 @@ function on_notify_data(name, data) {
 
 function on_paint(gr) {
 	panel.paint(gr);
-	panel.draw_header(gr, list.header_text());
-	list.paint(gr);
+	panel.draw_header(gr, lastfm_info.header_text());
+	lastfm_info.paint(gr);
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 0) list.metadb_changed();
+	if (type == 0) {
+		lastfm_info.metadb_changed();
+	}
 }
 
 function on_playback_new_track() {
-	list.playback_new_track();
+	lastfm_info.playback_new_track();
 }
 
 function on_playback_stop(reason) {
@@ -86,7 +88,7 @@ function on_playback_stop(reason) {
 }
 
 function on_playback_time() {
-	list.playback_time();
+	lastfm_info.playback_time();
 }
 
 function on_playlist_switch() {
@@ -95,7 +97,7 @@ function on_playlist_switch() {
 
 function on_size() {
 	panel.size();
-	list.w = panel.w - (LM * 2);
-	list.h = panel.h - TM;
-	list.size();
+	lastfm_info.w = panel.w - (LM * 2);
+	lastfm_info.h = panel.h - TM;
+	lastfm_info.size();
 }

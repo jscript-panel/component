@@ -428,6 +428,12 @@ var AlbumArtId = {
 	artist : 4,
 };
 
+var AlbumArtType = {
+	embedded : 0,
+	default : 1,
+	stub : 2,
+}
+
 var ColourTypeCUI = {
 	text : 0,
 	selection_text : 1,

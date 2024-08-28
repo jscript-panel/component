@@ -23,13 +23,13 @@ function _albumart(x, y, w, h) {
 		var img = null;
 
 		switch (type) {
-		case 0:
+		case AlbumArtType.embedded:
 			img = panel.metadb.GetAlbumArtEmbedded(id);
 			break;
-		case 1:
+		case AlbumArtType.default:
 			img = panel.metadb.GetAlbumArt(id, false);
 			break;
-		case 2:
+		case AlbumArtType.stub:
 			img = fb.GetAlbumArtStub(id);
 			break;
 		}

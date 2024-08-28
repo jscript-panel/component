@@ -44,7 +44,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 		}
 
 		if (this.properties.layout.value > 0) {
-			_drawImage(gr, albumart.img, albumart.x, albumart.y, albumart.w, albumart.h, image.centre);
+			albumart.paint(gr);
 		}
 
 		if (this.text_layout) {
@@ -53,6 +53,10 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 	}
 
 	this.rbtn_up = function (x, y) {
+		if (this.properties.layout.value > 0) {
+			panel.m.AppendMenuItem(MF_GRAYED, 0, 'Text display options');
+		}
+
 		panel.m.AppendMenuItem(MF_STRING, 1200, 'Custom text...');
 		panel.m.AppendMenuItem(CheckMenuIf(this.properties.per_second.enabled), 1201, 'Per-second updates');
 		panel.m.AppendMenuSeparator();
@@ -66,36 +70,35 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			panel.m.AppendMenuItem(MF_STRING, 1206, 'Album Art left, Text right');
 			panel.m.CheckMenuRadioItem(1204, 1206, this.properties.layout.value + 1204);
 			panel.m.AppendMenuSeparator();
-		}
-
-		albumart.ids.forEach(function (item, i) {
-			panel.m.AppendMenuItem(MF_STRING, i + 1300, item);
-		});
-		panel.m.CheckMenuRadioItem(1300, 1304, albumart.properties.id.value + 1300);
-		panel.m.AppendMenuSeparator();
-
-		if (!this.buttons_or_rating) {
 			panel.m.AppendMenuItem(CheckMenuIf(this.properties.albumart.enabled), 1207, 'Album art background');
 			panel.m.AppendMenuItem(GetMenuFlags(this.properties.albumart.enabled, this.properties.albumart_blur.enabled), 1208, 'Enable blur effect');
 			panel.m.AppendMenuSeparator();
 		}
 
 		if (this.properties.layout.value != 1) {
-			panel.s10.AppendMenuItem(MF_STRING, 1210, 'Left');
-			panel.s10.AppendMenuItem(MF_STRING, 1211, 'Right');
-			panel.s10.AppendMenuItem(MF_STRING, 1212, 'Centre');
-			panel.s10.CheckMenuRadioItem(1210, 1212, this.properties.halign.value + 1210);
-			panel.s10.AppendTo(panel.m, MF_STRING, 'Text alignment (horizontal)');
-			panel.s11.AppendMenuItem(MF_STRING, 1220, 'Top');
-			panel.s11.AppendMenuItem(MF_STRING, 1221, 'Bottom');
-			panel.s11.AppendMenuItem(MF_STRING, 1222, 'Centre');
-			panel.s11.CheckMenuRadioItem(1220, 1222, this.properties.valign.value + 1220);
-			panel.s11.AppendTo(panel.m, MF_STRING, 'Text alignment (vertical)');
+			// s10 used by album art
+			panel.s11.AppendMenuItem(MF_STRING, 1210, 'Left');
+			panel.s11.AppendMenuItem(MF_STRING, 1211, 'Right');
+			panel.s11.AppendMenuItem(MF_STRING, 1212, 'Centre');
+			panel.s11.CheckMenuRadioItem(1210, 1212, this.properties.halign.value + 1210);
+			panel.s11.AppendTo(panel.m, MF_STRING, 'Text alignment (horizontal)');
+			panel.s12.AppendMenuItem(MF_STRING, 1220, 'Top');
+			panel.s12.AppendMenuItem(MF_STRING, 1221, 'Bottom');
+			panel.s12.AppendMenuItem(MF_STRING, 1222, 'Centre');
+			panel.s12.CheckMenuRadioItem(1220, 1222, this.properties.valign.value + 1220);
+			panel.s12.AppendTo(panel.m, MF_STRING, 'Text alignment (vertical)');
+
 			if (this.properties.layout.value == 0)
 			{
 				panel.m.AppendMenuItem(MF_STRING, 1230, 'Margin...');
 			}
+
 			panel.m.AppendMenuSeparator();
+		}
+
+		if (this.properties.layout.value > 0) {
+			panel.m.AppendMenuItem(MF_GRAYED, 0, 'Album art options');
+			albumart.rbtn_up(x, y);
 		}
 	}
 
@@ -153,18 +156,14 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			if (tmp != this.properties.margin.value) {
 				this.properties.margin.value = tmp;
 				this.size();
-				window.Repaint();
 			}
 			break;
-		case 1300:
-		case 1301:
-		case 1302:
-		case 1303:
-		case 1304:
-			albumart.properties.id.value = idx - 1300;
-			albumart.metadb_changed();
+		default:
+			albumart.rbtn_up_done(idx);
 			break;
 		}
+
+		window.Repaint();
 	}
 
 	this.refresh = function (force) {

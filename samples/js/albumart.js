@@ -167,45 +167,45 @@ function _albumart(x, y, w, h) {
 
 	this.rbtn_up = function (x, y) {
 		if (this.is_review_panel) {
-			panel.m.AppendMenuItem(MF_STRING, 1600, 'Album Art left, Text right');
-			panel.m.AppendMenuItem(MF_STRING, 1601, 'Album Art top, Text bottom');
-			panel.m.CheckMenuRadioItem(1600, 1601, this.properties.layout.value + 1600);
+			panel.m.AppendMenuItem(MF_STRING, 1000, 'Album Art left, Text right');
+			panel.m.AppendMenuItem(MF_STRING, 1001, 'Album Art top, Text bottom');
+			panel.m.CheckMenuRadioItem(1000, 1001, this.properties.layout.value + 1000);
 			panel.m.AppendMenuSeparator();
 		}
 
-		panel.m.AppendMenuItem(MF_STRING, 1000, 'Refresh');
+		panel.m.AppendMenuItem(MF_STRING, 1002, 'Refresh');
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(MF_GRAYED, 0, 'Mode');
-		panel.m.AppendMenuItem(MF_STRING, 1100, 'Default');
-		panel.m.AppendMenuItem(MF_STRING, 1101, 'Custom');
+		panel.m.AppendMenuItem(MF_STRING, 1010, 'Default');
+		panel.m.AppendMenuItem(MF_STRING, 1011, 'Custom');
 		panel.m.AppendMenuSeparator();
-		panel.m.CheckMenuRadioItem(1100, 1101, this.properties.mode.value + 1100);
+		panel.m.CheckMenuRadioItem(1010, 1011, this.properties.mode.value + 1010);
 
 		if (this.properties.mode.value == 0) {
 			this.ids.forEach(function (item, i) {
-				panel.m.AppendMenuItem(MF_STRING, i + 1010, item);
+				panel.m.AppendMenuItem(MF_STRING, i + 1020, item);
 			});
-			panel.m.CheckMenuRadioItem(1010, 1014, this.properties.id.value + 1010);
+			panel.m.CheckMenuRadioItem(1020, 1024, this.properties.id.value + 1020);
 		} else {
-			panel.m.AppendMenuItem(MF_STRING, 1110, 'Edit...');
-			panel.m.AppendMenuItem(MF_STRING, 1111, 'Help');
+			panel.m.AppendMenuItem(MF_STRING, 1030, 'Edit...');
+			panel.m.AppendMenuItem(MF_STRING, 1031, 'Help');
 		}
 
 		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(MF_STRING, 1020, 'Crop (focus on centre)');
-		panel.m.AppendMenuItem(MF_STRING, 1021, 'Crop (focus on top)');
-		panel.m.AppendMenuItem(MF_STRING, 1022, 'Stretch');
-		panel.m.AppendMenuItem(MF_STRING, 1023, 'Centre');
-		panel.m.CheckMenuRadioItem(1020, 1023, this.properties.aspect.value + 1020);
+		panel.m.AppendMenuItem(MF_STRING, 1040, 'Crop (focus on centre)');
+		panel.m.AppendMenuItem(MF_STRING, 1041, 'Crop (focus on top)');
+		panel.m.AppendMenuItem(MF_STRING, 1042, 'Stretch');
+		panel.m.AppendMenuItem(MF_STRING, 1043, 'Centre');
+		panel.m.CheckMenuRadioItem(1040, 1043, this.properties.aspect.value + 1040);
 		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.path)), 1030, 'Open containing folder');
+		panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.path)), 1050, 'Open containing folder');
 		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(EnableMenuIf(panel.metadb), 1040, 'Google image search');
+		panel.m.AppendMenuItem(EnableMenuIf(panel.metadb), 1060, 'Google image search');
 		panel.m.AppendMenuSeparator();
-		panel.s10.AppendMenuItem(MF_STRING, 1050, 'Opens image in external viewer');
-		panel.s10.AppendMenuItem(MF_STRING, 1051, 'Opens image using fb2k viewer');
-		panel.s10.AppendMenuItem(MF_STRING, 1052, 'Opens containing folder');
-		panel.s10.CheckMenuRadioItem(1050, 1052, this.properties.double_click_mode.value + 1050);
+		panel.s10.AppendMenuItem(MF_STRING, 1070, 'Opens image in external viewer');
+		panel.s10.AppendMenuItem(MF_STRING, 1071, 'Opens image using fb2k viewer');
+		panel.s10.AppendMenuItem(MF_STRING, 1072, 'Opens containing folder');
+		panel.s10.CheckMenuRadioItem(1070, 1072, this.properties.double_click_mode.value + 1070);
 		panel.s10.AppendTo(panel.m, MF_STRING, 'Double click');
 		panel.m.AppendMenuSeparator();
 	}
@@ -213,40 +213,28 @@ function _albumart(x, y, w, h) {
 	this.rbtn_up_done = function (idx) {
 		switch (idx) {
 		case 1000:
+		case 1001:
+			this.properties.layout.value = idx - 1000;
+			on_size();
+			window.Repaint();
+			break;
+		case 1002:
 			this.metadb_changed();
 			break;
 		case 1010:
 		case 1011:
-		case 1012:
-		case 1013:
-		case 1014:
-			this.properties.id.value = idx - 1010;
+			this.properties.mode.value = idx - 1010;
 			this.metadb_changed();
 			break;
 		case 1020:
 		case 1021:
 		case 1022:
 		case 1023:
-			this.properties.aspect.value = idx - 1020;
-			window.RepaintRect(this.x, this.y, this.w, this.h);
-			break;
-		case 1030:
-			_explorer(this.path);
-			break;
-		case 1040:
-			utils.Run('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(panel.tf('%album artist%[ %album%]')));
-			break;
-		case 1050:
-		case 1051:
-		case 1052:
-			this.properties.double_click_mode.value = idx - 1050;
-			break;
-		case 1100:
-		case 1101:
-			this.properties.mode.value = idx - 1100;
+		case 1024:
+			this.properties.id.value = idx - 1020;
 			this.metadb_changed();
 			break;
-		case 1110:
+		case 1030:
 			try {
 				var tmp = utils.TextBox('Enter image types here. Each one will checked in order until a valid image is found. See Help.', window.Name, this.properties.edit.value);
 				if (tmp != this.properties.edit.value) {
@@ -255,14 +243,26 @@ function _albumart(x, y, w, h) {
 				}
 			} catch (e) {}
 			break;
-		case 1111:
+		case 1031:
 			utils.ShowPopupMessage(this.help_text, window.Name);
 			break;
-		case 1600:
-		case 1601:
-			this.properties.layout.value = idx - 1600;
-			on_size();
-			window.Repaint();
+		case 1040:
+		case 1041:
+		case 1042:
+		case 1043:
+			this.properties.aspect.value = idx - 1040;
+			window.RepaintRect(this.x, this.y, this.w, this.h);
+			break;
+		case 1050:
+			_explorer(this.path);
+			break;
+		case 1060:
+			utils.Run('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(panel.tf('%album artist%[ %album%]')));
+			break;
+		case 1070:
+		case 1071:
+		case 1072:
+			this.properties.double_click_mode.value = idx - 1070;
 			break;
 		}
 	}

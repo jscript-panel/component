@@ -69,9 +69,7 @@ function on_metadb_changed(handles, fromhook) {
 }
 
 function on_mouse_lbtn_dblclk(x, y) {
-	if (albumart.img && albumart.containsXY(x, y)) {
-		panel.metadb.ShowAlbumArtViewer();
-	}
+	albumart.lbtn_dblclk(x, y);
 }
 
 function on_mouse_lbtn_down(x, y) {

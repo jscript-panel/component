@@ -343,6 +343,7 @@ function _properties(mode, x, y, w, h) {
 	this.index = 0;
 	this.offset = 0;
 	this.count = 0;
+	this.data = [];
 	this.clickable_text_x = 0;
 	this.filename = '';
 	this.properties_value_x = 0;

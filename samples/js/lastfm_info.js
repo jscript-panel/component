@@ -403,6 +403,7 @@ function _lastfm_info(x, y, w, h) {
 	this.index = 0;
 	this.offset = 0;
 	this.count = 0;
+	this.data = [];
 	this.clickable_text_x = 0;
 	this.spacer_w = 0;
 	this.artist = '';

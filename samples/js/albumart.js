@@ -103,8 +103,8 @@ function _albumart(x, y, w, h) {
 
 					var id_type = _stringToArray(item, '_');
 					if (id_type.length == 2) {
-						var id = this.custom_ids.indexOf(id_type[0]);
-						var type = this.custom_types.indexOf(id_type[1]);
+						var id = this.ids.indexOf(id_type[0]);
+						var type = this.types.indexOf(id_type[1]);
 
 						if (id > -1 && type > -1) {
 							img = this.get_custom(id, type);
@@ -183,7 +183,7 @@ function _albumart(x, y, w, h) {
 
 		if (this.properties.mode.value == 0) {
 			this.ids.forEach(function (item, i) {
-				panel.m.AppendMenuItem(MF_STRING, i + 1020, item);
+				panel.m.AppendMenuItem(MF_STRING, i + 1020, _.capitalize(item));
 			});
 			panel.m.CheckMenuRadioItem(1020, 1024, this.properties.id.value + 1020);
 		} else {
@@ -298,9 +298,8 @@ function _albumart(x, y, w, h) {
 	this.image_index = 0;
 	this.path = null;
 	this.hover = false;
-	this.ids = ['Front', 'Back', 'Disc', 'Icon', 'Artist'];
-	this.custom_ids = ['front', 'back', 'disc', 'icon', 'artist'];
-	this.custom_types = ['embedded', 'default', 'stub'];
+	this.ids =  ['front', 'back', 'disc', 'icon', 'artist'];
+	this.types = ['embedded', 'default', 'stub'];
 	this.custom_id = -1;
 	this.custom_type = -1;
 	this.help_text = utils.ReadUTF8(fb.ComponentPath + 'samples\\text\\albumart_help');

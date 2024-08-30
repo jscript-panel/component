@@ -117,10 +117,6 @@ function _console(x, y, w, h) {
 		}
 	}
 
-	this.reset = function () {
-		this.text = '';
-	}
-
 	this.size = function () {
 		this.ha = this.h - _scale(24);
 		this.up_btn.x = this.x + Math.round((this.w - _scale(12)) / 2);

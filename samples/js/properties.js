@@ -173,7 +173,13 @@ function _properties(mode, x, y, w, h) {
 	}
 
 	this.metadb_changed = function () {
-		this.update();
+		if (panel.metadb) {
+			this.update();
+		} else {
+			this.count = 0;
+			this.data = [];
+			window.Repaint();
+		}
 	}
 
 	this.move = function (x, y) {
@@ -255,12 +261,6 @@ function _properties(mode, x, y, w, h) {
 			_explorer(this.filename);
 			break;
 		}
-	}
-
-	this.reset = function () {
-		this.count = 0;
-		this.data = [];
-		this.metadb_changed();
 	}
 
 	this.size = function (update) {

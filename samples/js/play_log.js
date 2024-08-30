@@ -141,10 +141,6 @@ function _play_log(x, y, w, h) {
 		this.text = utils.ReadUTF8(this.filename);
 	}
 
-	this.reset = function () {
-		this.text = this.filename = '';
-	}
-
 	this.size = function () {
 		this.ha = this.h - _scale(24);
 		this.up_btn.x = this.x + Math.round((this.w - _scale(12)) / 2);

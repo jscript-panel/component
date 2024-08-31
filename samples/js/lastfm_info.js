@@ -13,6 +13,9 @@ function _lastfm_info(x, y, w, h) {
 	}
 
 	this.get = function () {
+		if (lastfm.api_key.empty())
+			return;
+
 		switch (this.properties.mode.value) {
 		case 0:
 			if (!_tagged(this.artist)) {
@@ -147,6 +150,11 @@ function _lastfm_info(x, y, w, h) {
 	}
 
 	this.paint = function (gr) {
+		if (lastfm.api_key.empty()) {
+			this.draw_row(gr, 'Use the right click menu to set your own Last.fm API key.', panel.colours.text, this.x, this.y + _scale(12), this.w, panel.row_height);
+			return;
+		}
+
 		if (this.count == 0)
 			return;
 
@@ -222,6 +230,7 @@ function _lastfm_info(x, y, w, h) {
 		}
 
 		panel.m.AppendMenuItem(MF_STRING, 1150, 'Last.fm username...');
+		panel.m.AppendMenuItem(MF_STRING, 1151, 'Last.fm API key...');
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.filename)), 1999, 'Open containing folder');
 		panel.m.AppendMenuSeparator();
@@ -262,6 +271,9 @@ function _lastfm_info(x, y, w, h) {
 			break;
 		case 1150:
 			lastfm.update_username();
+			break;
+		case 1151:
+			lastfm.update_api_key();
 			break;
 		case 1999:
 			_explorer(this.filename);

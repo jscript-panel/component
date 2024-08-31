@@ -183,7 +183,9 @@ function _lastfm_bio(x, y, w, h) {
 	}
 
 	this.paint = function (gr) {
-		if (this.text_layout) {
+		if (lastfm.api_key.empty()) {
+			gr.WriteTextSimple('Use the right click menu to set your own Last.fm API key.', panel.fonts.normal, panel.colours.text, this.x, this.y + _scale(12), this.w, this.h);
+		} else if (this.text_layout) {
 			gr.WriteTextLayout(this.text_layout, panel.colours.text, this.x, this.y + _scale(12), this.w, this.ha, this.offset);
 			this.up_btn.paint(gr, panel.colours.text);
 			this.down_btn.paint(gr, panel.colours.text);
@@ -253,6 +255,8 @@ function _lastfm_bio(x, y, w, h) {
 	this.rbtn_up = function (x, y) {
 		panel.m.AppendMenuItem(EnableMenuIf(panel.metadb), 1100, 'Force update');
 		panel.m.AppendMenuSeparator();
+		panel.m.AppendMenuItem(MF_STRING, 1101, 'Last.fm API key...');
+		panel.m.AppendMenuSeparator();
 		this.langs.forEach(function (item, i) {
 			panel.s10.AppendMenuItem(MF_STRING, i + 1110, item);
 		});
@@ -274,6 +278,9 @@ function _lastfm_bio(x, y, w, h) {
 		case 1100:
 			this.get();
 			this.get_extra();
+			break;
+		case 1101:
+			lastfm.update_api_key();
 			break;
 		case 1110:
 		case 1111:

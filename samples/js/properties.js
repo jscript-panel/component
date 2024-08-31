@@ -1,4 +1,18 @@
 function _properties(mode, x, y, w, h) {
+	this.add_location = function () {
+		var names = ['FILE NAME', 'FOLDER NAME', 'FILE PATH', 'SUBSONG INDEX', 'FILE SIZE', 'FILE CREATED', 'LAST MODIFIED'];
+		var values = [panel.tf('%filename_ext%'), panel.tf('$directory_path(%path%)'), this.filename, panel.metadb.SubSong, panel.tf('[%filesize_natural%]'), panel.tf('[%file_created%]'), panel.tf('[%last_modified%]')];
+		var urls = ['%filename_ext% IS ', '"$directory_path(%path%)" IS ', '%path% IS ', '%subsong% IS ', '%filesize_natural% IS ', '%file_created% IS ', '%last_modified% IS '];
+		for (var i = 0; i < 7; i++) {
+			this.data.push({
+				name : names[i],
+				value : values[i],
+				url : urls[i] + values[i]
+			});
+		}
+		this.add_separator();
+	}
+
 	this.add_meta = function (f) {
 		for (var i = 0; i < f.MetaCount; i++) {
 			var name = f.MetaName(i).toUpperCase();
@@ -31,18 +45,38 @@ function _properties(mode, x, y, w, h) {
 		}
 	}
 
-	this.add_location = function () {
-		var names = ['FILE NAME', 'FOLDER NAME', 'FILE PATH', 'SUBSONG INDEX', 'FILE SIZE', 'FILE CREATED', 'LAST MODIFIED'];
-		var values = [panel.tf('%filename_ext%'), panel.tf('$directory_path(%path%)'), this.filename, panel.metadb.SubSong, panel.tf('[%filesize_natural%]'), panel.tf('[%file_created%]'), panel.tf('[%last_modified%]')];
-		var urls = ['%filename_ext% IS ', '"$directory_path(%path%)" IS ', '%path% IS ', '%subsong% IS ', '%filesize_natural% IS ', '%file_created% IS ', '%last_modified% IS '];
-		for (var i = 0; i < 7; i++) {
+	this.add_other_info = function () {
+		var tmp = JSON.parse(fb.CreateHandleList(panel.metadb).GetOtherInfo());
+
+		_.forEach(['Location', 'General'], function (item) {
+			this.add_section(tmp[item], item);
+		}, this);
+
+		for (var i in tmp) {
+			if (i != 'General' && i != 'Location') {
+				this.add_section(tmp[i], i);
+			}
+		}
+	}
+
+	this.add_section = function (obj, name) {
+		this.data.push({
+			name : name,
+			value : 'SECTION_HEADER',
+		});
+
+		for (var i in obj) {
 			this.data.push({
-				name : names[i],
-				value : values[i],
-				url : urls[i] + values[i]
+				name : i,
+				value : obj[i],
 			});
 		}
+
 		this.add_separator();
+	}
+
+	this.add_separator = function () {
+		this.data.push({ name : '', value : '' });
 	}
 
 	this.add_tech = function (f) {
@@ -66,46 +100,17 @@ function _properties(mode, x, y, w, h) {
 		this.add_separator();
 	}
 
-	this.add_section = function (obj, name) {
-		this.data.push({
-			name : name,
-			value : 'SECTION_HEADER',
-		});
-
-		for (var i in obj) {
-			this.data.push({
-				name : i,
-				value : obj[i],
-			});
-		}
-
-		this.add_separator();
-	}
-
-	this.add_other_info = function () {
-		var tmp = JSON.parse(fb.CreateHandleList(panel.metadb).GetOtherInfo());
-
-		_.forEach(['Location', 'General'], function (item) {
-			this.add_section(tmp[item], item);
-		}, this);
-
-		for (var i in tmp) {
-			if (i != 'General' && i != 'Location') {
-				this.add_section(tmp[i], i);
-			}
-		}
-	}
-
-	this.add_separator = function () {
-		this.data.push({ name : '', value : '' });
-	}
-
 	this.containsXY = function (x, y) {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
 
 	this.draw_row = function (gr, text, colour, x, y, w, h, text_alignment) {
 		gr.WriteTextSimple(text, panel.fonts.normal, colour, x, y, w, h, text_alignment || DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+	}
+
+	this.font_changed = function () {
+		this.size();
+		this.metadb_changed();
 	}
 
 	this.get_musicbrainz_url = function (name, value) {
@@ -159,11 +164,14 @@ function _properties(mode, x, y, w, h) {
 			case this.down_btn.lbtn_up(x, y):
 			case !this.in_range:
 				break;
-			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
-				if (_.startsWith(this.data[this.index].url, 'http')) {
-					utils.Run(this.data[this.index].url);
-				} else {
-					plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, this.data[this.index].value, this.data[this.index].url);
+			default:
+				var item = this.data[this.index];
+				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+					if (_.startsWith(item.url, 'http')) {
+						utils.Run(item.url);
+					} else {
+						plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item.value, item.url);
+					}
 				}
 				break;
 			}
@@ -194,16 +202,18 @@ function _properties(mode, x, y, w, h) {
 			case this.down_btn.move(x, y):
 			case !this.in_range:
 				break;
-			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
-				window.SetCursor(IDC_HAND);
-				if (_.startsWith(this.data[this.index].url, 'http')) {
-					_tt(this.data[this.index].url);
-				} else {
-					_tt('Autoplaylist: ' + this.data[this.index].url);
-				}
-				break;
 			default:
-				_tt('');
+				var item = this.data[this.index];
+				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+					window.SetCursor(IDC_HAND);
+					if (_.startsWith(item.url, 'http')) {
+						_tt(item.url);
+					} else {
+						_tt('Autoplaylist: ' + item.url);
+					}
+				} else {
+					_tt('');
+				}
 				break;
 			}
 			return true;
@@ -263,7 +273,7 @@ function _properties(mode, x, y, w, h) {
 		}
 	}
 
-	this.size = function (update) {
+	this.size = function () {
 		this.index = 0;
 		this.offset = 0;
 		this.rows = Math.floor((this.h - _scale(24)) / panel.row_height);
@@ -271,7 +281,6 @@ function _properties(mode, x, y, w, h) {
 		this.down_btn.x = this.up_btn.x;
 		this.up_btn.y = this.y;
 		this.down_btn.y = this.y + this.h - _scale(12);
-		if (update) this.update();
 	}
 
 	this.update = function () {

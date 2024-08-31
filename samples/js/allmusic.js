@@ -91,6 +91,7 @@ function _allmusic(x, y, w, h) {
 			this.down_btn.lbtn_up(x, y);
 			return true;
 		}
+
 		return false;
 	}
 
@@ -214,10 +215,6 @@ function _allmusic(x, y, w, h) {
 		}
 	}
 
-	this.tidy = function (str) {
-		return utils.ConvertToAscii(str).toLowerCase().replace(/ and /g, '').replace(/ & /g, '');
-	}
-
 	this.rbtn_up = function (x, y) {
 		this.cb = utils.GetClipboardText();
 		panel.m.AppendMenuItem(EnableMenuIf(panel.metadb && this.cb.length > 0 && _tagged(this.artist) && _tagged(this.album)), 1000, 'Paste text from clipboard');
@@ -250,6 +247,10 @@ function _allmusic(x, y, w, h) {
 		this.up_btn.y = this.y;
 		this.down_btn.y = this.y + this.h - _scale(12);
 		this.update();
+	}
+
+	this.tidy = function (str) {
+		return utils.ConvertToAscii(str).toLowerCase().replace(/ and /g, '').replace(/ & /g, '');
 	}
 
 	this.update = function () {

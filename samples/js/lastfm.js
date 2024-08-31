@@ -7,7 +7,7 @@ function _lastfm() {
 		if (name == '2K3.NOTIFY.LASTFM') {
 			this.username = this.get_username();
 			_.forEach(panel.list_objects, function (item) {
-				if (item.mode == 'lastfm_info' && item.properties.mode.value > 0) {
+				if (item.name == 'lastfm_info' && item.properties.mode.value > 0) {
 					item.update();
 				}
 			});

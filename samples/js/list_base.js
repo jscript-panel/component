@@ -3,6 +3,11 @@ function _list_base(x, y, w, h) {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
 
+	this.font_changed = function () {
+		this.size();
+		this.update();
+	}
+
 	this.key_down = function (k) {
 		switch (k) {
 		case VK_UP:
@@ -31,12 +36,16 @@ function _list_base(x, y, w, h) {
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
 
-		this.up_btn.move(x, y);
-		this.down_btn.move(x, y);
-		return this.containsXY(x, y);
+		if (this.containsXY(x, y)) {
+			this.up_btn.move(x, y);
+			this.down_btn.move(x, y);
+			return true;
+		}
+
+		return false;
 	}
 
-	this.size = function (update) {
+	this.size = function () {
 		this.index = 0;
 		this.offset = 0;
 		this.rows = Math.floor((this.h - _scale(24)) / panel.row_height);
@@ -44,7 +53,6 @@ function _list_base(x, y, w, h) {
 		this.down_btn.x = this.up_btn.x;
 		this.up_btn.y = this.y;
 		this.down_btn.y = this.y + this.h - _scale(12);
-		if (update) this.update();
 	}
 
 	this.wheel = function (s) {

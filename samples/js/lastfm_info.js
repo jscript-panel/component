@@ -7,6 +7,11 @@ function _lastfm_info(x, y, w, h) {
 		gr.WriteTextSimple(text, panel.fonts.normal, colour, x, y, w, h, text_alignment || DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 	}
 
+	this.font_changed = function () {
+		this.size();
+		this.reset();
+	}
+
 	this.get = function () {
 		switch (this.properties.mode.value) {
 		case 0:
@@ -50,11 +55,7 @@ function _lastfm_info(x, y, w, h) {
 		}
 
 		if (_save(f, response_text)) {
-			if (this.properties.mode.value == 0) {
-				this.reset();
-			} else {
-				this.update();
-			}
+			this.reset();
 		}
 	}
 
@@ -78,11 +79,14 @@ function _lastfm_info(x, y, w, h) {
 			case this.down_btn.lbtn_up(x, y):
 			case !this.in_range:
 				break;
-			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
-				if (_.startsWith(this.data[this.index].url, 'http')) {
-					utils.Run(this.data[this.index].url);
-				} else {
-					plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, this.data[this.index].value, this.data[this.index].url);
+			default:
+				var item = this.data[this.index];
+				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+					if (_.startsWith(item.url, 'http')) {
+						utils.Run(item.url);
+					} else {
+						plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item.value, item.url);
+					}
 				}
 				break;
 			}
@@ -92,7 +96,8 @@ function _lastfm_info(x, y, w, h) {
 	}
 
 	this.metadb_changed = function () {
-		if (this.mode == 'lastfm_info' && this.properties.mode.value > 0)
+		// user mode
+		if (this.properties.mode.value == 1)
 			return;
 
 		if (panel.metadb) {
@@ -125,16 +130,14 @@ function _lastfm_info(x, y, w, h) {
 				break;
 			case !this.in_range:
 				break;
-			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
-				window.SetCursor(IDC_HAND);
-				if (_.startsWith(this.data[this.index].url, 'http')) {
-					_tt(this.data[this.index].url);
-				} else {
-					_tt('Autoplaylist: ' + this.data[this.index].url);
-				}
-				break;
 			default:
-				_tt('');
+				var item = this.data[this.index];
+				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+					window.SetCursor(IDC_HAND);
+					_tt(item.url);
+				} else {
+					_tt('');
+				}
 				break;
 			}
 			return true;
@@ -227,12 +230,9 @@ function _lastfm_info(x, y, w, h) {
 	this.rbtn_up_done = function (idx) {
 		switch (idx) {
 		case 1100:
-			this.properties.mode.value = 0;
-			this.reset();
-			break;
 		case 1101:
-			this.properties.mode.value = 1;
-			this.update();
+			this.properties.mode.value = idx - 1100;
+			this.reset();
 			break;
 		case 1102:
 		case 1103:
@@ -243,13 +243,13 @@ function _lastfm_info(x, y, w, h) {
 		case 1110:
 		case 1111:
 			this.properties.user_mode.value = idx - 1110;
-			this.update();
+			this.reset();
 			break;
 		case 1120:
 		case 1121:
 		case 1122:
 			this.properties.charts_method.value = idx - 1120;
-			this.update();
+			this.reset();
 			break;
 		case 1130:
 		case 1131:
@@ -258,7 +258,7 @@ function _lastfm_info(x, y, w, h) {
 		case 1134:
 		case 1135:
 			this.properties.charts_period.value = idx - 1130;
-			this.update();
+			this.reset();
 			break;
 		case 1150:
 			lastfm.update_username();
@@ -273,10 +273,15 @@ function _lastfm_info(x, y, w, h) {
 		this.count = 0;
 		this.data = [];
 		this.artist = '';
-		this.metadb_changed();
+
+		if (this.properties.mode.value == 0) { // artist
+			this.metadb_changed();
+		} else { // user
+			this.update();
+		}
 	}
 
-	this.size = function (update) {
+	this.size = function () {
 		this.index = 0;
 		this.offset = 0;
 		this.rows = Math.floor((this.h - _scale(24)) / panel.row_height);
@@ -284,7 +289,6 @@ function _lastfm_info(x, y, w, h) {
 		this.down_btn.x = this.up_btn.x;
 		this.up_btn.y = this.y;
 		this.down_btn.y = this.y + this.h - _scale(12);
-		if (update) this.update();
 	}
 
 	this.update = function () {
@@ -394,6 +398,7 @@ function _lastfm_info(x, y, w, h) {
 	utils.CreateFolder(folders.lastfm);
 	panel.list_objects.push(this);
 
+	this.name = 'lastfm_info'; // needs a name to be triggerd by lastfm user name change
 	this.x = x;
 	this.y = y;
 	this.w = w;

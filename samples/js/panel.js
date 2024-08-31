@@ -33,7 +33,7 @@ function _panel(options) {
 		this.fonts.title = this.create_font(this.fonts.size.value, 700);
 		this.row_height = _scale(this.fonts.size.value + 4);
 		_.invoke(this.text_objects, 'font_changed');
-		_.invoke(this.list_objects, 'size', true);
+		_.invoke(this.list_objects, 'font_changed');
 		_.invoke(this.display_objects, 'refresh', true);
 	}
 
@@ -78,11 +78,13 @@ function _panel(options) {
 		this.s12 = window.CreatePopupMenu();
 		this.s13 = window.CreatePopupMenu();
 		this.s14 = window.CreatePopupMenu();
+
 		// panel 1-999
 		// object 1000+
 		if (object) {
 			object.rbtn_up(x, y);
 		}
+
 		if (this.list_objects.length || this.text_objects.length || this.display_objects.length) {
 			_.forEach(this.fonts.sizes, function (item) {
 				this.s1.AppendMenuItem(MF_STRING, item, item);
@@ -91,6 +93,7 @@ function _panel(options) {
 			this.s1.AppendTo(this.m, MF_STRING, 'Font size');
 			this.m.AppendMenuSeparator();
 		}
+
 		if (this.custom_background) {
 			this.s2.AppendMenuItem(MF_STRING, 100, window.IsDefaultUI ? 'Use default UI setting' : 'Use columns UI setting');
 			this.s2.AppendMenuItem(MF_STRING, 101, 'Splitter');
@@ -101,6 +104,7 @@ function _panel(options) {
 			this.s2.AppendTo(this.m, MF_STRING, 'Background colour');
 			this.m.AppendMenuSeparator();
 		}
+
 		if (this.metadb_func) {
 			this.s3.AppendMenuItem(MF_STRING, 110, 'Prefer now playing');
 			this.s3.AppendMenuItem(MF_STRING, 111, 'Follow selected track (playlist)');
@@ -108,6 +112,7 @@ function _panel(options) {
 			this.s3.AppendTo(this.m, MF_STRING, 'Selection mode');
 			this.m.AppendMenuSeparator();
 		}
+
 		this.m.AppendMenuItem(MF_STRING, 120, 'Configure...');
 
 		var idx = this.m.TrackPopupMenu(x, y);

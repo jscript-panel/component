@@ -127,6 +127,7 @@ function _lastfm_bio(x, y, w, h) {
 			this.down_btn.lbtn_up(x, y);
 			return true;
 		}
+
 		return false;
 	}
 
@@ -171,11 +172,13 @@ function _lastfm_bio(x, y, w, h) {
 		this.mx = x;
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
+
 		if (this.containsXY(x, y)) {
 			this.up_btn.move(x, y);
 			this.down_btn.move(x, y);
 			return true;
 		}
+
 		return false;
 	}
 

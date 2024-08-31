@@ -21,6 +21,11 @@ function _musicbrainz(x, y, w, h) {
 		gr.WriteTextSimple(text, panel.fonts.normal, colour, x, y, w, h, text_alignment || DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 	}
 
+	this.font_changed = function () {
+		this.size();
+		this.reset();
+	}
+
 	this.get = function () {
 		if (this.properties.mode.value == 0) {
 			var url = 'https://musicbrainz.org/ws/2/release-group?fmt=json&limit=100&offset=' + this.mb_offset + '&artist=' + this.mb_id;
@@ -82,11 +87,10 @@ function _musicbrainz(x, y, w, h) {
 			case this.down_btn.lbtn_up(x, y):
 			case !this.in_range:
 				break;
-			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width) && typeof this.data[this.index].url == 'string':
-				if (_.startsWith(this.data[this.index].url, 'http')) {
-					utils.Run(this.data[this.index].url);
-				} else {
-					plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, this.data[this.index].value, this.data[this.index].url);
+			default:
+				var item = this.data[this.index];
+				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+					utils.Run(item.url);
 				}
 				break;
 			}
@@ -127,11 +131,14 @@ function _musicbrainz(x, y, w, h) {
 			case this.down_btn.move(x, y):
 			case !this.in_range:
 				break;
-			case x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(this.data[this.index].width, this.text_width):
-				_tt(this.data[this.index].url);
-				break;
 			default:
-				_tt('');
+				var item = this.data[this.index];
+				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+					window.SetCursor(IDC_HAND);
+					_tt(item.url);
+				} else {
+					_tt('');
+				}
 				break;
 			}
 			return true;
@@ -194,7 +201,7 @@ function _musicbrainz(x, y, w, h) {
 		this.metadb_changed();
 	}
 
-	this.size = function (update) {
+	this.size = function () {
 		this.index = 0;
 		this.offset = 0;
 		this.rows = Math.floor((this.h - _scale(24)) / panel.row_height);
@@ -202,7 +209,6 @@ function _musicbrainz(x, y, w, h) {
 		this.down_btn.x = this.up_btn.x;
 		this.up_btn.y = this.y;
 		this.down_btn.y = this.y + this.h - _scale(12);
-		if (update) this.update();
 	}
 
 	this.update = function () {

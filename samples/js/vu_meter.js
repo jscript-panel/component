@@ -55,7 +55,8 @@ function init() {
 	update_rms_offset();
 	update_colours();
 
-	if (fb.IsPlaying) start_timer();
+	if (fb.IsPaused) update_graph();
+	else if (fb.IsPlaying) start_timer();
 	else get_initial_track_info();
 }
 

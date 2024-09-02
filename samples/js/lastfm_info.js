@@ -151,7 +151,7 @@ function _lastfm_info(x, y, w, h) {
 
 	this.paint = function (gr) {
 		if (lastfm.api_key.empty()) {
-			this.draw_row(gr, 'Use the right click menu to set your own Last.fm API key.', panel.colours.text, this.x, this.y + _scale(12), this.w, panel.row_height);
+			gr.WriteTextSimple('Use the right click menu to set your own Last.fm API key.', panel.fonts.normal, panel.colours.text, this.x, this.y + _scale(12), this.w, this.h);
 			return;
 		}
 

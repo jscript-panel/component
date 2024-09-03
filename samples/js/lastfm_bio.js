@@ -25,17 +25,17 @@ function _lastfm_bio(x, y, w, h) {
 	}
 
 	this.get = function () {
-		if (!_tagged(this.artist)) {
+		if (lastfm.api_key.empty() || !_tagged(this.artist))
 			return;
-		}
+
 		var url = lastfm.base_url + '&method=artist.getInfo&autocorrect=1&lang=' + this.langs[this.properties.lang.value] + '&artist=' + encodeURIComponent(this.artist);
 		utils.DownloadFileAsync(window.ID, url, this.filename);
 	}
 
 	this.get_extra = function () {
-		if (!_tagged(this.artist)) {
+		if (!_tagged(this.artist))
 			return;
-		}
+
 		var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist);
 		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
 		this.filenames[task_id] = this.filename_extra;

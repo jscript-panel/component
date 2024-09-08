@@ -149,7 +149,14 @@ function _albumart(x, y, w, h) {
 	}
 
 	this.paint = function (gr) {
-		_drawImage(gr, this.img, this.x, this.y, this.w, this.h, this.properties.aspect.value);
+		if (!this.img)
+			return;
+
+		if (this.is_review_panel) {
+			_drawImage(gr, this.img, this.x, this.y, this.w, this.h, this.properties.aspect.value == image.full ? image.full_top_align : this.properties.aspect.value, 1.0, RGB(150, 150, 150));
+		} else {
+			_drawImage(gr, this.img, this.x, this.y, this.w, this.h, this.properties.aspect.value);
+		}
 	}
 
 	this.reset_images = function () {
@@ -194,8 +201,8 @@ function _albumart(x, y, w, h) {
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(MF_STRING, 1040, 'Crop (focus on centre)');
 		panel.m.AppendMenuItem(MF_STRING, 1041, 'Crop (focus on top)');
-		panel.m.AppendMenuItem(MF_STRING, 1042, 'Stretch');
-		panel.m.AppendMenuItem(MF_STRING, 1043, 'Centre');
+		//panel.m.AppendMenuItem(MF_STRING, 1042, 'Stretch');
+		panel.m.AppendMenuItem(MF_STRING, 1043, 'Full');
 		panel.m.CheckMenuRadioItem(1040, 1043, this.properties.aspect.value + 1040);
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.path)), 1050, 'Open containing folder');
@@ -251,7 +258,7 @@ function _albumart(x, y, w, h) {
 		case 1042:
 		case 1043:
 			this.properties.aspect.value = idx - 1040;
-			window.RepaintRect(this.x, this.y, this.w, this.h);
+			window.Repaint();
 			break;
 		case 1050:
 			_explorer(this.path);
@@ -305,7 +312,7 @@ function _albumart(x, y, w, h) {
 	this.help_text = utils.ReadUTF8(fb.ComponentPath + 'samples\\text\\albumart_help');
 
 	this.properties = {
-		aspect : new _p('2K3.ARTREADER.ASPECT', image.centre),
+		aspect : new _p('2K3.ARTREADER.ASPECT', image.full),
 		id : new _p('2K3.ARTREADER.ID', 0),
 		double_click_mode : new _p('2K3.ARTREADER.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer
 		mode : new _p('2K3.ARTREADER.MODE', 0), // 0 default, 1 custom

@@ -9,7 +9,7 @@ function _button(x, y, w, h, normal, hover, fn, tiptext) {
 		if (this.current.char) {
 			gr.WriteTextSimple(this.current.char, this.font, this.current.colour, this.x, this.y, this.w, this.h, 2, 2);
 		} else if (this.current.img) {
-			_drawImage(gr, this.current.img, this.x, this.y, this.w, this.h, image.centre);
+			_drawImage(gr, this.current.img, this.x, this.y, this.w, this.h, image.full);
 		}
 	}
 
@@ -115,7 +115,7 @@ function _dispose() {
 	});
 }
 
-function _drawImage(gr, img, dst_x, dst_y, dst_w, dst_h, mode, opacity) {
+function _drawImage(gr, img, dst_x, dst_y, dst_w, dst_h, mode, opacity, border) {
 	if (!img) {
 		return [];
 	}
@@ -139,18 +139,24 @@ function _drawImage(gr, img, dst_x, dst_y, dst_w, dst_h, mode, opacity) {
 		}
 		gr.DrawImage(img, dst_x, dst_y, dst_w, dst_h, src_x + 3, src_y + 3, src_w - 6, src_h - 6, opacity || 1);
 		break;
-	case mode == image.centre:
+	case mode == image.full:
+	case mode == image.full_top_align:
 	default:
 		var s = Math.min(dst_w / img.Width, dst_h / img.Height);
 		var w = Math.floor(img.Width * s);
 		var h = Math.floor(img.Height * s);
 		dst_x += Math.round((dst_w - w) / 2);
-		dst_y += Math.round((dst_h - h) / 2);
+		dst_y = mode == image.full_top_align ? dst_y : dst_y + Math.round((dst_h - h) / 2);
 		dst_w = w;
 		dst_h = h;
 		gr.DrawImage(img, dst_x, dst_y, dst_w, dst_h, 0, 0, img.Width, img.Height, opacity || 1);
 		break;
 	}
+
+	if (border) {
+		DrawRectangle(gr, dst_x, dst_y, dst_w, dst_h, border);
+	}
+
 	return [dst_x, dst_y, dst_w, dst_h];
 }
 
@@ -442,7 +448,8 @@ var image = {
 	crop : 0,
 	crop_top : 1,
 	stretch : 2,
-	centre : 3
+	full : 3,
+	full_top_align : 4,
 };
 
 var ha_links = [

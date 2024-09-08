@@ -129,17 +129,21 @@ function _images() {
 	}
 
 	this.paint = function (gr) {
-		if (!this.image)
-			return;
-
 		if (this.is_bio_panel) {
-			this.draw_blurred_image(gr);
-			_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
-			_drawImage(gr, this.image, this.x, this.y, this.w, this.h, this.properties.aspect.value);
-		} else {
-			if (this.properties.aspect.value == image.centre) {
+			if (this.image) {
 				this.draw_blurred_image(gr);
-				_drawImage(gr, this.image, this.x + 20, this.y + 20, this.w - 40, this.h - 40, this.properties.aspect.value);
+				_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
+				_drawImage(gr, this.image, this.x, this.y, this.w, this.h, this.properties.aspect.value == image.full ? image.full_top_align : this.properties.aspect.value, 1.0, RGB(150, 150, 150));
+			} else {
+				_drawOverlay(gr, 0, 0, panel.w, panel.h);
+			}
+		} else {
+			if (!this.image)
+				return;
+
+			if (this.properties.aspect.value == image.full) {
+				this.draw_blurred_image(gr);
+				_drawImage(gr, this.image, this.x + 20, this.y + 20, this.w - 40, this.h - 40, this.properties.aspect.value, 1.0, RGB(150, 150, 150));
 			} else {
 				_drawImage(gr, this.image, this.x, this.y, this.w, this.h, this.properties.aspect.value);
 			}
@@ -202,8 +206,8 @@ function _images() {
 
 		panel.m.AppendMenuItem(MF_STRING, 1500, 'Crop (focus on centre)');
 		panel.m.AppendMenuItem(MF_STRING, 1501, 'Crop (focus on top)');
-		panel.m.AppendMenuItem(MF_STRING, 1502, 'Stretch');
-		panel.m.AppendMenuItem(MF_STRING, 1503, 'Centre');
+		//panel.m.AppendMenuItem(MF_STRING, 1502, 'Stretch');
+		panel.m.AppendMenuItem(MF_STRING, 1503, 'Full');
 		panel.m.CheckMenuRadioItem(1500, 1503, this.properties.aspect.value + 1500);
 		panel.m.AppendMenuSeparator();
 
@@ -339,7 +343,7 @@ function _images() {
 	}
 
 	this.wheel = function (s) {
-		if (!this.is_bio_panel && utils.IsKeyPressed(VK_SHIFT) && this.properties.aspect.value == image.centre) {
+		if (!this.is_bio_panel && utils.IsKeyPressed(VK_SHIFT) && this.properties.aspect.value == image.full) {
 			var value = _clamp(this.properties.blur_opacity.value + (s * 0.05), 0.2, 0.8);
 			if (value != this.properties.blur_opacity.value) {
 				this.properties.blur_opacity.value = value;
@@ -394,7 +398,7 @@ function _images() {
 		source : new _p('2K3.IMAGES.SOURCE', 0), // 0 custom folder 1 last.fm
 		tf : new _p('2K3.IMAGES.CUSTOM.FOLDER.TF', '$directory_path(%path%)'),
 		cycle : new _p('2K3.IMAGES.CYCLE', 5),
-		aspect : new _p('2K3.IMAGES.ASPECT', this.is_bio_panel ? image.crop_top : image.centre),
+		aspect : new _p('2K3.IMAGES.ASPECT', this.is_bio_panel ? image.crop_top : image.full),
 		limit : new _p('2K3.IMAGES.DOWNLOAD.LIMIT', 10),
 		auto_download : new _p('2K3.IMAGES.AUTO.DOWNLOAD', true),
 		double_click_mode : new _p('2K3.IMAGES.DOUBLE.CLICK.MODE', 1), // 0 external viewer 1 fb2k viewer 2 explorer

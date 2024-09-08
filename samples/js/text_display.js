@@ -44,7 +44,8 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 		}
 
 		if (this.properties.layout.value > 0) {
-			albumart.paint(gr);
+			var border = this.properties.albumart.enabled ? RGB(150, 150, 150) : panel.colours.text;
+			_drawImage(gr, albumart.img, albumart.x, albumart.y, albumart.w, albumart.h, albumart.properties.aspect.value, 1.0, border);
 		}
 
 		if (this.text_layout) {

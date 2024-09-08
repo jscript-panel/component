@@ -21,7 +21,7 @@ allmusic.paint = function (gr) {
 	_drawOverlay(gr, 0, 0, panel.w, panel.h, 180);
 
 	var y = albumart.properties.layout.value == 0 ? margin : this.y - margin;
-	gr.WriteTextSimple(this.header_text(), panel.fonts.title, white, this.x, y, this.w, margin + _scale(4), DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
+	gr.WriteTextSimple(this.header_text(), panel.fonts.title, white, this.x, y, this.w, TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (this.text_layout) {
 		gr.WriteTextLayout(this.text_layout, white, this.x, this.y + margin, this.w, this.ha, this.offset);

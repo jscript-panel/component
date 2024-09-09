@@ -34,6 +34,10 @@ function on_paint(gr) {
 	}
 }
 
+function on_playback_pause() {
+	seekbar.playback_seek();
+}
+
 function on_playback_seek() {
 	seekbar.playback_seek();
 }

@@ -56,6 +56,10 @@ function on_playback_new_track(metadb) {
 	seekbar.playback_new_track(metadb);
 }
 
+function on_playback_pause() {
+	seekbar.playback_seek();
+}
+
 function on_playback_seek() {
 	seekbar.playback_seek();
 }

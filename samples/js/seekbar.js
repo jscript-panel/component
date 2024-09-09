@@ -5,17 +5,10 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 	}
 
 	this.interval_func = _.bind(function () {
-		if (fb.IsPlaying && !fb.IsPaused && fb.PlaybackLength > 0) {
+		if (fb.PlaybackLength > 0 && !fb.IsPaused) {
 			this.repaint_rect();
 		}
 	}, this);
-
-	this.item_focus_change = function () {
-		if (!this.spectrogram_mode || fb.IsPlaying) return;
-		this.clear_image();
-		this.image = this.get_image(fb.GetFocusItem());
-		window.Repaint();
-	}
 
 	this.lbtn_down = function (x, y) {
 		if (this.containsXY(x, y)) {
@@ -57,58 +50,10 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		if (this.hover) {
 			_tt('');
 		}
+
 		this.hover = false;
 		this.drag = false;
 		return false;
-	}
-
-	this.paint = function (gr) {
-		if (!this.spectrogram_mode) return;
-
-		if (this.working) {
-			gr.WriteTextSimple(chars.working, JSON.stringify({Name:'Segoe Fluent Icons',Size:this.h - _scale(16)}), this.properties.marker_colour.value, this.x, this.y, this.w, this.h, 2, 2);
-		} else if (this.image) {
-			_drawImage(gr, this.image, this.x, this.y, this.w, this.h, image.stretch);
-		}
-		if (fb.IsPlaying && fb.PlaybackLength > 0) {
-			gr.FillRectangle(this.x + this.pos() - 2, this.y, 2, this.h, this.properties.marker_colour.value);
-		}
-	}
-
-	this.playback_new_track = function (metadb) {
-		if (!this.spectrogram_mode) return;
-		this.clear_image();
-
-		if (metadb) {
-			this.image = this.get_image(metadb);
-			if (!this.image) {
-				var ext = _getExt(metadb.Path);
-				switch(true) {
-				case utils.IsFile(this.filename):
-					console.log(N, 'Skipping... a cached file appears to exist but it was not recognised as a valid image.');
-					break;
-				case !utils.IsFile(ffmpeg_exe):
-					console.log(N, 'Skipping... ffmpeg.exe was not found. Check the path set in the script.');
-					break;
-				case !utils.IsFolder(spectrogram_cache):
-					console.log(N, 'Skipping... spectrogram_cache folder was not found. Check the path set in the script.');
-					break;
-				case !utils.IsFile(metadb.Path) || this.excluded.indexOf(ext) > -1:
-					console.log(N, 'Skipping... Playing item not supported.');
-					break;
-				case fb.PlaybackLength <= 0:
-					console.log(N, 'Skipping... Unknown length.');
-					break;
-				case this.properties.library_only.enabled && !metadb.IsInLibrary():
-					console.log(N, 'Skipping... Track not in library.');
-					break;
-				default:
-					this.generate_image(metadb);
-					break;
-				}
-			}
-		}
-		window.Repaint();
 	}
 
 	this.playback_seek = function () {
@@ -153,61 +98,6 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		window.RepaintRect(this.x - _scale(75), this.y - _scale(10), this.w + _scale(150), this.h + _scale(20));
 	}
 
-	this.rbtn_up = function (x, y) {
-		var size = 0;
-		utils.ListFiles(spectrogram_cache).toArray().forEach(function (item) {
-			size += utils.GetFileSize(item);
-		});
-
-		panel.m.AppendMenuItem(MF_STRING, 1000, 'FFmpeg showspectrumpic options...');
-		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(MF_STRING, 1001, 'Marker colour...');
-		panel.m.AppendMenuSeparator();
-		panel.m.AppendMenuItem(CheckMenuIf(this.properties.library_only.enabled), 1002, 'Only analyse tracks in library');
-		panel.m.AppendMenuSeparator();
-		panel.s10.AppendMenuItem(MF_STRING, 1010, 'Clear all');
-		panel.s10.AppendMenuItem(MF_STRING, 1011, 'Clear older than 1 day');
-		panel.s10.AppendMenuItem(MF_STRING, 1012, 'Clear older than 7 days');
-		panel.s10.AppendMenuItem(MF_STRING, 1013, 'Clear older than 30 days');
-		panel.s10.AppendMenuItem(MF_STRING, 1014, 'Clear older than 90 days');
-		panel.s10.AppendMenuSeparator();
-		panel.s10.AppendMenuItem(MF_GRAYED, 0, 'In use: ' + utils.FormatFileSize(size));
-		panel.s10.AppendTo(panel.m, MF_STRING, 'Cached images');
-	}
-
-	this.rbtn_up_done = function (idx) {
-		switch (idx) {
-		case 1000:
-			var tmp = utils.InputBox('All FFmpeg showspectrumpic options should work here.', window.Name, this.properties.params.value);
-			if (tmp != this.properties.params.value) {
-				this.properties.params.value = tmp;
-				this.playback_new_track(fb.GetNowPlaying());
-			}
-			break;
-		case 1001:
-			var tmp = utils.ColourPicker(this.properties.marker_colour.value);
-			if (tmp != this.properties.marker_colour.value) {
-				this.properties.marker_colour.value = tmp;
-				window.Repaint();
-			}
-			break;
-		case 1002:
-			this.properties.library_only.toggle();
-			break;
-		case 1010:
-		case 1011:
-		case 1012:
-		case 1013:
-		case 1014:
-			var period = [0, ONE_DAY, ONE_DAY * 7, ONE_DAY * 30, ONE_DAY * 90][idx - 1010];
-			var files = utils.ListFiles(spectrogram_cache).toArray();
-			files.forEach(function (item) {
-				if (period == 0 || _fileExpired(item, period)) utils.RemovePath(item);
-			});
-			break;
-		}
-	}
-
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -221,12 +111,17 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 
 	if (this.spectrogram_mode) {
 		this.clear_image = function () {
-			if (this.image) this.image.Dispose();
+			if (this.image) {
+				this.image.Dispose();
+			}
+
 			this.image = null;
 		}
 
 		this.generate_image = function (metadb) {
-			if (!metadb) return;
+			if (!metadb)
+				return;
+
 			this.working = true;
 			window.Repaint();
 
@@ -252,11 +147,15 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 		}
 
 		this.get_image = function (metadb) {
-			if (!metadb) return null;
+			if (!metadb)
+				return null;
+
 			this.filename = spectrogram_cache + this.tfo.crc.EvalWithMetadb(metadb) + utils.ReplaceIllegalChars(this.properties.params.value, true);
+
 			if (this.is_cue(metadb)) {
 				this.filename += '_' + metadb.SubSong;
 			}
+
 			this.filename += '.webp';
 			return utils.LoadImage(this.filename)
 		}
@@ -265,9 +164,122 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			return this.tfo.cue.EvalWithMetadb(metadb) == 'cue';
 		}
 
+		this.item_focus_change = function () {
+			if (fb.IsPlaying)
+				return;
+
+			this.clear_image();
+			this.image = this.get_image(fb.GetFocusItem());
+			window.Repaint();
+		}
+
 		this.pad = function (num) {
-			if (num >= 10) return num;
+			if (num >= 10)
+				return num;
+
 			return '0' + num;
+		}
+
+		this.paint = function (gr) {
+			if (this.working) {
+				gr.WriteTextSimple(chars.working, JSON.stringify({Name:'Segoe Fluent Icons',Size:this.h - _scale(16)}), this.properties.marker_colour.value, this.x, this.y, this.w, this.h, 2, 2);
+			} else if (this.image) {
+				_drawImage(gr, this.image, this.x, this.y, this.w, this.h, image.stretch);
+			}
+
+			if (fb.IsPlaying && fb.PlaybackLength > 0) {
+				gr.FillRectangle(this.x + this.pos() - 2, this.y, 2, this.h, this.properties.marker_colour.value);
+			}
+		}
+
+		this.playback_new_track = function (metadb) {
+			this.clear_image();
+
+			if (metadb) {
+				this.image = this.get_image(metadb);
+				if (!this.image) {
+					var ext = _getExt(metadb.Path);
+					switch(true) {
+					case utils.IsFile(this.filename):
+						console.log(N, 'Skipping... a cached file appears to exist but it was not recognised as a valid image.');
+						break;
+					case !utils.IsFile(ffmpeg_exe):
+						console.log(N, 'Skipping... ffmpeg.exe was not found. Check the path set in the script.');
+						break;
+					case !utils.IsFolder(spectrogram_cache):
+						console.log(N, 'Skipping... spectrogram_cache folder was not found. Check the path set in the script.');
+						break;
+					case !utils.IsFile(metadb.Path) || this.excluded.indexOf(ext) > -1:
+						console.log(N, 'Skipping... Playing item not supported.');
+						break;
+					case fb.PlaybackLength <= 0:
+						console.log(N, 'Skipping... Unknown length.');
+						break;
+					case this.properties.library_only.enabled && !metadb.IsInLibrary():
+						console.log(N, 'Skipping... Track not in library.');
+						break;
+					default:
+						this.generate_image(metadb);
+						break;
+					}
+				}
+			}
+			window.Repaint();
+		}
+
+		this.rbtn_up = function (x, y) {
+			var size = 0;
+			utils.ListFiles(spectrogram_cache).toArray().forEach(function (item) {
+				size += utils.GetFileSize(item);
+			});
+
+			panel.m.AppendMenuItem(MF_STRING, 1000, 'FFmpeg showspectrumpic options...');
+			panel.m.AppendMenuSeparator();
+			panel.m.AppendMenuItem(MF_STRING, 1001, 'Marker colour...');
+			panel.m.AppendMenuSeparator();
+			panel.m.AppendMenuItem(CheckMenuIf(this.properties.library_only.enabled), 1002, 'Only analyse tracks in library');
+			panel.m.AppendMenuSeparator();
+			panel.s10.AppendMenuItem(MF_STRING, 1010, 'Clear all');
+			panel.s10.AppendMenuItem(MF_STRING, 1011, 'Clear older than 1 day');
+			panel.s10.AppendMenuItem(MF_STRING, 1012, 'Clear older than 7 days');
+			panel.s10.AppendMenuItem(MF_STRING, 1013, 'Clear older than 30 days');
+			panel.s10.AppendMenuItem(MF_STRING, 1014, 'Clear older than 90 days');
+			panel.s10.AppendMenuSeparator();
+			panel.s10.AppendMenuItem(MF_GRAYED, 0, 'In use: ' + utils.FormatFileSize(size));
+			panel.s10.AppendTo(panel.m, MF_STRING, 'Cached images');
+		}
+
+		this.rbtn_up_done = function (idx) {
+			switch (idx) {
+			case 1000:
+				var tmp = utils.InputBox('All FFmpeg showspectrumpic options should work here.', window.Name, this.properties.params.value);
+				if (tmp != this.properties.params.value) {
+					this.properties.params.value = tmp;
+					this.playback_new_track(fb.GetNowPlaying());
+				}
+				break;
+			case 1001:
+				var tmp = utils.ColourPicker(this.properties.marker_colour.value);
+				if (tmp != this.properties.marker_colour.value) {
+					this.properties.marker_colour.value = tmp;
+					window.Repaint();
+				}
+				break;
+			case 1002:
+				this.properties.library_only.toggle();
+				break;
+			case 1010:
+			case 1011:
+			case 1012:
+			case 1013:
+			case 1014:
+				var period = [0, ONE_DAY, ONE_DAY * 7, ONE_DAY * 30, ONE_DAY * 90][idx - 1010];
+				var files = utils.ListFiles(spectrogram_cache).toArray();
+				files.forEach(function (item) {
+					if (period == 0 || _fileExpired(item, period)) utils.RemovePath(item);
+				});
+				break;
+			}
 		}
 
 		this.run_cmd_async_done = function (task_id) {

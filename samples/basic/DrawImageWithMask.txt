@@ -34,7 +34,8 @@ var img = utils.LoadImage(fb.ComponentPath + 'samples\\images\\1.webp');
 var square = make_square(img, 300);
 
 function make_square(img, size) {
-	if (!img) return null;
+	if (!img)
+		return null;
 
 	if (img.Width < img.Height) {
 		var src_x = 0;

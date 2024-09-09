@@ -583,7 +583,8 @@ function oBrowser() {
 
 	this.init_groups = function () {
 		this.groups = [];
-		if (this.list.Count == 0) return;
+		if (this.list.Count == 0)
+			return;
 
 		var arr = tfo.groupkey.EvalWithMetadbs(this.list).toArray();
 		var previous = "";
@@ -800,7 +801,8 @@ function oBrowser() {
 	}
 
 	this.on_mouse = function (event, x, y) {
-		if (g_active_playlist == -1) return;
+		if (g_active_playlist == -1)
+			return;
 
 		this.activeRow = -1
 		var shift = utils.IsKeyPressed(VK_SHIFT);

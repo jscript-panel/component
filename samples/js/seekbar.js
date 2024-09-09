@@ -276,7 +276,9 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 				var period = [0, ONE_DAY, ONE_DAY * 7, ONE_DAY * 30, ONE_DAY * 90][idx - 1010];
 				var files = utils.ListFiles(spectrogram_cache).toArray();
 				files.forEach(function (item) {
-					if (period == 0 || _fileExpired(item, period)) utils.RemovePath(item);
+					if (period == 0 || _fileExpired(item, period)) {
+						utils.RemovePath(item);
+					}
 				});
 				break;
 			}

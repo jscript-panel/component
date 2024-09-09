@@ -185,7 +185,8 @@ function stop_timer() {
 
 function get_initial_track_info() {
 	var handle = fb.GetFocusItem();
-	if (!handle) return;
+	if (!handle)
+		return;
 
 	var info = handle.GetFileInfo();
 
@@ -204,7 +205,9 @@ function channel_name(ch) {
 		if (channels.config) {
 			for (var i = 0, idx = 0; i < ChannelNames.length; ++i) {
 				if (channels.config & (1 << i)) {
-					if (idx == ch) return ChannelNames[i];
+					if (idx == ch)
+						return ChannelNames[i];
+
 					idx++;
 				}
 			}
@@ -373,7 +376,8 @@ function on_mouse_rbtn_up(x, y) {
 
 function on_paint(gr) {
 	gr.Clear(colours.background);
-	if (wh < 1 || ww < 1) return;
+	if (wh < 1 || ww < 1)
+		return;
 
 	var show_ch_labels = true;
 	var show_db_labels = true;

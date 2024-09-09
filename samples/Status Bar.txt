@@ -176,7 +176,8 @@ function on_playback_new_track() {
 }
 
 function on_playback_starting() {
-	if (stop_reason == 2) return;
+	if (stop_reason == 2)
+		return;
 
 	starting = true;
 	window.Repaint();

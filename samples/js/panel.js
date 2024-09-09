@@ -45,7 +45,8 @@ function _panel(options) {
 	}
 
 	this.item_focus_change = function () {
-		if (!this.metadb_func) return;
+		if (!this.metadb_func)
+			return;
 
 		this.metadb = this.selection.value == 0 && fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
 		if (!this.metadb) _tt('');

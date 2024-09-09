@@ -28,8 +28,11 @@ function _images() {
 
 	this.http_request_done = function (id, success, response_text) {
 		var artist = this.artists[id];
-		if (!artist) return; // we didn't request this id
-		if (!success) return console.log(N, response_text);
+		if (!artist)
+			return; // we didn't request this id
+
+		if (!success)
+			return console.log(N, response_text);
 
 		var filename_base = _artistFolder(artist) + utils.ReplaceIllegalChars(artist) + '_'
 

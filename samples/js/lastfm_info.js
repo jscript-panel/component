@@ -49,8 +49,11 @@ function _lastfm_info(x, y, w, h) {
 
 	this.http_request_done = function (id, success, response_text) {
 		var f = this.filenames[id];
-		if (!f) return;
-		if (!success) return console.log(N, response_text);
+		if (!f)
+			return;
+
+		if (!success)
+			return console.log(N, response_text);
 
 		var data = _jsonParse(response_text);
 		if (data.error) {

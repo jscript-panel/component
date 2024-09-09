@@ -42,8 +42,11 @@ function _musicbrainz(x, y, w, h) {
 
 	this.http_request_done = function (id, success, response_text) {
 		var f = this.filenames[id];
-		if (!f) return;
-		if (!success) return console.log(N, response_text);
+		if (!f)
+			return;
+
+		if (!success)
+			return console.log(N, response_text);
 
 		if (this.properties.mode.value == 0) {
 			var data = _jsonParse(response_text);

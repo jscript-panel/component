@@ -98,7 +98,9 @@ function oPlaylistManager() {
 	}
 
 	this.draw = function (gr) {
-		if (this.woffset == 0) return;
+		if (this.woffset == 0)
+			return;
+
 		if (this.playlists.length != plman.PlaylistCount) this.refresh();
 
 		var cx = this.x - this.woffset + this.border + 5;

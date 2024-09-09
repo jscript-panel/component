@@ -80,8 +80,11 @@ function DetermineTextColour(background) {
 }
 
 function StripCode(text, chr) {
-	if (!text) return '';
-	if (text.indexOf(chr) == -1) return text;
+	if (!text)
+		return '';
+
+	if (text.indexOf(chr) == -1)
+		return text;
 
 	var arr = text.split(chr);
 	var str = text.indexOf(chr) == 0 ? '' : arr[0];
@@ -538,12 +541,16 @@ Number.prototype.calc_width2 = function (font) {
 }
 
 String.prototype.calc_width = function (font_obj) {
-	if (this.empty()) return 0;
+	if (this.empty())
+		return 0;
+
 	return utils.CalcTextWidth(this, font_obj.Name, font_obj.Size, font_obj.Weight || 400);
 }
 
 String.prototype.calc_width2 = function (font) {
-	if (this.empty()) return 0;
+	if (this.empty())
+		return 0;
+
 	return utils.CalcTextWidth2(this, font);
 }
 

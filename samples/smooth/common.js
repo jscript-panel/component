@@ -12,7 +12,9 @@ function on_font_changed() {
 }
 
 function on_get_album_art_done(metadb, art_id, image) {
-	if (!image) return;
+	if (!image)
+		return;
+
 	for (var i = 0; i < brw.groups.length; i++) {
 		if (brw.groups[i].metadb && brw.groups[i].metadb.Compare(metadb)) {
 			var cached_filename = generate_filename(brw.groups[i].cachekey, art_id);
@@ -111,7 +113,8 @@ function generate_filename(cachekey, art_id) {
 function get_art(metadb, cachekey, art_id) {
 	var filename = generate_filename(cachekey, art_id);
 	var img = images.cache[filename];
-	if (img) return img;
+	if (img)
+		return img;
 
 	img = utils.LoadImage(filename);
 	if (img) {

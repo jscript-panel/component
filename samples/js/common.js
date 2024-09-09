@@ -60,17 +60,21 @@ function _buttons() {
 				temp_btn = i;
 			}
 		});
+
 		if (this.btn == temp_btn) {
 			return this.btn;
 		}
+
 		if (this.btn) {
 			this.buttons[this.btn].cs('normal');
 		}
+
 		if (temp_btn) {
 			this.buttons[temp_btn].cs('hover');
 		} else {
 			_tt('');
 		}
+
 		this.btn = temp_btn;
 		return this.btn;
 	}
@@ -80,6 +84,7 @@ function _buttons() {
 			_tt('');
 			this.buttons[this.btn].cs('normal');
 		}
+
 		this.btn = null;
 	}
 
@@ -88,6 +93,7 @@ function _buttons() {
 			this.buttons[this.btn].lbtn_up(x, y, mask);
 			return true;
 		}
+
 		return false;
 	}
 
@@ -116,9 +122,9 @@ function _dispose() {
 }
 
 function _drawImage(gr, img, dst_x, dst_y, dst_w, dst_h, mode, opacity, border) {
-	if (!img) {
+	if (!img) 
 		return [];
-	}
+
 	switch (true) {
 	case (dst_w == dst_h && img.Width == img.Height) || (dst_w == img.Width && dst_h == img.Height):
 	case mode == image.stretch:
@@ -171,7 +177,9 @@ function _explorer(file) {
 }
 
 function _fbEscape(value) {
-	if (typeof value != 'string') return '';
+	if (typeof value != 'string')
+		return '';
+
 	return value.replace(/'/g, "''").replace(/[\(\)\[\],$]/g, "'$&'");
 }
 
@@ -349,10 +357,10 @@ function _q(value) {
 }
 
 function _save(file, value) {
-	if (utils.WriteTextFile(file, value)) {
+	if (utils.WriteTextFile(file, value))
 		return true;
-	}
-	console.log('Error saving to ' + file);
+
+	console.log(N, 'Error saving to ' + file);
 	return false;
 }
 
@@ -373,7 +381,6 @@ function _sb(ch, x, y, w, h, v, fn) {
 			return true;
 		}
 
-		//window.SetCursor(IDC_ARROW);
 		return false;
 	}
 
@@ -382,8 +389,10 @@ function _sb(ch, x, y, w, h, v, fn) {
 			if (this.fn) {
 				this.fn(x, y);
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -402,7 +411,9 @@ function _scale(size) {
 }
 
 function _stringToArray(str, sep) {
-	if (typeof str != 'string' || typeof sep != 'string') return [];
+	if (typeof str != 'string' || typeof sep != 'string')
+		return [];
+
 	return str.split(sep).map(function (item) { return item.trim(); }).filter(function (item) { return !item.empty(); });
 }
 

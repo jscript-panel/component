@@ -21,7 +21,9 @@ function on_colours_changed() {
 }
 
 function on_item_focus_change() {
-	if (panel.selection.value == 0 && fb.IsPlaying) return;
+	if (panel.selection.value == 0 && fb.IsPlaying)
+		return;
+
 	panel.item_focus_change();
 }
 
@@ -30,7 +32,9 @@ function on_key_down(k) {
 }
 
 function on_metadb_changed(handles, fromhook) {
-	if (fromhook) return;
+	if (fromhook)
+		return;
+
 	albumart.metadb_changed();
 }
 

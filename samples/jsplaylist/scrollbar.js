@@ -27,7 +27,9 @@ function PlaylistScrollBar() {
 	}
 
 	this.setCursorButton = function () {
-		if (!this.cursorWidth || !this.cursorHeight) return;
+		if (!this.cursorWidth || !this.cursorHeight)
+			return;
+
 		this.cursorImage_normal = utils.CreateImage(this.cursorWidth, this.cursorHeight);
 		var gb = this.cursorImage_normal.GetGraphics();
 

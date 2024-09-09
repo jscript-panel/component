@@ -262,7 +262,9 @@ function oBrowser() {
 
 				for (var i = 0; i < arr.length; i += 2) {
 					var artist = arr[i];
-					if (artist.empty()) continue;
+					if (artist.empty())
+						continue;
+
 					var cachekey = utils.HashString(artist);
 
 					var handles = arr[i + 1];

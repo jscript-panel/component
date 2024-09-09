@@ -12,7 +12,9 @@ function _thumbs() {
 		var current = 0;
 		for (var row = 0; row < this.img_rows; row++) {
 			for (var col = 0; col < this.columns; col++) {
-				if (!this.thumbs[current]) continue;
+				if (!this.thumbs[current])
+					continue;
+
 				if (this.properties.circular.enabled) {
 					temp_gr.DrawImageWithMask(this.thumbs[current], this.circular_mask, col * size, row * size, size, size);
 				} else {
@@ -102,7 +104,8 @@ function _thumbs() {
 	}
 
 	this.draw_blurred_image = function (gr) {
-		if (!this.images[this.image_index]) return;
+		if (!this.images[this.image_index])
+			return;
 
 		if (!this.blurred_images[this.image_index]) {
 			this.blurred_images[this.image_index] = this.images[this.image_index].Clone();
@@ -120,7 +123,9 @@ function _thumbs() {
 
 	this.get_defaults = function () {
 		var defaults = _jsonParseFile(this.json_file);
-		if (_.isArray(defaults)) return {};
+		if (_.isArray(defaults))
+			return {};
+
 		return defaults;
 	}
 
@@ -160,8 +165,11 @@ function _thumbs() {
 
 	this.http_request_done = function (id, success, response_text) {
 		var artist = this.artists[id];
-		if (!artist) return; // we didn't request this id
-		if (!success) return console.log(N, response_text);
+		if (!artist)
+			return; // we didn't request this id
+
+		if (!success)
+			return console.log(N, response_text);
 
 		var filename_base = _artistFolder(artist) + utils.ReplaceIllegalChars(artist) + '_'
 
@@ -707,54 +715,56 @@ function _thumbs() {
 		switch (true) {
 		case !this.containsXY(this.mx, this.my):
 		case this.properties.mode.value == 0 && this.overlay: // grid
-			if (this.images.length < 2) {
+			if (this.images.length < 2)
 				return;
-			}
+
 			this.image_index -= s;
+
 			if (this.image_index < 0) {
 				this.image_index = this.images.length - 1;
-			}
-			if (this.image_index >= this.images.length) {
+			} else if (this.image_index >= this.images.length) {
 				this.image_index = 0;
 			}
+
 			window.Repaint();
 			return;
 		case this.properties.mode.value == 0: // grid
-			if (this.img_rows < this.rows) {
+			if (this.img_rows < this.rows)
 				return;
-			}
+
 			if (offset < 0) {
 				offset = 0;
-			}
-			if (offset > this.img_rows - this.rows) {
+			} else if (offset > this.img_rows - this.rows) {
 				offset = this.img_rows - this.rows + 1;
 			}
+
 			break;
 		case this.properties.mode.value == 1: // left
 		case this.properties.mode.value == 2: // right
-			if (this.images.length < this.rows) {
+			if (this.images.length < this.rows)
 				return;
-			}
+
 			if (offset < 0) {
 				offset = 0;
-			}
-			if (offset + this.rows > this.images.length) {
+			} else if (offset + this.rows > this.images.length) {
 				offset = this.images.length - this.rows + 1;
 			}
+
 			break;
 		case this.properties.mode.value == 3: // top
 		case this.properties.mode.value == 4: // bottom
-			if (this.images.length < this.columns) {
+			if (this.images.length < this.columns)
 				return;
-			}
+
 			if (offset < 0) {
 				offset = 0;
-			}
-			if (offset + this.columns > this.images.length) {
+			} else if (offset + this.columns > this.images.length) {
 				offset = this.images.length - this.columns + 1;
 			}
+
 			break;
 		}
+
 		if (this.offset != offset) {
 			this.offset = offset;
 			window.RepaintRect(this.x, this.y, this.w, this.h);

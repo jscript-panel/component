@@ -171,7 +171,9 @@ function on_font_changed() {
 }
 
 function on_get_album_art_done(metadb, art_id, image) {
-	if (!image) return;
+	if (!image)
+		return;
+
 	for (var i = 0; i < p.list.groups.length; i++) {
 		var group = p.list.groups[i];
 		if (group.metadb && group.metadb.Compare(metadb)) {
@@ -691,7 +693,8 @@ function on_mouse_rbtn_up(x, y) {
 	if (cSettings.visible) {
 		p.settings.on_mouse("rbtn_up", x, y);
 	} else {
-		if (x >= ww - p.scrollbar.w) return false;
+		if (x >= ww - p.scrollbar.w)
+			return false;
 
 		if (p.headerBar.visible)
 			p.headerBar.on_mouse("rbtn_up", x, y);
@@ -699,6 +702,7 @@ function on_mouse_rbtn_up(x, y) {
 		p.playlistManager.check("rbtn_up", x, y);
 		p.list.check("rbtn_up", x, y);
 	}
+
 	return true;
 }
 
@@ -865,7 +869,9 @@ function on_playback_time(time) {
 }
 
 function on_playlist_item_ensure_visible(playlist, index) {
-	if (g_double_clicked) return;
+	if (g_double_clicked)
+		return;
+
 	on_item_focus_change(playlist, 0, index);
 }
 
@@ -1124,7 +1130,8 @@ function togglePlaylistManager() {
 function image_cache() {
 	this.get = function (metadb, group_key) {
 		var img = this.cachelist[group_key];
-		if (img) return img;
+		if (img)
+			return img;
 
 		if (!this.requested[group_key]) {
 			this.requested[group_key] = true;
@@ -1333,12 +1340,14 @@ function get_colours() {
 }
 
 function get_wallpaper() {
-	var img = null;
-	if (!properties.showwallpaper) return img;
+	if (!properties.showwallpaper)
+		return null;
 
 	var metadb = fb.GetNowPlaying();
-	if (!metadb) return img;
+	if (!metadb)
+		return null;
 
+	var img = null;
 	if (properties.wallpapertype == -1) {
 		if (utils.IsFile(properties.wallpaperpath)) {
 			img = utils.LoadImage(properties.wallpaperpath);
@@ -1352,6 +1361,7 @@ function get_wallpaper() {
 	if (img && properties.wallpaperblurred) {
 		img.StackBlur(properties.wallpaperblurvalue);
 	}
+
 	return img;
 }
 

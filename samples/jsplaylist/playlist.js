@@ -155,7 +155,9 @@ function oItem(row_index, type, metadb, track_index, group_index, track_index_in
 	}
 
 	this.drawText = function (gr, text, font, colour, x, y, w, h, align) {
-		if (!text) return;
+		if (!text)
+			return;
+
 		if (g_dynamic) {
 			// WriteTextSimple ignores $rgb code
 			gr.WriteTextSimple(text, font, colour, x, y, w, h, align, 2, 1, 1);
@@ -554,7 +556,8 @@ function oList(object_name) {
 		this.groups = [];
 		this.totalRows = 0;
 		g_total_duration_text = utils.FormatDuration(this.handleList.CalcTotalDuration());
-		if (this.count == 0) return;
+		if (this.count == 0)
+			return;
 
 		var previous = "";
 		var g = 0, t = 0, group_duration = 0;

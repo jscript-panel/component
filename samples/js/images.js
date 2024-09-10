@@ -51,7 +51,7 @@ function _images() {
 			})
 			.take(this.properties.limit.value)
 			.forEach(function (item) {
-				utils.DownloadFileAsync(window.ID, item.url, item.filename);
+				utils.DownloadFileAsync(window.ID, item.url, item.filename, true);
 			})
 			.value();
 	}

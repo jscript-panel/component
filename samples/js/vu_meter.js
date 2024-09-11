@@ -19,7 +19,7 @@ if (properties.meter_style.value > 1) {
 
 var font_t = CreateFontString("Segoe UI", 8);
 var solid_colour = false;
-var rms_block_dbs = [0.625, 1.25, 2.5];
+var rms_block_dbs = [0.3125, 0.625, 1.25, 2.5];
 var RMS_levels = [], Peak_levels = [], Peak_falldown = [];
 var ChannelNames = [ "FL", "FR", "FC", "LFE", "BL", "BR", "FCL", "FCR", "BC", "SL", "SR", "TC", "TFL", "TFC", "TFR", "TBL", "TBC", "TBR" ];
 var ww = 0, wh = 0, timer_id = 0, rms_db_offset = 0, dBrange = 0;
@@ -327,6 +327,7 @@ function on_mouse_rbtn_up(x, y) {
 	case 20:
 	case 21:
 	case 22:
+	case 23:
 		properties.rms_block_db.value = rms_block_dbs[idx - 20];
 		window.Repaint();
 		break;

@@ -168,8 +168,10 @@ function _thumbs() {
 		if (!artist)
 			return; // we didn't request this id
 
-		if (!success)
-			return console.log(N, response_text);
+		if (!success) {
+			console.log(N, response_text);
+			return;
+		}
 
 		var filename_base = _artistFolder(artist) + utils.ReplaceIllegalChars(artist) + '_'
 

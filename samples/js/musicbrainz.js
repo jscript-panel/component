@@ -45,8 +45,10 @@ function _musicbrainz(x, y, w, h) {
 		if (!f)
 			return;
 
-		if (!success)
-			return console.log(N, response_text);
+		if (!success) {
+			console.log(N, response_text);
+			return;
+		}
 
 		if (this.properties.mode.value == 0) {
 			var data = _jsonParse(response_text);

@@ -48,8 +48,10 @@ function _allmusic(x, y, w, h) {
 		if (!filename)
 			return;
 
-		if (!success)
-			return console.log(N, response_text);
+		if (!success) {
+			console.log(N, response_text);
+			return;
+		}
 
 		if (this.review_url.length) {
 			this.review_url = '';

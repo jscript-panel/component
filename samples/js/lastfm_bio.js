@@ -53,8 +53,10 @@ function _lastfm_bio(x, y, w, h) {
 		if (!filename)
 			return;
 
-		if (!success)
-			return console.log(N, response_text);
+		if (!success) {
+			console.log(N, response_text);
+			return;
+		}
 
 		doc.open();
 

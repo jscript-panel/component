@@ -52,12 +52,15 @@ function _lastfm_info(x, y, w, h) {
 		if (!f)
 			return;
 
-		if (!success)
-			return console.log(N, response_text);
+		if (!success) {
+			console.log(N, response_text);
+			return;
+		}
 
 		var data = _jsonParse(response_text);
 		if (data.error) {
-			return console.log(N, data.message);
+			console.log(N, data.message);
+			return;
 		}
 
 		if (_save(f, response_text)) {

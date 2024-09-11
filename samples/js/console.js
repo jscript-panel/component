@@ -176,7 +176,7 @@ function _console(x, y, w, h) {
 	this.CRLF = '\r\n';
 
 	this.properties = {
-		timestamp : new _p('2K3.TEXT.CONSOLE.TIMESTAMP', false)
+		timestamp : new _p('2K3.TEXT.CONSOLE.TIMESTAMP', true)
 	};
 
 	this.up_btn = new _sb(chars.up, this.x, this.y, _scale(12), _scale(12), _.bind(function () { return this.offset < 0; }, this), _.bind(function () { this.wheel(1); }, this));

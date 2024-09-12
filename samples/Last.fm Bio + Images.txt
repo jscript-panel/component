@@ -23,7 +23,7 @@ lastfm_bio.paint = function (gr) {
 	gr.WriteText2(this.header_text(), panel.fonts.title, white, this.x, y, this.w, TM, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_WORD_WRAPPING_NO_WRAP, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 
 	if (lastfm.api_key.empty()) {
-		gr.WriteTextSimple('Use the right click menu to set your own Last.fm API key.', panel.fonts.normal, panel.colours.text, this.x, this.y + margin, this.w, this.ha);
+		gr.WriteTextSimple('Use the right click menu to set your own Last.fm API key.', panel.fonts.normal, white, this.x, this.y + margin, this.w, this.ha);
 	} else if (this.text_layout) {
 		gr.WriteTextLayout(this.text_layout, white, this.x, this.y + margin, this.w, this.ha, this.offset);
 		this.up_btn.paint(gr, white);

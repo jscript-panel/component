@@ -21,16 +21,17 @@ function _lastfm_info(x, y, w, h) {
 			if (!_tagged(this.artist)) {
 				return;
 			}
-			var url = lastfm.base_url + '&limit=100&method=' + this.artist_methods[this.properties.artist_method.value].method + '&artist=' + encodeURIComponent(this.artist);
+			var url = lastfm.base_url() + '&limit=100&method=' + this.artist_methods[this.properties.artist_method.value].method + '&artist=' + encodeURIComponent(this.artist);
 			break;
 		case 1:
 			if (this.properties.user_mode.value == 0) {
-				var url = lastfm.base_url + '&limit=100&method=' + this.chart_methods[this.properties.charts_method.value].method + '&period=' + this.chart_periods[this.properties.charts_period.value].period + '&user=' + lastfm.username;
+				var url = lastfm.base_url() + '&limit=100&method=' + this.chart_methods[this.properties.charts_method.value].method + '&period=' + this.chart_periods[this.properties.charts_period.value].period + '&user=' + lastfm.username;
 			} else {
-				var url = lastfm.base_url + '&limit=100&method=user.getRecentTracks&user=' + lastfm.username;
+				var url = lastfm.base_url() + '&limit=100&method=user.getRecentTracks&user=' + lastfm.username;
 			}
 			break;
 		}
+
 		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, lastfm.ua);
 		this.filenames[task_id] = this.filename;
 	}

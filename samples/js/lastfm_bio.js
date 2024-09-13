@@ -28,7 +28,7 @@ function _lastfm_bio(x, y, w, h) {
 		if (lastfm.api_key.empty() || !_tagged(this.artist))
 			return;
 
-		var url = lastfm.base_url + '&method=artist.getInfo&autocorrect=1&lang=' + this.langs[this.properties.lang.value] + '&artist=' + encodeURIComponent(this.artist);
+		var url = lastfm.base_url() + '&method=artist.getInfo&autocorrect=1&lang=' + this.langs[this.properties.lang.value] + '&artist=' + encodeURIComponent(this.artist);
 		utils.DownloadFileAsync(window.ID, url, this.filename);
 	}
 

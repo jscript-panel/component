@@ -1,8 +1,6 @@
 function _lastfm() {
-	this.read_file = function () {
-		var obj = _jsonParseFile(this.json_file);
-		this.api_key = obj.api_key || '';
-		this.username = obj.username || '';
+	this.base_url = function () {
+		return 'http://ws.audioscrobbler.com/2.0/?format=json&api_key=' + this.api_key;
 	}
 
 	this.notify_data = function (name, data) {
@@ -22,6 +20,12 @@ function _lastfm() {
 				}
 			});
 		}
+	}
+
+	this.read_file = function () {
+		var obj = _jsonParseFile(this.json_file);
+		this.api_key = obj.api_key || '';
+		this.username = obj.username || '';
 	}
 
 	this.update_api_key = function () {
@@ -59,5 +63,4 @@ function _lastfm() {
 	this.username = ''
 	this.ua = 'jscript_panel_lastfm';
 	this.read_file();
-	this.base_url = 'http://ws.audioscrobbler.com/2.0/?format=json&api_key=' + this.api_key;
 }

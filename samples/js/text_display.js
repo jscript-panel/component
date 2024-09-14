@@ -89,8 +89,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			panel.s12.CheckMenuRadioItem(1220, 1222, this.properties.valign.value + 1220);
 			panel.s12.AppendTo(panel.m, MF_STRING, 'Text alignment (vertical)');
 
-			if (this.properties.layout.value == 0)
-			{
+			if (this.properties.layout.value == 0) {
 				panel.m.AppendMenuItem(MF_STRING, 1230, 'Margin...');
 			}
 

@@ -136,13 +136,14 @@ function oPlaylistManager() {
 
 		cx = this.x - this.woffset + this.border;
 		for (var i = this.offset; i < this.playlists.length; i++) {
+			var playlistIndex = this.playlists[i].idx;
 			var cy = this.y + cPlaylistManager.rowHeight + row_idx * ch;
 			this.playlists[i].y = cy;
 			var txt_color = g_colour_text;
-			var is_hovering = g_drag_drop_playlist_manager_hover && i == this.hoverId && playlist_can_add_items(this.playlists[i].idx);
+			var is_hovering = g_drag_drop_playlist_manager_hover && i == this.hoverId && playlist_can_add_items(playlistIndex);
 
 			// draw selected bg if active or being hovered over
-			if (this.playlists[i].idx == g_active_playlist || is_hovering) {
+			if (playlistIndex == g_active_playlist || is_hovering) {
 				gr.FillRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, g_colour_selection);
 
 				if (is_hovering) { // only draw outline if hovering
@@ -156,14 +157,20 @@ function oPlaylistManager() {
 				gr.DrawRectangle(cx + 1, cy + 1, this.w - this.border - this.scrollbarWidth - 2, ch - 2, 2, g_colour_text);
 			}
 
-			gr.WriteTextSimple(plman.IsPlaylistLocked(this.playlists[i].idx) ? chars.lock : chars.list, g_font_fluent_12, txt_color, cx, cy, ch, ch, 2, 2);
+			if (plman.IsAutoPlaylist(playlistIndex)) {
+				gr.WriteTextSimple(chars.autoplaylist, g_font_fluent_12, txt_color, cx, cy, ch, ch, 2, 2);
+			} else if (plman.IsPlaylistLocked(playlistIndex)) {
+				gr.WriteTextSimple(chars.lock, g_font_fluent_12, txt_color, cx, cy, ch, ch, 2, 2);
+			} else {
+				gr.WriteTextSimple(chars.list, g_font_fluent_12, txt_color, cx, cy, ch, ch, 2, 2);
+			}
 
 			// draw INPUTBOX if rename requested
 			if (this.inputboxID == i) {
 				this.inputbox.draw(gr, this.x - this.woffset + this.border + scale(30), cy + 5);
 			} else {
 				// playlist total items
-				var count = plman.GetPlaylistItemCount(this.playlists[i].idx);
+				var count = plman.GetPlaylistItemCount(playlistIndex);
 				gr.WriteTextSimple(count, g_font_12, txt_color, cx + g_z10, cy, cw - g_z5, ch, 1, 2, 1);
 
 				var count_width = "99999".calc_width2(g_font_12);

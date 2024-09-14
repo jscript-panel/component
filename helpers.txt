@@ -243,6 +243,7 @@ var chars = {
 	random : '\ue9ce',
 	album : '\ue93c',
 	folder : '\ued25',
+	autoplaylist : '\uea69',
 // Ignore these, they are special chars for $rgb and $font parsing
 	etx : String.fromCharCode(3),
 	bel : String.fromCharCode(7),

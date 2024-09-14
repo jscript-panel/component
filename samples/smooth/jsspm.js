@@ -354,13 +354,12 @@ function oBrowser() {
 					gr.DrawRectangle(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_colour_text & 0xa0ffffff);
 				}
 
-				if (plman.IsPlaylistLocked(i))
-				{
+				if (plman.IsAutoPlaylist(i)) {
+					gr.WriteTextSimple(chars.autoplaylist, g_font_fluent_20, normal_text, ax + scale(5), ay, ah, ah, 0, 2);
+				} else if (plman.IsPlaylistLocked(i)) {
 					gr.WriteTextSimple(chars.lock, g_font_fluent_20, normal_text, ax + scale(5), ay, ah, ah, 0, 2);
-				}
-				else
-				{
-					gr.WriteTextSimple(chars.list, g_font_fluent_20, normal_text, ax + scale(7), ay, ah, ah, 0, 2);
+				} else {
+					gr.WriteTextSimple(chars.list, g_font_fluent_20, normal_text, ax + scale(6), ay, ah, ah, 0, 2);
 				}
 
 				if (this.inputboxID == i) {

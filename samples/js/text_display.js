@@ -11,10 +11,6 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 		return x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h;
 	}
 
-	this.lbtn_up = function (x, y) {
-		return this.containsXY(x, y);
-	}
-
 	this.metadb_changed = function () {
 		this.refresh();
 	}
@@ -197,7 +193,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 					var font = JSON.parse(panel.fonts.normal);
 
 					if (this.properties.layout.value == 1) {
-						this.text_layout = utils.CreateTextLayout(this.text, font.Name, font.Size, font.Weight, font.Style, font.Stretch, 2, 2);
+						this.text_layout = utils.CreateTextLayout(this.text, font.Name, font.Size, font.Weight, font.Style, font.Stretch, 2, 0);
 					} else {
 						this.text_layout = utils.CreateTextLayout(this.text, font.Name, font.Size, font.Weight, font.Style, font.Stretch, this.properties.halign.value, this.properties.valign.value);
 					}
@@ -217,46 +213,53 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 		switch (this.properties.layout.value) {
 		case 0: // text only
 			var margin_property = _scale(this.properties.margin.value);
+
 			this.x = margin_property;
 			this.y = margin_property;
 			this.w = panel.w - (margin_property * 2);
 			this.h = panel.h - (margin_property * 2);
-			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+
+			if (this.text_layout) {
+				this.text_height = this.text_layout.CalcTextHeight(this.w);
+			}
 			break;
 		case 1: // album art top, text bottom
-			this.x = margin;
-			this.w = panel.w - (margin * 2);
-			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
-
-			if (this.buttons_or_rating) {
-				this.y = panel.h - _scale(30) - this.text_height - (margin * 2);
-				this.h = this.text_height;
-			} else {
-				this.y = panel.h - this.text_height - (margin * 2);
-				this.h = this.text_height + (margin * 2);
+			var width = panel.w - (margin * 2);
+			if (this.text_layout) {
+				this.text_height = this.text_layout.CalcTextHeight(width);
 			}
+
+			var text_height = Math.min(this.text_height + margin, panel.h / 2);
 
 			albumart.x = margin;
 			albumart.y = margin;
-			albumart.w = panel.w - (margin * 2);
+			albumart.w = width;
+			albumart.h = panel.h - text_height - (margin * 2);
+
+			this.x = margin;
+			this.y = panel.h - text_height;
+			this.w = width;
+			this.h = text_height - margin;
 
 			if (this.buttons_or_rating) {
-				albumart.h = panel.h - this.h - margin - _scale(60);
-			} else {
-				albumart.h = panel.h - this.h - margin;
+				albumart.h -= _scale(40);
+				this.y -= _scale(40);
 			}
-
 			break;
 		case 2: // album art left, text right
 			albumart.x = margin;
 			albumart.y = margin;
 			albumart.w = (panel.w / 2) - margin;
 			albumart.h = panel.h - (margin * 2);
+
 			this.x = (margin * 2) + albumart.w;
 			this.y = margin;
 			this.w = albumart.w - margin;
 			this.h = panel.h - (margin * 2);
-			if (this.text_layout) this.text_height = this.text_layout.CalcTextHeight(this.w);
+
+			if (this.text_layout) {
+				this.text_height = this.text_layout.CalcTextHeight(this.w);
+			}
 			break;
 		}
 

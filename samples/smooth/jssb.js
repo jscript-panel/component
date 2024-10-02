@@ -255,8 +255,6 @@ function oBrowser() {
 		}
 
 		if (this.list.Count > 0) {
-			var g = 0;
-
 			if (ppt.library && ppt.tagMode == 1) { // multi value artist
 				var arr = this.list.GroupByTag("artist").toArray();
 
@@ -265,16 +263,15 @@ function oBrowser() {
 					if (artist.empty())
 						continue;
 
-					var cachekey = utils.HashString(artist);
-
 					var handles = arr[i + 1];
-					handles.SortByFormat(obj.sort_tf, 1);
+					var cachekey = utils.HashString(artist);
+					var group = new oGroup(g, i, handles.GetItem(0), artist, cachekey);
+					group.finalise(handles);
 
-					this.groups.push(new oGroup(g, i, handles.GetItem(0), artist, cachekey));
-					this.groups[g].finalise(handles);
-					g++;
+					this.groups.push(group);
 				}
 			} else {
+				var g = 0;
 				var track_tfs = obj.group_tfo.EvalWithMetadbs(this.list).toArray();
 				var previous = "";
 				var handles = fb.CreateHandleList();

@@ -41,6 +41,7 @@ function _panel(options) {
 		if (!this.tfo[t]) {
 			this.tfo[t] = fb.TitleFormat(t);
 		}
+
 		return this.tfo[t];
 	}
 
@@ -49,7 +50,11 @@ function _panel(options) {
 			return;
 
 		this.metadb = this.selection.value == 0 && fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
-		if (!this.metadb) _tt('');
+
+		if (!this.metadb) {
+			_tt('');
+		}
+
 		on_metadb_changed();
 	}
 
@@ -66,6 +71,7 @@ function _panel(options) {
 			var col = this.colours.custom_background.value;
 			break;
 		}
+
 		gr.Clear(col);
 	}
 
@@ -151,6 +157,7 @@ function _panel(options) {
 			}
 			break;
 		}
+
 		return true;
 	}
 
@@ -163,10 +170,12 @@ function _panel(options) {
 		if (!this.metadb) {
 			return '';
 		}
+
 		var tfo = this.get_tfo(t);
-		if (this.selection.value == 0 && fb.IsPlaying) {
+
+		if (this.selection.value == 0 && fb.IsPlaying)
 			return tfo.Eval();
-		}
+
 		return tfo.EvalWithMetadb(this.metadb);
 	}
 
@@ -187,6 +196,7 @@ function _panel(options) {
 	if (this.metadb_func) {
 		this.selection = new _p('2K3.PANEL.SELECTION', 0);
 	}
+
 	if (typeof options == 'object') {
 		if (options.custom_background === true) {
 			this.custom_background = true;
@@ -194,6 +204,7 @@ function _panel(options) {
 			this.colours.custom_background = new _p('2K3.PANEL.COLOURS.CUSTOM.BACKGROUND', RGB(0, 0, 0));
 		}
 	}
+
 	this.colours_changed();
 	this.font_changed();
 }

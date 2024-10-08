@@ -74,12 +74,13 @@ function on_mouse_lbtn_up(x, y) {
 		fb.GetNowPlaying().ShowAlbumArtViewer();
 		return;
 	}
-	if (buttons.lbtn_up(x, y)) {
+
+	if (buttons.lbtn_up(x, y))
 		return;
-	}
-	if (seekbar.lbtn_up(x, y)) {
+
+	if (seekbar.lbtn_up(x, y))
 		return;
-	}
+
 	fb.RunMainMenuCommand('View/Show now playing in playlist');
 }
 
@@ -89,9 +90,10 @@ function on_mouse_leave() {
 
 function on_mouse_move(x, y) {
 	window.SetCursor(x < panel.h && fb.IsPlaying && img ? IDC_HAND : IDC_ARROW);
-	if (buttons.move(x, y)) {
+
+	if (buttons.move(x, y))
 		return;
-	}
+
 	seekbar.move(x, y);
 }
 
@@ -105,14 +107,7 @@ function on_mouse_rbtn_up(x, y) {
 }
 
 function on_mouse_wheel(s) {
-	if (seekbar.wheel(s)) {
-		return;
-	}
-	if (s == 1) {
-		fb.VolumeUp();
-	} else {
-		fb.VolumeDown();
-	}
+	seekbar.wheel(s);
 }
 
 function on_paint(gr) {

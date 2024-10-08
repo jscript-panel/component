@@ -70,13 +70,12 @@ function _console(x, y, w, h) {
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			this.up_btn.lbtn_up(x, y);
-			this.down_btn.lbtn_up(x, y);
-			return true;
-		}
+		if (!this.containsXY(x, y))
+			return false;
 
-		return false;
+		this.up_btn.lbtn_up(x, y);
+		this.down_btn.lbtn_up(x, y);
+		return true;
 	}
 
 	this.move = function (x, y) {
@@ -84,13 +83,12 @@ function _console(x, y, w, h) {
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
 
-		if (this.containsXY(x, y)) {
-			this.up_btn.move(x, y);
-			this.down_btn.move(x, y);
-			return true;
-		}
+		if (!this.containsXY(x, y))
+			return false;
 
-		return false;
+		this.up_btn.move(x, y);
+		this.down_btn.move(x, y);
+		return true;
 	}
 
 	this.paint = function (gr) {
@@ -139,21 +137,28 @@ function _console(x, y, w, h) {
 		this.text_height = this.text_layout.CalcTextHeight(this.w);
 		this.scroll_step = _scale(panel.fonts.size.value) * 4;
 
-		if (this.text_height < this.ha) this.offset = 0;
-		else this.offset = -(this.text_height - this.ha);
+		if (this.text_height < this.ha)
+			this.offset = 0;
+		else
+			this.offset = -(this.text_height - this.ha);
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.text_height > this.ha) {
-				this.offset += s * this.scroll_step;
-				if (this.offset > 0) this.offset = 0;
-				else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
-				window.RepaintRect(this.x, this.y, this.w, this.h);
-			}
-			return true;
+		if (!this.containsXY(this.mx, this.my))
+			return false;
+
+		if (this.text_height > this.ha) {
+			this.offset += s * this.scroll_step;
+
+			if (this.offset > 0)
+				this.offset = 0;
+			else if (this.offset < this.ha - this.text_height)
+				this.offset = this.ha - this.text_height;
+
+			window.RepaintRect(this.x, this.y, this.w, this.h);
 		}
-		return false;
+
+		return true;
 	}
 
 	panel.text_objects.push(this);

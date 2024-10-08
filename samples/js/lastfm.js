@@ -30,6 +30,7 @@ function _lastfm() {
 
 	this.update_api_key = function () {
 		var api_key = utils.InputBox('Enter your Last.fm API key', window.Name, this.api_key);
+
 		if (api_key != this.api_key) {
 			this.api_key = api_key;
 			this.write_file();
@@ -40,6 +41,7 @@ function _lastfm() {
 
 	this.update_username = function () {
 		var username = utils.InputBox('Enter your Last.fm username', window.Name, this.username);
+
 		if (username != this.username) {
 			this.username = username;
 			this.write_file();

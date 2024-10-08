@@ -17,9 +17,8 @@ function _images() {
 	}
 
 	this.download = function () {
-		if (!_tagged(this.artist)) {
+		if (!_tagged(this.artist))
 			return;
-		}
 
 		var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist) + '/+images';
 		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
@@ -28,6 +27,7 @@ function _images() {
 
 	this.http_request_done = function (id, success, response_text) {
 		var artist = this.artists[id];
+
 		if (!artist)
 			return; // we didn't request this id
 
@@ -60,11 +60,14 @@ function _images() {
 
 	this.interval_func = _.bind(function () {
 		this.time++;
+
 		if (this.properties.cycle.value > 0 && this.image_paths.length > 1 && this.time % this.properties.cycle.value == 0) {
 			this.image_index++;
+
 			if (this.image_index == this.image_paths.length) {
 				this.image_index = 0;
 			}
+
 			this.update_image();
 			window.Repaint();
 		}
@@ -124,6 +127,7 @@ function _images() {
 			this.artist = '';
 			this.folder = '';
 		}
+
 		this.update();
 	}
 
@@ -162,6 +166,7 @@ function _images() {
 
 	this.playback_time = function () {
 		this.counter++;
+
 		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.image_paths.length == 0 && !this.history[this.artist]) {
 			this.history[this.artist] = true;
 			this.download();
@@ -169,9 +174,8 @@ function _images() {
 	}
 
 	this.rbtn_up = function (x, y) {
-		if (!this.containsXY(x, y)) {
+		if (!this.containsXY(x, y))
 			return;
-		}
 
 		if (this.is_bio_panel) {
 			panel.m.AppendMenuItem(MF_STRING, 1600, 'Image left, Text right');
@@ -357,24 +361,23 @@ function _images() {
 			return;
 		}
 
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.image_paths.length > 1) {
-				this.image_index -= s;
+		if (!this.containsXY(this.mx, this.my))
+			return false;
 
-				if (this.image_index < 0) {
-					this.image_index = this.image_paths.length - 1;
-				} else if (this.image_index >= this.image_paths.length) {
-					this.image_index = 0;
-				}
+		if (this.image_paths.length > 1) {
+			this.image_index -= s;
 
-				this.update_image();
-				window.Repaint();
+			if (this.image_index < 0) {
+				this.image_index = this.image_paths.length - 1;
+			} else if (this.image_index >= this.image_paths.length) {
+				this.image_index = 0;
 			}
 
-			return true;
+			this.update_image();
+			window.Repaint();
 		}
 
-		return false;
+		return true;
 	}
 
 	this.x = 0;

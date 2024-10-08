@@ -42,14 +42,15 @@ function _lastfm_bio(x, y, w, h) {
 	}
 
 	this.header_text = function () {
-		if (this.flag_font && this.flag.length) {
+		if (this.flag_font && this.flag.length)
 			return panel.tf('$font(Twemoji Mozilla,' + _scale(panel.fonts.size.value - 3) + ')' + this.flag + '$font() ') + this.artist;
-		}
+
 		return this.artist;
 	}
 
 	this.http_request_done = function (id, success, response_text) {
 		var filename = this.filenames[id];
+
 		if (!filename)
 			return;
 
@@ -76,6 +77,7 @@ function _lastfm_bio(x, y, w, h) {
 				tags.push(a.innerText);
 			}
 		}
+
 		if (tags.length) obj.Tags = tags.join(', ');
 
 		var dts = div.getElementsByTagName('dt');
@@ -124,13 +126,13 @@ function _lastfm_bio(x, y, w, h) {
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			this.up_btn.lbtn_up(x, y);
-			this.down_btn.lbtn_up(x, y);
-			return true;
-		}
+		if (!this.containsXY(x, y))
+			return false;
 
-		return false;
+		this.up_btn.lbtn_up(x, y);
+		this.down_btn.lbtn_up(x, y);
+		return true;
+
 	}
 
 	this.metadb_changed = function () {
@@ -166,6 +168,7 @@ function _lastfm_bio(x, y, w, h) {
 			this.clear_layout();
 			this.reset();
 		}
+
 		this.update();
 		window.Repaint();
 	}
@@ -175,13 +178,12 @@ function _lastfm_bio(x, y, w, h) {
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
 
-		if (this.containsXY(x, y)) {
-			this.up_btn.move(x, y);
-			this.down_btn.move(x, y);
-			return true;
-		}
+		if (!this.containsXY(x, y))
+			return false;
 
-		return false;
+		this.up_btn.move(x, y);
+		this.down_btn.move(x, y);
+		return true;
 	}
 
 	this.paint = function (gr) {
@@ -240,6 +242,7 @@ function _lastfm_bio(x, y, w, h) {
 	this.parse_location = function (location) {
 		var locations = _stringToArray(location, ',');
 		var flag = utils.GetCountryFlag(_.last(locations));
+
 		if (flag.length) {
 			this.flag = flag;
 		} else {
@@ -345,21 +348,28 @@ function _lastfm_bio(x, y, w, h) {
 		this.text_height = this.text_layout.CalcTextHeight(this.w);
 		this.scroll_step = _scale(panel.fonts.size.value) * 4;
 
-		if (this.text_height < this.ha) this.offset = 0;
-		else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
+		if (this.text_height < this.ha)
+			this.offset = 0;
+		else if (this.offset < this.ha - this.text_height)
+			this.offset = this.ha - this.text_height;
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.text_height > this.ha) {
-				this.offset += s * this.scroll_step;
-				if (this.offset > 0) this.offset = 0;
-				else if (this.offset < this.ha - this.text_height) this.offset = this.ha - this.text_height;
-				window.RepaintRect(this.x, this.y, this.w, this.h);
-			}
-			return true;
+		if (!this.containsXY(this.mx, this.my))
+			return false;
+
+		if (this.text_height > this.ha) {
+			this.offset += s * this.scroll_step;
+
+			if (this.offset > 0)
+				this.offset = 0;
+			else if (this.offset < this.ha - this.text_height)
+				this.offset = this.ha - this.text_height;
+
+			window.RepaintRect(this.x, this.y, this.w, this.h);
 		}
-		return false;
+
+		return true;
 	}
 
 	utils.CreateFolder(folders.artists);

@@ -11,29 +11,32 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 	}, this);
 
 	this.lbtn_down = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (fb.IsPlaying && fb.PlaybackLength > 0) {
-				this.drag = true;
-			}
-			return true;
+		if (!this.containsXY(x, y))
+			return false;
+
+		if (fb.IsPlaying && fb.PlaybackLength > 0) {
+			this.drag = true;
 		}
-		return false;
+
+		return true;
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (this.drag) {
-				this.drag = false;
-				fb.PlaybackTime = fb.PlaybackLength * this.drag_seek;
-			}
-			return true;
+		if (!this.containsXY(x, y))
+			return false;
+
+		if (this.drag) {
+			this.drag = false;
+			fb.PlaybackTime = fb.PlaybackLength * this.drag_seek;
 		}
-		return false;
+
+		return true;
 	}
 
 	this.move = function (x, y) {
 		this.mx = x;
 		this.my = y;
+
 		if (this.containsXY(x, y)) {
 			if (fb.IsPlaying && fb.PlaybackLength > 0) {
 				x -= this.x;
@@ -69,25 +72,26 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			switch (true) {
-			case !fb.IsPlaying:
-			case fb.PlaybackLength <= 0:
-				break;
-			case fb.PlaybackLength < 60:
-				fb.PlaybackTime += s * 5;
-				break;
-			case fb.PlaybackLength < 600:
-				fb.PlaybackTime += s * 10;
-				break;
-			default:
-				fb.PlaybackTime += s * 60;
-				break;
-			}
-			_tt('');
-			return true;
+		if (!this.containsXY(this.mx, this.my))
+			return false;
+
+		switch (true) {
+		case !fb.IsPlaying:
+		case fb.PlaybackLength <= 0:
+			break;
+		case fb.PlaybackLength < 60:
+			fb.PlaybackTime += s * 5;
+			break;
+		case fb.PlaybackLength < 600:
+			fb.PlaybackTime += s * 10;
+			break;
+		default:
+			fb.PlaybackTime += s * 60;
+			break;
 		}
-		return false;
+
+		_tt('');
+		return true;
 	}
 
 	this.pos = function () {

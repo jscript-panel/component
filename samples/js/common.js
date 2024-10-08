@@ -236,6 +236,7 @@ function _help(x, y, flags) {
 	var menu = window.CreatePopupMenu();
 	_.forEach(ha_links, function (item, i) {
 		menu.AppendMenuItem(MF_STRING, i + 100, item[0]);
+
 		if (i == 1) {
 			menu.AppendMenuSeparator();
 		}
@@ -376,24 +377,22 @@ function _sb(ch, x, y, w, h, v, fn) {
 	}
 
 	this.move = function (x, y) {
-		if (this.containsXY(x, y)) {
-			window.SetCursor(IDC_HAND);
-			return true;
-		}
+		if (!this.containsXY(x, y))
+			return false;
 
-		return false;
+		window.SetCursor(IDC_HAND);
+		return true;
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (this.fn) {
-				this.fn(x, y);
-			}
+		if (!this.containsXY(x, y))
+			return false;
 
-			return true;
+		if (this.fn) {
+			this.fn(x, y);
 		}
 
-		return false;
+		return true;
 	}
 
 	this.ch = ch;

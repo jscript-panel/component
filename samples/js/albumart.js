@@ -59,33 +59,34 @@ function _albumart(x, y, w, h) {
 	}
 
 	this.lbtn_dblclk = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (panel.metadb) {
-				switch (this.properties.double_click_mode.value) {
-				case 0:
-					if (panel.metadb.Path == this.path) {
-						_explorer(this.path);
-					} else if (utils.IsFile(this.path) || _.startsWith(this.path, 'http')) {
-						utils.Run(this.path);
-					}
-					break;
-				case 1:
-					if (this.properties.mode.value == 0) {
-						panel.metadb.ShowAlbumArtViewer(this.properties.id.value);
-					} else {
-						if (this.custom_id > -1 && this.custom_type > -1) {
-							panel.metadb.ShowAlbumArtViewer2(this.custom_id, this.custom_type);
-						}
-					}
-					break;
-				case 2:
-					if (utils.IsFile(this.path)) _explorer(this.path);
-					break;
+		if (!this.containsXY(x, y))
+			return false;
+
+		if (panel.metadb) {
+			switch (this.properties.double_click_mode.value) {
+			case 0:
+				if (panel.metadb.Path == this.path) {
+					_explorer(this.path);
+				} else if (utils.IsFile(this.path) || _.startsWith(this.path, 'http')) {
+					utils.Run(this.path);
 				}
+				break;
+			case 1:
+				if (this.properties.mode.value == 0) {
+					panel.metadb.ShowAlbumArtViewer(this.properties.id.value);
+				} else {
+					if (this.custom_id > -1 && this.custom_type > -1) {
+						panel.metadb.ShowAlbumArtViewer2(this.custom_id, this.custom_type);
+					}
+				}
+				break;
+			case 2:
+				if (utils.IsFile(this.path)) _explorer(this.path);
+				break;
 			}
-			return true;
 		}
-		return false;
+
+		return true;
 	}
 
 	this.metadb_changed = function () {
@@ -144,6 +145,7 @@ function _albumart(x, y, w, h) {
 		if (this.hover) {
 			_tt('');
 		}
+
 		this.hover = false;
 		return false;
 	}
@@ -275,20 +277,22 @@ function _albumart(x, y, w, h) {
 	}
 
 	this.wheel = function (s) {
-		if (this.properties.mode.value == 0 && this.containsXY(this.mx, this.my)) {
-			var id = this.properties.id.value - s;
-			if (id < 0) {
-				id = 4;
-			}
-			if (id > 4) {
-				id = 0;
-			}
-			this.properties.id.value = id;
-			_tt('');
-			this.metadb_changed();
-			return true;
+		if (this.properties.mode.value == 1 || !this.containsXY(this.mx, this.my))
+			return false;
+
+		var id = this.properties.id.value - s;
+
+		if (id < 0) {
+			id = 4;
 		}
-		return false;
+		if (id > 4) {
+			id = 0;
+		}
+
+		this.properties.id.value = id;
+		_tt('');
+		this.metadb_changed();
+		return true;
 	}
 
 	this.is_review_panel = panel.text_objects.length == 1 && panel.text_objects[0].name == 'allmusic';

@@ -202,6 +202,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 		} else {
 			this.clear_layout();
 		}
+
 		this.size();
 		window.Repaint();
 	}
@@ -263,23 +264,30 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			break;
 		}
 
-		if (this.text_height < this.h) this.offset = 0;
-		else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
+		if (this.text_height < this.h)
+			this.offset = 0;
+		else if (this.offset < this.h - this.text_height)
+			this.offset = this.h - this.text_height;
 
 		this.scroll_step = _scale(panel.fonts.size.value) * 4;
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.text_height > this.h) {
-				this.offset += s * this.scroll_step;
-				if (this.offset > 0) this.offset = 0;
-				else if (this.offset < this.h - this.text_height) this.offset = this.h - this.text_height;
-				window.RepaintRect(this.x, this.y, this.w, this.h);
-			}
-			return true;
+		if (!this.containsXY(this.mx, this.my))
+			return false;
+
+		if (this.text_height > this.h) {
+			this.offset += s * this.scroll_step;
+
+			if (this.offset > 0)
+				this.offset = 0;
+			else if (this.offset < this.h - this.text_height)
+				this.offset = this.h - this.text_height;
+
+			window.RepaintRect(this.x, this.y, this.w, this.h);
 		}
-		return false;
+
+		return true;
 	}
 
 	panel.display_objects.push(this);

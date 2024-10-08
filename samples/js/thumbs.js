@@ -123,6 +123,7 @@ function _thumbs() {
 
 	this.get_defaults = function () {
 		var defaults = _jsonParseFile(this.json_file);
+
 		if (_.isArray(defaults))
 			return {};
 
@@ -157,14 +158,17 @@ function _thumbs() {
 			total_file_size += utils.GetFileSize(item);
 			return total_file_size < size_limit && i <= count_limit;
 		});
+
 		if (filtered.length < files.length) {
 			console.log(N, 'Not all images have been loaded. This is due to excessive total size and/or count.');
 		}
+
 		return filtered;
 	}
 
 	this.http_request_done = function (id, success, response_text) {
 		var artist = this.artists[id];
+
 		if (!artist)
 			return; // we didn't request this id
 
@@ -208,6 +212,7 @@ function _thumbs() {
 
 	this.interval_func = _.bind(function () {
 		this.time++;
+
 		if (this.properties.cycle.value > 0 && this.images.length > 1 && this.time % this.properties.cycle.value == 0) {
 			this.image_index++;
 			if (this.image_index == this.images.length) {
@@ -404,6 +409,7 @@ function _thumbs() {
 
 	this.playback_time = function () {
 		this.counter++;
+
 		if (panel.selection.value == 0 && this.properties.source.value == 1 && this.properties.auto_download.enabled && this.counter == 2 && this.images.length == 0 && !this.history[this.artist]) {
 			this.history[this.artist] = true;
 			this.download();

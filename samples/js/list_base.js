@@ -22,13 +22,12 @@ function _list_base(x, y, w, h) {
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			this.up_btn.lbtn_up(x, y);
-			this.down_btn.lbtn_up(x, y);
-			return true;
-		}
+		if (!this.containsXY(x, y))
+			return false;
 
-		return false;
+		this.up_btn.lbtn_up(x, y);
+		this.down_btn.lbtn_up(x, y);
+		return true;
 	}
 
 	this.move = function (x, y) {
@@ -36,13 +35,12 @@ function _list_base(x, y, w, h) {
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
 
-		if (this.containsXY(x, y)) {
-			this.up_btn.move(x, y);
-			this.down_btn.move(x, y);
-			return true;
-		}
+		if (!this.containsXY(x, y))
+			return false;
 
-		return false;
+		this.up_btn.move(x, y);
+		this.down_btn.move(x, y);
+		return true;
 	}
 
 	this.size = function () {
@@ -56,23 +54,25 @@ function _list_base(x, y, w, h) {
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.count > this.rows) {
-				var offset = this.offset - (s * 3);
-				if (offset < 0) {
-					offset = 0;
-				}
-				if (offset + this.rows > this.count) {
-					offset = this.count - this.rows;
-				}
-				if (this.offset != offset) {
-					this.offset = offset;
-					window.RepaintRect(this.x, this.y, this.w, this.h);
-				}
+		if (!this.containsXY(this.mx, this.my))
+			return false;
+
+		if (this.count > this.rows) {
+			var offset = this.offset - (s * 3);
+
+			if (offset < 0) {
+				offset = 0;
+			} else if (offset + this.rows > this.count) {
+				offset = this.count - this.rows;
 			}
-			return true;
+
+			if (this.offset != offset) {
+				this.offset = offset;
+				window.RepaintRect(this.x, this.y, this.w, this.h);
+			}
 		}
-		return false;
+
+		return true;
 	}
 
 	panel.list_objects.push(this);

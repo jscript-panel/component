@@ -128,6 +128,7 @@ function update_graph() {
 	var cur_time = fb.PlaybackTime;
 	if (cur_time > rms_window) {
 		var chunk = fb.GetAudioChunk(rms_window);
+
 		if (chunk) {
 			channels.count = chunk.ChannelCount;
 			channels.config = chunk.ChannelConfig;
@@ -297,6 +298,7 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 3:
 		var tmp = utils.ColourPicker(properties.custom_background.value);
+
 		if (tmp != properties.custom_background.value) {
 			properties.custom_background.value = tmp;
 			update_colours();
@@ -305,6 +307,7 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 4:
 		var tmp = utils.ColourPicker(properties.custom_text.value);
+
 		if (tmp != properties.custom_text.value) {
 			properties.custom_text.value = tmp;
 			update_colours();
@@ -313,6 +316,7 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 5:
 		var tmp = utils.ColourPicker(colours.peak);
+
 		if (tmp != colours.peak) {
 			properties.custom_peak.value = tmp;
 			update_colours();
@@ -348,6 +352,7 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 110:
 		var tmp = utils.ColourPicker(properties.custom_bar.value);
+
 		if (tmp != properties.custom_bar.value) {
 			properties.custom_bar.value = tmp;
 			update_colours();
@@ -356,6 +361,7 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 111:
 		var tmp = utils.ColourPicker(properties.custom_bar_g1.value);
+
 		if (tmp != properties.custom_bar_g1.value) {
 			properties.custom_bar_g1.value = tmp;
 			update_colours();
@@ -364,6 +370,7 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	case 112:
 		var tmp = utils.ColourPicker(properties.custom_bar_g2.value);
+
 		if (tmp != properties.custom_bar_g2.value) {
 			properties.custom_bar_g2.value = tmp;
 			update_colours();
@@ -422,7 +429,11 @@ function on_paint(gr) {
 
 	if (show_db_labels) {
 		var db_spacing = 5;
-		if (dBrange < db_spacing) db_spacing = 1;
+
+		if (dBrange < db_spacing) {
+			db_spacing = 1;
+		}
+
 		if (ww * db_spacing / dBrange < _scale(64)) {
 			db_spacing = ((_scale(64) * dBrange) / ww);
 			db_spacing -= (db_spacing % 5);

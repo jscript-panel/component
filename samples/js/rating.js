@@ -29,6 +29,7 @@ function _rating(x, y, h, colour) {
 		if (this.properties.mode.value == 1 && !this.foo_playcount) { // if mode is set to 1 (foo_playcount) but component is missing, reset to 0.
 			this.properties.mode.value = 0;
 		}
+
 		if (this.properties.mode.value == 0) {
 			utils.ShowPopupMessage('Rating supports 2 different modes.\n\nYou can use foo_playcount which is limited to 5 stars or you can choose to write to your file tags. You can choose the tag name and a max value via the right click menu.', window.Name);
 		}
@@ -43,13 +44,14 @@ function _rating(x, y, h, colour) {
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			if (panel.metadb) {
-				this.set_rating();
-			}
-			return true;
+		if (!this.containsXY(x, y))
+			return false;
+
+		if (panel.metadb) {
+			this.set_rating();
 		}
-		return false;
+
+		return true;
 	}
 
 	this.metadb_changed = function () {
@@ -59,6 +61,7 @@ function _rating(x, y, h, colour) {
 			this.hrating = this.rating;
 			this.tiptext = this.properties.mode.value == 0 ? 'Choose a mode first.' : panel.tf('Rate "%title%" by "%artist%".');
 		}
+
 		window.Repaint();
 	}
 

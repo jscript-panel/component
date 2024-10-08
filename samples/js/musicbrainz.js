@@ -1,8 +1,8 @@
 _.mixin({
 	nest : function(collection, keys) {
-		if (!keys.length) {
+		if (!keys.length)
 			return collection;
-		}
+
 		return _(collection)
 			.groupBy(keys[0])
 			.mapValues(function (values) {
@@ -32,6 +32,7 @@ function _musicbrainz(x, y, w, h) {
 		} else {
 			var url = 'https://musicbrainz.org/ws/2/artist/' + this.mb_id + '?fmt=json&inc=url-rels';
 		}
+
 		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, 'foo_jscript_panel_musicbrainz');
 		this.filenames[task_id] = this.filename;
 	}
@@ -42,6 +43,7 @@ function _musicbrainz(x, y, w, h) {
 
 	this.http_request_done = function (id, success, response_text) {
 		var f = this.filenames[id];
+
 		if (!f)
 			return;
 
@@ -86,22 +88,23 @@ function _musicbrainz(x, y, w, h) {
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			switch (true) {
-			case this.up_btn.lbtn_up(x, y):
-			case this.down_btn.lbtn_up(x, y):
-			case !this.in_range:
-				break;
-			default:
-				var item = this.data[this.index];
-				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
-					utils.Run(item.url);
-				}
-				break;
+		if (!this.containsXY(x, y))
+			return false;
+
+		switch (true) {
+		case this.up_btn.lbtn_up(x, y):
+		case this.down_btn.lbtn_up(x, y):
+		case !this.in_range:
+			break;
+		default:
+			var item = this.data[this.index];
+			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+				utils.Run(item.url);
 			}
-			return true;
+			break;
 		}
-		return false;
+
+		return true;
 	}
 
 	this.metadb_changed = function () {
@@ -128,27 +131,29 @@ function _musicbrainz(x, y, w, h) {
 		this.mx = x;
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
-		if (this.containsXY(x, y)) {
-			this.index = Math.floor((y - this.y - _scale(12)) / panel.row_height) + this.offset;
-			this.in_range = this.index >= this.offset && this.index < this.offset + Math.min(this.rows, this.count);
-			switch (true) {
-			case this.up_btn.move(x, y):
-			case this.down_btn.move(x, y):
-			case !this.in_range:
-				break;
-			default:
-				var item = this.data[this.index];
-				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
-					window.SetCursor(IDC_HAND);
-					_tt(item.url);
-				} else {
-					_tt('');
-				}
-				break;
+
+		if (!this.containsXY(x, y))
+			return false;
+
+		this.index = Math.floor((y - this.y - _scale(12)) / panel.row_height) + this.offset;
+		this.in_range = this.index >= this.offset && this.index < this.offset + Math.min(this.rows, this.count);
+		switch (true) {
+		case this.up_btn.move(x, y):
+		case this.down_btn.move(x, y):
+		case !this.in_range:
+			break;
+		default:
+			var item = this.data[this.index];
+			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+				window.SetCursor(IDC_HAND);
+				_tt(item.url);
+			} else {
+				_tt('');
 			}
-			return true;
+			break;
 		}
-		return false;
+
+		return true;
 	}
 
 	this.paint = function (gr) {
@@ -251,7 +256,9 @@ function _musicbrainz(x, y, w, h) {
 							}
 						}, this);
 					}, this);
+
 					this.data.pop();
+
 					if (_fileExpired(this.filename, ONE_DAY)) {
 						this.get();
 					}
@@ -260,6 +267,7 @@ function _musicbrainz(x, y, w, h) {
 				}
 			} else {
 				this.filename = _artistFolder(this.artist) + 'musicbrainz.links.' + this.mb_id + '.json';
+
 				if (utils.IsFile(this.filename)) {
 					var url = 'https://musicbrainz.org/artist/' + this.mb_id;
 					this.data = _(_.get(_jsonParseFile(this.filename), 'relations', []))
@@ -296,23 +304,25 @@ function _musicbrainz(x, y, w, h) {
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.count > this.rows) {
-				var offset = this.offset - (s * 3);
-				if (offset < 0) {
-					offset = 0;
-				}
-				if (offset + this.rows > this.count) {
-					offset = this.count - this.rows;
-				}
-				if (this.offset != offset) {
-					this.offset = offset;
-					window.RepaintRect(this.x, this.y, this.w, this.h);
-				}
+		if (!this.containsXY(this.mx, this.my))
+			return false;
+
+		if (this.count > this.rows) {
+			var offset = this.offset - (s * 3);
+
+			if (offset < 0) {
+				offset = 0;
+			} else if (offset + this.rows > this.count) {
+				offset = this.count - this.rows;
 			}
-			return true;
+
+			if (this.offset != offset) {
+				this.offset = offset;
+				window.RepaintRect(this.x, this.y, this.w, this.h);
+			}
 		}
-		return false;
+
+		return true;
 	}
 
 	utils.CreateFolder(folders.artists);

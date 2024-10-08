@@ -50,6 +50,7 @@ function _lastfm_info(x, y, w, h) {
 
 	this.http_request_done = function (id, success, response_text) {
 		var f = this.filenames[id];
+
 		if (!f)
 			return;
 
@@ -59,6 +60,7 @@ function _lastfm_info(x, y, w, h) {
 		}
 
 		var data = _jsonParse(response_text);
+
 		if (data.error) {
 			console.log(N, data.message);
 			return;
@@ -83,26 +85,27 @@ function _lastfm_info(x, y, w, h) {
 	}
 
 	this.lbtn_up = function (x, y) {
-		if (this.containsXY(x, y)) {
-			switch (true) {
-			case this.up_btn.lbtn_up(x, y):
-			case this.down_btn.lbtn_up(x, y):
-			case !this.in_range:
-				break;
-			default:
-				var item = this.data[this.index];
-				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
-					if (_.startsWith(item.url, 'http')) {
-						utils.Run(item.url);
-					} else {
-						plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item.value, item.url);
-					}
+		if (!this.containsXY(x, y))
+			return false;
+
+		switch (true) {
+		case this.up_btn.lbtn_up(x, y):
+		case this.down_btn.lbtn_up(x, y):
+		case !this.in_range:
+			break;
+		default:
+			var item = this.data[this.index];
+			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+				if (_.startsWith(item.url, 'http')) {
+					utils.Run(item.url);
+				} else {
+					plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item.value, item.url);
 				}
-				break;
 			}
-			return true;
+			break;
 		}
-		return false;
+
+		return true;
 	}
 
 	this.metadb_changed = function () {
@@ -131,29 +134,29 @@ function _lastfm_info(x, y, w, h) {
 		this.my = y;
 		window.SetCursor(IDC_ARROW);
 
-		if (this.containsXY(x, y)) {
-			this.index = Math.floor((y - this.y - _scale(12)) / panel.row_height) + this.offset;
-			this.in_range = this.index >= this.offset && this.index < this.offset + Math.min(this.rows, this.count);
-			switch (true) {
-			case this.up_btn.move(x, y):
-			case this.down_btn.move(x, y):
-				break;
-			case !this.in_range:
-				break;
-			default:
-				var item = this.data[this.index];
-				if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
-					window.SetCursor(IDC_HAND);
-					_tt(item.url);
-				} else {
-					_tt('');
-				}
-				break;
+		if (!this.containsXY(x, y))
+			return false;
+
+		this.index = Math.floor((y - this.y - _scale(12)) / panel.row_height) + this.offset;
+		this.in_range = this.index >= this.offset && this.index < this.offset + Math.min(this.rows, this.count);
+		switch (true) {
+		case this.up_btn.move(x, y):
+		case this.down_btn.move(x, y):
+			break;
+		case !this.in_range:
+			break;
+		default:
+			var item = this.data[this.index];
+			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
+				window.SetCursor(IDC_HAND);
+				_tt(item.url);
+			} else {
+				_tt('');
 			}
-			return true;
+			break;
 		}
 
-		return false;
+		return true;
 	}
 
 	this.paint = function (gr) {
@@ -199,6 +202,7 @@ function _lastfm_info(x, y, w, h) {
 
 	this.playback_time = function () {
 		this.time_elapsed++;
+
 		if (this.time_elapsed == 3 && this.properties.mode.value == 1 && this.properties.user_mode.value == 1 && lastfm.username.length) {
 			this.get();
 		}
@@ -394,23 +398,25 @@ function _lastfm_info(x, y, w, h) {
 	}
 
 	this.wheel = function (s) {
-		if (this.containsXY(this.mx, this.my)) {
-			if (this.count > this.rows) {
-				var offset = this.offset - (s * 3);
-				if (offset < 0) {
-					offset = 0;
-				}
-				if (offset + this.rows > this.count) {
-					offset = this.count - this.rows;
-				}
-				if (this.offset != offset) {
-					this.offset = offset;
-					window.RepaintRect(this.x, this.y, this.w, this.h);
-				}
+		if (!this.containsXY(this.mx, this.my))
+			return false;
+
+		if (this.count > this.rows) {
+			var offset = this.offset - (s * 3);
+
+			if (offset < 0) {
+				offset = 0;
+			} else if (offset + this.rows > this.count) {
+				offset = this.count - this.rows;
 			}
-			return true;
+
+			if (this.offset != offset) {
+				this.offset = offset;
+				window.RepaintRect(this.x, this.y, this.w, this.h);
+			}
 		}
-		return false;
+
+		return true;
 	}
 
 	utils.CreateFolder(folders.artists);

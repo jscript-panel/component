@@ -38,6 +38,7 @@ function on_metadb_changed(handles, fromhook) {
 	if (!fromhook) {
 		albumart.metadb_changed();
 	}
+
 	text.metadb_changed();
 }
 
@@ -48,7 +49,7 @@ function on_mouse_lbtn_dblclk(x, y) {
 }
 
 function on_mouse_move(x, y) {
-	if (albumart.move(x, y))
+	if (text.properties.layout.value > 0 && albumart.move(x, y))
 		return;
 
 	text.move(x, y);

@@ -120,6 +120,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 		case 1206:
 			this.properties.layout.value = idx - 1204;
 			this.refresh(true);
+			_tt('');
 			break;
 		case 1207:
 			this.properties.albumart.toggle();

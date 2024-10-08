@@ -49,9 +49,9 @@ function on_mouse_lbtn_down(x, y) {
 }
 
 function on_mouse_lbtn_up(x, y) {
-	if (buttons.lbtn_up(x, y)) {
+	if (buttons.lbtn_up(x, y))
 		return;
-	}
+
 	seekbar.lbtn_up(x, y);
 }
 
@@ -60,9 +60,9 @@ function on_mouse_leave() {
 }
 
 function on_mouse_move(x, y) {
-	if (buttons.move(x, y)) {
+	if (buttons.move(x, y))
 		return;
-	}
+
 	seekbar.move(x, y);
 }
 

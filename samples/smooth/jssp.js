@@ -348,17 +348,17 @@ function on_paint(gr) {
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 0) {
-		brw.repaint();
-	} else if (type == 1) {
+	if (type == 1) {
 		if (ppt.wallpapermode == 1) {
 			setWallpaperImg();
 		}
+
 		if (ppt.enableDynamicColours) {
 			on_colours_changed();
 		}
-		brw.repaint();
 	}
+
+	brw.repaint();
 }
 
 function on_playback_new_track() {
@@ -385,6 +385,7 @@ function on_playback_stop(reason) {
 		if (ppt.wallpapermode == 1) {
 			setWallpaperImg();
 		}
+
 		if (ppt.enableDynamicColours) {
 			on_colours_changed();
 		}

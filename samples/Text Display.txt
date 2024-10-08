@@ -71,8 +71,10 @@ function on_paint(gr) {
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 0) text.metadb_changed();
-	else if (type == 1 && (text.properties.albumart.enabled || text.properties.layout.value > 0)) albumart.metadb_changed();
+	if (type == 0)
+		text.metadb_changed();
+	else if (text.properties.albumart.enabled || text.properties.layout.value > 0)
+		albumart.metadb_changed();
 }
 
 function on_playback_new_track() {

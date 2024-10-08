@@ -60,7 +60,9 @@ function on_paint(gr) {
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 1) albumart.metadb_changed();
+	if (type == 1) {
+		albumart.metadb_changed();
+	}
 }
 
 function on_playback_new_track() {

@@ -86,9 +86,9 @@ function on_mouse_lbtn_dblclk(x, y) {
 }
 
 function on_mouse_rbtn_up(x, y) {
-	if (lastfm_bio.containsXY(x, y)) {
+	if (lastfm_bio.containsXY(x, y))
 		return panel.rbtn_up(x, y, lastfm_bio);
-	}
+
 	return panel.rbtn_up(x, y, images);
 }
 

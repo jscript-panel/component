@@ -49,8 +49,10 @@ var bold_font = CreateFontString('Segoe UI', 12, true);
 
 window.MaxHeight = _scale(150);
 
-if (fb.IsPlaying) on_playback_new_track(fb.GetNowPlaying());
-else on_item_focus_change();
+if (fb.IsPlaying)
+	on_playback_new_track(fb.GetNowPlaying());
+else
+	on_item_focus_change();
 
 buttons.update = function () {
 	var y = Math.round((panel.h - bs) / 2);
@@ -67,11 +69,15 @@ buttons.update = function () {
 }
 
 function update_album_art(metadb) {
-	if (img) img.Dispose();
-	img = null;
+	if (img) {
+		img.Dispose();
+		img = null;
+	}
+
 	if (metadb) {
 		img = metadb.GetAlbumArt();
 	}
+
 	window.Repaint();
 }
 
@@ -112,14 +118,13 @@ function on_mouse_move(x, y) {
 }
 
 function on_mouse_rbtn_up(x, y) {
-	if (seekbar.containsXY(x, y)) {
-		return panel.rbtn_up(x, y, seekbar);
-	}
-
 	if (buttons.buttons.stop.containsXY(x, y)) {
 		fb.StopAfterCurrent = !fb.StopAfterCurrent;
 		return true;
 	}
+
+	if (seekbar.containsXY(x, y))
+		return panel.rbtn_up(x, y, seekbar);
 
 	return panel.rbtn_up(x, y);
 }
@@ -148,8 +153,10 @@ function on_paint(gr) {
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 0) window.Repaint();
-	else update_album_art(fb.GetNowPlaying());
+	if (type == 0)
+		window.Repaint();
+	else
+		update_album_art(fb.GetNowPlaying());
 }
 
 function on_playback_edited() {

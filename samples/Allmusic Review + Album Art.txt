@@ -80,9 +80,9 @@ function on_mouse_lbtn_dblclk(x, y) {
 }
 
 function on_mouse_rbtn_up(x, y) {
-	if (allmusic.containsXY(x, y)) {
+	if (allmusic.containsXY(x, y))
 		return panel.rbtn_up(x, y, allmusic);
-	}
+
 	return panel.rbtn_up(x, y, albumart);
 }
 
@@ -111,7 +111,7 @@ function on_playback_dynamic_info_track(type) {
 		// stream metadata doesn't contain album tags for
 		// lookups but we can update the artist in the title section
 		window.Repaint();
-	} else if (type == 1) {
+	} else {
 		albumart.metadb_changed();
 	}
 }

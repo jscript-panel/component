@@ -141,8 +141,10 @@ function on_playback_order_changed() {
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 0) text.metadb_changed();
-	else if (type == 1) albumart.metadb_changed();
+	if (type == 0)
+		text.metadb_changed();
+	else
+		albumart.metadb_changed();
 }
 
 function on_playback_new_track() {

@@ -35,6 +35,7 @@ function on_mouse_rbtn_up(x, y) {
 		_help(0, bs);
 		return true;
 	}
+
 	return panel.rbtn_up(x, y);
 }
 

@@ -57,11 +57,15 @@ buttons.update = function () {
 }
 
 function update_album_art(metadb) {
-	if (img) img.Dispose();
-	img = null;
+	if (img) {
+		img.Dispose();
+		img = null;
+	}
+
 	if (metadb) {
 		img = metadb.GetAlbumArt();
 	}
+
 	window.Repaint();
 }
 
@@ -132,8 +136,10 @@ function on_paint(gr) {
 }
 
 function on_playback_dynamic_info_track(type) {
-	if (type == 0) window.Repaint();
-	else update_album_art(fb.GetNowPlaying());
+	if (type == 0)
+		window.Repaint();
+	else
+		update_album_art(fb.GetNowPlaying());
 }
 
 function on_playback_edited() {

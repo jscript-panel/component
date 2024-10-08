@@ -37,11 +37,15 @@ function on_colours_changed() {
 }
 
 function on_item_focus_change() {
-	if (!fb.IsPlaying) update_album_art();
+	if (!fb.IsPlaying) {
+		update_album_art();
+	}
 }
 
 function on_mouse_lbtn_dblclk() {
-	if (g_metadb) g_metadb.ShowAlbumArtViewer(0);
+	if (g_metadb) {
+		g_metadb.ShowAlbumArtViewer(0);
+	}
 }
 
 function on_mouse_move(x, y) {
@@ -54,16 +58,19 @@ function on_mouse_move(x, y) {
 function on_paint(gr) {
 	var bg = window.IsDefaultUI ? window.GetColourDUI(1) : window.GetColourCUI(3);
 	gr.Clear(bg);
+
 	if (g_img) {
 		// Keep aspect ratio
 		var scale_w = ww / g_img.Width;
 		var scale_h = wh / g_img.Height;
 		var scale = Math.min(scale_w, scale_h);
 		var pos_x = 0, pos_y = 0;
+
 		if (scale_w < scale_h)
 			pos_y = (wh - g_img.height * scale) / 2;
 		else if (scale_w > scale_h)
 			pos_x = (ww - g_img.Width * scale) / 2;
+
 		gr.DrawImage(g_img, pos_x, pos_y, g_img.Width * scale, g_img.Height * scale, 0, 0, g_img.Width, g_img.Height);
 	}
 }
@@ -76,7 +83,9 @@ function on_size() {
 // get notified of album art changes when listening to a supported stream
 function on_playback_dynamic_info_track(type) {
 	// type 0 is metadata which we're not interested in
-	if (type == 1) update_album_art();
+	if (type == 1) {
+		update_album_art();
+	}
 }
 
 function on_playback_new_track() {
@@ -90,5 +99,7 @@ function on_playback_stop(reason) {
 }
 
 function on_playlist_switch() {
-	if (!fb.IsPlaying) update_album_art();
+	if (!fb.IsPlaying) {
+		update_album_art();
+	}
 }

@@ -20,6 +20,7 @@ img_to_blur.StackBlur(30);
 
 function on_paint(gr) {
 	gr.Clear(RGB(255, 255, 255));
+
 	var x = (window.Width - 300) / 2;
 	var y = (window.Height - 300) / 2
 	gr.DrawImage(img_to_blur, x, y, 300, 300, 0, 0, 300, 300);

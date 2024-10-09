@@ -27,8 +27,12 @@ function on_mouse_wheel(step) {
 		return;
 
 	offset += step * 60;
-	if (offset > 0) offset = 0;
-	else if (offset < box.h - text_height) offset = box.h - text_height;
+
+	if (offset > 0)
+		offset = 0;
+	else if (offset < box.h - text_height)
+		offset = box.h - text_height;
+
 	window.Repaint();
 }
 
@@ -36,6 +40,9 @@ function on_size() {
 	box.w = window.Width / 2;
 	box.h = window.Height / 2;
 	text_height = layout.CalcTextHeight(box.w);
-	if (text_height < box.h) offset = 0;
-	else if (offset < box.h - text_height) offset = box.h - text_height;
+
+	if (text_height < box.h)
+		offset = 0;
+	else if (offset < box.h - text_height)
+		offset = box.h - text_height;
 }

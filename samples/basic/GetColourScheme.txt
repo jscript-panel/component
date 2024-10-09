@@ -7,31 +7,33 @@
 // Tracks playlist selection
 
 var img = null;
-var arr = [];
+var colours = [];
 on_item_focus_change();
 
 function on_item_focus_change() {
-	if (img) img.Dispose();
-	img = null;
+	if (img) {
+		img.Dispose();
+		img = null;
+	}
 
-	arr = [];
+	colours = [];
 	var metadb = fb.GetFocusItem();
 	if (metadb) {
 		img = metadb.GetAlbumArt(); // omitting the type defaults to front
 
 		if (img) {
-			arr = img.GetColourScheme(10).toArray();
+			colours = img.GetColourScheme(10).toArray();
 		}
 	}
 	window.Repaint();
 }
 
 function on_paint(gr) {
-	if (img && arr.length) {
+	if (img && colours.length) {
 		gr.DrawImage(img, 0, 0, 300, 300, 0, 0, img.Width, img.Height);
-		for (var i = 0; i < arr.length; i++) {
-			var bar_colour = arr[i];
-			gr.FillRectangle(300, i * 30, window.Width - 300, 30, bar_colour);
+
+		colours.forEach(function (colour, i) {
+			gr.FillRectangle(300, i * 30, window.Width - 300, 30, colour);
 
 			/*
 			The 2nd WriteTextSimple arg is the font. Leaving it as an empty string so defaults of Segoe UI and 16px are used.
@@ -40,8 +42,8 @@ function on_paint(gr) {
 			which calculates whether to use black or white for the text colour depending on
 			the background colour.
 			*/
-			gr.WriteTextSimple('Some text', '', DetermineTextColour(bar_colour), 300, i * 30, window.Width - 300, 30, 2, 2);
-		}
+			gr.WriteTextSimple('Some text', '', DetermineTextColour(colour), 300, i * 30, window.Width - 300, 30, 2, 2);
+		});
 	}
 }
 

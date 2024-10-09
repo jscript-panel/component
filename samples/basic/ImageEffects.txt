@@ -19,7 +19,10 @@ var effects = ['Grayscale', 'Inverted', 'Sepia']
 update();
 
 function update() {
-	if (copy) copy.Dispose();
+	if (copy) {
+		copy.Dispose();
+	}
+
 	copy = img.Clone();
 	copy.ApplyEffect(effect);
 }
@@ -33,8 +36,12 @@ function on_paint(gr) {
 
 function on_mouse_wheel(step) {
 	effect += step;
-	if (effect >= effects.length) effect = 0;
-	if (effect < 0) effect = effects.length - 1;
+
+	if (effect >= effects.length)
+		effect = 0;
+	else if (effect < 0)
+		effect = effects.length - 1;
+
 	update();
 	window.Repaint();
 }

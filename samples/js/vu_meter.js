@@ -55,9 +55,12 @@ function init() {
 	update_rms_offset();
 	update_colours();
 
-	if (fb.IsPaused) update_graph();
-	else if (fb.IsPlaying) start_timer();
-	else get_initial_track_info();
+	if (fb.IsPaused)
+		update_graph();
+	else if (fb.IsPlaying)
+		start_timer();
+	else
+		get_initial_track_info();
 }
 
 function update_rms_offset() {
@@ -90,6 +93,7 @@ function update_colours() {
 				[0.0, colours.text],
 				[1.0, colours.highlight],
 			]
+
 			colours.bar = JSON.stringify(brush);
 		}
 	} else { // custom
@@ -106,10 +110,12 @@ function update_colours() {
 			colours.bar = properties.custom_bar.value;
 		} else { // 2 colour gradient
 			solid_colour = false;
+
 			brush.Stops = [
 				[0.0, properties.custom_bar_g1.value],
 				[1.0, properties.custom_bar_g2.value],
-			]
+			];
+
 			colours.bar = JSON.stringify(brush);
 		}
 	}
@@ -121,48 +127,65 @@ function clear_graph() {
 		Peak_levels[c] = 0;
 		Peak_falldown[c] = 0;
 	}
+
 	window.Repaint();
 }
 
 function update_graph() {
 	var cur_time = fb.PlaybackTime;
-	if (cur_time > rms_window) {
-		var chunk = fb.GetAudioChunk(rms_window);
 
-		if (chunk) {
-			channels.count = chunk.ChannelCount;
-			channels.config = chunk.ChannelConfig;
-			var data = chunk.Data.toArray();
-			var frame_len = chunk.SampleCount;
-			if (data && channels.count > 0 && frame_len > 0) {
-				var old_count = Peak_levels.length;
-				RMS_levels.length = channels.count;
-				Peak_levels.length = channels.count;
-				Peak_falldown.length = channels.count;
-				if (old_count < channels.count) {
-					for (var c = old_count; c < channels.count; ++c) {
-						Peak_levels[c] = 0;
-						Peak_falldown[c] = 0;
-					}
-				}
-				for (var c = 0; c < channels.count; ++c) {
-					var sum = 0, peak = 0;
-					for (var i = c; i < data.length; i += channels.count) {
-						var s = Math.abs(data[i]);
-						if (s > peak) peak = s;
-						sum += s * s;
-					}
-					RMS_levels[c] = Math.sqrt(sum/frame_len);
-					if (peak >= Peak_levels[c]) {
-						Peak_levels[c] = peak;
-						Peak_falldown[c] = 0;
-					} else {
-						if (++Peak_falldown[c] > peak_hold) Peak_levels[c] *= peak_fall_mul;
-					}
-				}
-				window.Repaint();
+	if (cur_time < rms_window)
+		return;
+
+	var chunk = fb.GetAudioChunk(rms_window);
+
+	if (!chunk)
+		return;
+
+	channels.count = chunk.ChannelCount;
+	channels.config = chunk.ChannelConfig;
+	var data = chunk.Data.toArray();
+	var frame_len = chunk.SampleCount;
+
+	if (data && channels.count > 0 && frame_len > 0) {
+		var old_count = Peak_levels.length;
+		RMS_levels.length = channels.count;
+		Peak_levels.length = channels.count;
+		Peak_falldown.length = channels.count;
+
+		if (old_count < channels.count) {
+			for (var c = old_count; c < channels.count; ++c) {
+				Peak_levels[c] = 0;
+				Peak_falldown[c] = 0;
 			}
 		}
+
+		for (var c = 0; c < channels.count; ++c) {
+			var sum = 0, peak = 0;
+
+			for (var i = c; i < data.length; i += channels.count) {
+				var s = Math.abs(data[i]);
+
+				if (s > peak) {
+					peak = s;
+				}
+
+				sum += s * s;
+			}
+
+			RMS_levels[c] = Math.sqrt(sum/frame_len);
+
+			if (peak >= Peak_levels[c]) {
+				Peak_levels[c] = peak;
+				Peak_falldown[c] = 0;
+			} else {
+				if (++Peak_falldown[c] > peak_hold) {
+					Peak_levels[c] *= peak_fall_mul;
+				}
+			}
+		}
+
+		window.Repaint();
 	}
 }
 
@@ -186,16 +209,23 @@ function stop_timer() {
 
 function get_initial_track_info() {
 	var handle = fb.GetFocusItem();
+
 	if (!handle)
 		return;
 
 	var info = handle.GetFileInfo();
 
 	var idx = info.InfoFind("channels");
-	if (idx >= 0) channels.count = Number(info.InfoValue(idx));
+
+	if (idx >= 0) {
+		channels.count = Number(info.InfoValue(idx));
+	}
 
 	idx = info.InfoFind("WAVEFORMATEXTENSIBLE_CHANNEL_MASK");
-	if (idx >= 0) channels.config = Number(info.InfoValue(idx));
+
+	if (idx >= 0) {
+		channels.config = Number(info.InfoValue(idx));
+	}
 
 	info.Dispose();
 	handle.Dispose();
@@ -267,9 +297,11 @@ function on_mouse_rbtn_up(x, y) {
 	if (properties.meter_style.value == 1) {
 		style_menu.AppendMenuSeparator();
 		style_menu.AppendMenuItem(MF_GRAYED, 0, 'Block width (dB)');
+
 		rms_block_dbs.forEach(function (item, index) {
 			style_menu.AppendMenuItem(MF_STRING, 20 + index, item);
 		});
+
 		var rms_block_db_index = rms_block_dbs.indexOf(properties.rms_block_db.value);
 		style_menu.CheckMenuRadioItem(20, 20 + rms_block_dbs.length, 20 + rms_block_db_index);
 	}
@@ -384,6 +416,7 @@ function on_mouse_rbtn_up(x, y) {
 
 function on_paint(gr) {
 	gr.Clear(colours.background);
+
 	if (wh < 1 || ww < 1)
 		return;
 
@@ -476,6 +509,7 @@ function on_paint(gr) {
 
 		if (peak_bar_width > 0 && Peak_levels[c] > 0) {
 			var peak_db = _clamp(to_db(Peak_levels[c]), minDB, maxDB);
+
 			if (peak_db > minDB) {
 				var peak_pos = Math.round(bar_width * (peak_db - minDB) / dBrange);
 				gr.FillRectangle(bar_pad_left + peak_pos - peak_bar_width / 2, bar_pad_top + (bar_height * c), peak_bar_width, bar_height - 1, colours.peak);
@@ -496,6 +530,7 @@ function on_playback_stop(reason) {
 	if (reason != 2) {
 		stop_timer();
 	}
+
 	clear_graph();
 }
 

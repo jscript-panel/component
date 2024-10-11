@@ -47,7 +47,11 @@ function _play_log(x, y, w, h) {
 			var str = utils.TimestampToDateString(utils.Now()) + ' ' + current;
 
 			var lines = this.get_lines();
-			if (lines.length == this.properties.limit.value) lines.pop();
+
+			if (lines.length == this.properties.limit.value) {
+				lines.pop();
+			}
+
 			lines.unshift(str);
 
 			this.text = lines.join(this.CRLF);
@@ -113,7 +117,11 @@ function _play_log(x, y, w, h) {
 		switch (idx) {
 		case 1200:
 			var tmp = utils.InputBox('Enter title format pattern.', window.Name, this.properties.tf.value);
-			if (tmp.empty()) tmp = this.properties.tf.default_;
+
+			if (tmp.empty()) {
+				tmp = this.properties.tf.default_;
+			}
+
 			if (tmp != this.properties.tf.value) {
 				this.properties.tf.value = tmp;
 				this.tfo = panel.get_tfo(this.properties.tf.value);

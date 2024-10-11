@@ -96,6 +96,7 @@ function _panel(options) {
 			_.forEach(this.fonts.sizes, function (item) {
 				this.s1.AppendMenuItem(MF_STRING, item, item);
 			}, this);
+
 			this.s1.CheckMenuRadioItem(_.first(this.fonts.sizes), _.last(this.fonts.sizes), this.fonts.size.value);
 			this.s1.AppendTo(this.m, MF_STRING, 'Font size');
 			this.m.AppendMenuSeparator();
@@ -167,9 +168,8 @@ function _panel(options) {
 	}
 
 	this.tf = function (t) {
-		if (!this.metadb) {
+		if (!this.metadb)
 			return '';
-		}
 
 		var tfo = this.get_tfo(t);
 

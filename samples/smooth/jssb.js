@@ -36,10 +36,12 @@ function on_key_down(vkey) {
 
 function on_key_up(vkey) {
 	cScrollBar.timerCounter = -1;
+
 	if (cScrollBar.timerID) {
 		window.ClearTimeout(cScrollBar.timerID);
 		cScrollBar.timerID = false;
 	}
+
 	brw.repaint();
 }
 
@@ -944,13 +946,17 @@ function get_metrics() {
 }
 
 function check_scroll(scroll___) {
-	if (scroll___ < 0)
+	if (scroll___ < 0) {
 		scroll___ = 0;
+	}
+
 	var g1 = brw.h - (brw.totalRowsVis * brw.rowHeight);
 	var end_limit = (brw.rowsCount * brw.rowHeight) - (brw.totalRowsVis * brw.rowHeight) - g1;
+
 	if (scroll___ != 0 && scroll___ > end_limit) {
 		scroll___ = end_limit;
 	}
+
 	return scroll___;
 }
 

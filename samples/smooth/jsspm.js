@@ -31,10 +31,12 @@ function on_drag_drop(action, x, y, mask) {
 
 function on_drag_leave() {
 	g_drag_drop_target_id = -1;
+
 	if (cScrollBar.timerID) {
 		window.ClearInterval(cScrollBar.timerID);
 		cScrollBar.timerID = false;
 	}
+
 	brw.repaint();
 }
 
@@ -138,10 +140,12 @@ function on_key_down(vkey) {
 
 function on_key_up(vkey) {
 	cScrollBar.timerCounter = -1;
+
 	if (cScrollBar.timerID) {
 		window.ClearTimeout(cScrollBar.timerID);
 		cScrollBar.timerID = false;
 	}
+
 	brw.repaint();
 }
 
@@ -185,6 +189,7 @@ function on_mouse_wheel(step) {
 
 function on_paint(gr) {
 	gr.Clear(g_colour_background);
+
 	if (ppt.wallpapermode != 0 && g_wallpaperImg) {
 		drawImage(gr, g_wallpaperImg, brw.x, brw.y, brw.w, brw.h, true, null, ppt.wallpaperopacity);
 	}
@@ -826,14 +831,17 @@ function check_scroll(scroll___) {
 		scroll___ = 0;
 	var g1 = brw.h - (brw.totalRowsVis * ppt.rowHeight);
 	var end_limit = (brw.rows.length * ppt.rowHeight) - (brw.totalRowsVis * ppt.rowHeight) - g1;
+
 	if (scroll___ != 0 && scroll___ > end_limit) {
 		scroll___ = end_limit;
 	}
+
 	return scroll___;
 }
 
 function renamePlaylist() {
 	var text = brw.inputbox.text.trim();
+
 	if (brw.inputboxID > -1 && text.length) {
 		plman.RenamePlaylist(brw.inputboxID, text);
 		brw.inputboxID = -1;

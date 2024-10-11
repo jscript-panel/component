@@ -78,7 +78,9 @@ function _lastfm_bio(x, y, w, h) {
 			}
 		}
 
-		if (tags.length) obj.Tags = tags.join(', ');
+		if (tags.length) {
+			obj.Tags = tags.join(', ');
+		}
 
 		var dts = div.getElementsByTagName('dt');
 		var dds = div.getElementsByTagName('dd');
@@ -141,9 +143,11 @@ function _lastfm_bio(x, y, w, h) {
 
 			var temp_artist = panel.tf(DEFAULT_ARTIST);
 			var temp_country = panel.tf(this.properties.country_tf.value)
+
 			if (this.artist == temp_artist && this.country == temp_country) {
 				return;
 			}
+
 			this.artist = temp_artist;
 			this.country = temp_country;
 			this.flag = this.country;
@@ -202,6 +206,7 @@ function _lastfm_bio(x, y, w, h) {
 
 		if (utils.IsFile(this.filename)) {
 			str = _stripTags(_.get(_jsonParseFile(this.filename), 'artist.bio.content', '')).replace('Read more on Last.fm. User-contributed text is available under the Creative Commons By-SA License; additional terms may apply.', '').trim();
+
 			if (_fileExpired(this.filename, ONE_DAY)) {
 				this.get();
 			}
@@ -219,13 +224,10 @@ function _lastfm_bio(x, y, w, h) {
 		if (utils.IsFile(this.filename_extra)) {
 			var obj = _jsonParseFile(this.filename_extra);
 			_.forEach(obj, function (value, name) {
-				// test versions stored Flag, we ignore it now
-				if (name != 'Flag') {
-					str += name.trim() + ': ' + value.trim() + this.CRLF;
+				str += name.trim() + ': ' + value.trim() + this.CRLF;
 
-					if (this.flag.empty() && (name == 'Born In' || name == 'Founded In')) {
-						this.parse_location(value.toLowerCase());
-					}
+				if (this.flag.empty() && (name == 'Born In' || name == 'Founded In')) {
+					this.parse_location(value.toLowerCase());
 				}
 			}, this);
 
@@ -247,6 +249,7 @@ function _lastfm_bio(x, y, w, h) {
 			this.flag = flag;
 		} else {
 			var arr = _stringToArray(this.properties.flag_map.value, this.CRLF);
+
 			_.forEach(arr, function (item) {
 				var tmp = _stringToArray(item, '|');
 				if (tmp.length == 2 && _.includes(location, tmp[0].toLowerCase())) {
@@ -262,9 +265,11 @@ function _lastfm_bio(x, y, w, h) {
 		panel.m.AppendMenuSeparator();
 		panel.m.AppendMenuItem(MF_STRING, 1101, 'Last.fm API key...');
 		panel.m.AppendMenuSeparator();
+
 		this.langs.forEach(function (item, i) {
 			panel.s10.AppendMenuItem(MF_STRING, i + 1110, item);
 		});
+
 		panel.s10.CheckMenuRadioItem(1110, 1121, this.properties.lang.value + 1110);
 		panel.s10.AppendTo(panel.m, MF_STRING, 'Last.fm language');
 		panel.m.AppendMenuSeparator();

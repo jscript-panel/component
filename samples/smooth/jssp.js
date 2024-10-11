@@ -113,30 +113,6 @@ function on_key_down(vkey) {
 				}
 			}
 			break;
-		case VK_PGUP:
-			if (brw.rows.length > 0 && !brw.keypressed && !cScrollBar.timerID) {
-				brw.keypressed = true;
-
-				vk_pgup();
-				if (!cScrollBar.timerID) {
-					cScrollBar.timerID = window.SetTimeout(function () {
-						cScrollBar.timerID = window.SetInterval(vk_pgup, 100);
-					}, 400);
-				}
-			}
-			break;
-		case VK_PGDN:
-			if (brw.rows.length > 0 && !brw.keypressed && !cScrollBar.timerID) {
-				brw.keypressed = true;
-
-				vk_pgdn();
-				if (!cScrollBar.timerID) {
-					cScrollBar.timerID = window.SetTimeout(function () {
-						cScrollBar.timerID = window.SetInterval(vk_pgdn, 100);
-					}, 400);
-				}
-			}
-			break;
 		case VK_RETURN:
 			play(g_active_playlist, g_focus_id);
 			break;
@@ -1338,6 +1314,7 @@ function get_metrics() {
 
 function kill_scrollbar_timer() {
 	cScrollBar.timerCounter = -1;
+
 	if (cScrollBar.timerID) {
 		window.ClearTimeout(cScrollBar.timerID);
 		cScrollBar.timerID = false;
@@ -1350,6 +1327,7 @@ function vk_up() {
 	var new_row = 0;
 
 	new_row = g_focus_row - scrollstep;
+
 	if (new_row < 0) {
 		if (ppt.showGroupHeaders) {
 			new_row = ppt.groupHeaderRowsNumber;
@@ -1361,14 +1339,13 @@ function vk_up() {
 		if (brw.rows[new_row].type != 0) {
 			new_row -= ppt.groupHeaderRowsNumber;
 		}
-	}
-	if (new_row >= 0) {
-		new_focus_id = brw.rows[new_row].playlistTrackId;
-		plman.ClearPlaylistSelection(g_active_playlist);
-		plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-		plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-	} else {
-		kill_scrollbar_timer();
+
+		if (new_row >= 0) {
+			new_focus_id = brw.rows[new_row].playlistTrackId;
+			plman.ClearPlaylistSelection(g_active_playlist);
+			plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
+			plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
+		}
 	}
 }
 
@@ -1378,6 +1355,7 @@ function vk_down() {
 	var new_row = 0;
 
 	new_row = g_focus_row + scrollstep;
+
 	if (new_row > brw.rows.length - 1) {
 		new_row = brw.rows.length - 1;
 		kill_scrollbar_timer();
@@ -1387,72 +1365,28 @@ function vk_down() {
 				new_row += ppt.groupHeaderRowsNumber;
 			}
 		}
-	}
-	if (new_row < brw.rows.length) {
-		new_focus_id = brw.rows[new_row].playlistTrackId;
-		plman.ClearPlaylistSelection(g_active_playlist);
-		plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-		plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-	} else {
-		kill_scrollbar_timer();
-	}
-}
 
-function vk_pgup() {
-	var scrollstep = brw.totalRowsVis;
-	var new_focus_id = 0;
-	var new_row = 0;
-
-	new_row = g_focus_row - scrollstep;
-	if (new_row < 0) {
-		new_row = ppt.groupHeaderRowsNumber;
-		kill_scrollbar_timer();
-	} else {
-		if (brw.rows[new_row].type != 0) {
-			new_row += (ppt.groupHeaderRowsNumber - brw.rows[new_row].type + 1);
+		if (new_row < brw.rows.length) {
+			new_focus_id = brw.rows[new_row].playlistTrackId;
+			plman.ClearPlaylistSelection(g_active_playlist);
+			plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
+			plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
 		}
-	}
-	if (new_row >= 0) {
-		new_focus_id = brw.rows[new_row].playlistTrackId;
-		plman.ClearPlaylistSelection(g_active_playlist);
-		plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-		plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-	} else {
-		kill_scrollbar_timer();
-	}
-}
-
-function vk_pgdn() {
-	var scrollstep = brw.totalRowsVis;
-	var new_focus_id = 0,
-	new_row = 0;
-
-	new_row = g_focus_row + scrollstep;
-	if (new_row > brw.rows.length - 1) {
-		new_row = brw.rows.length - 1;
-	} else {
-		if (brw.rows[new_row].type != 0) {
-			new_row += (ppt.groupHeaderRowsNumber - brw.rows[new_row].type + 1);
-		}
-	}
-	if (new_row < brw.rows.length) {
-		new_focus_id = brw.rows[new_row].playlistTrackId;
-		plman.ClearPlaylistSelection(g_active_playlist);
-		plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-		plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-	} else {
-		kill_scrollbar_timer();
 	}
 }
 
 function check_scroll(scroll___) {
-	if (scroll___ < 0)
+	if (scroll___ < 0) {
 		scroll___ = 0;
+	}
+
 	var g1 = brw.h - (brw.totalRowsVis * ppt.rowHeight);
 	var end_limit = (brw.rows.length * ppt.rowHeight) - (brw.totalRowsVis * ppt.rowHeight) - g1;
+
 	if (scroll___ != 0 && scroll___ > end_limit) {
 		scroll___ = end_limit;
 	}
+
 	return isNaN(scroll___) ? 0 : scroll___;
 }
 

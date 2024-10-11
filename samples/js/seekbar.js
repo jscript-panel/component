@@ -46,6 +46,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 					this.playback_seek();
 				}
 			}
+
 			this.hover = true;
 			return true;
 		}
@@ -201,6 +202,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 
 			if (metadb) {
 				this.image = this.get_image(metadb);
+
 				if (!this.image) {
 					var ext = _getExt(metadb.Path);
 					switch(true) {
@@ -228,11 +230,13 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 					}
 				}
 			}
+
 			window.Repaint();
 		}
 
 		this.rbtn_up = function (x, y) {
 			var size = 0;
+
 			utils.ListFiles(spectrogram_cache).toArray().forEach(function (item) {
 				size += utils.GetFileSize(item);
 			});
@@ -257,6 +261,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			switch (idx) {
 			case 1000:
 				var tmp = utils.InputBox('All FFmpeg showspectrumpic options should work here.', window.Name, this.properties.params.value);
+
 				if (tmp != this.properties.params.value) {
 					this.properties.params.value = tmp;
 					this.playback_new_track(fb.GetNowPlaying());
@@ -264,6 +269,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 				break;
 			case 1001:
 				var tmp = utils.ColourPicker(this.properties.marker_colour.value);
+
 				if (tmp != this.properties.marker_colour.value) {
 					this.properties.marker_colour.value = tmp;
 					window.Repaint();
@@ -279,6 +285,7 @@ function _seekbar(x, y, w, h, spectrogram_mode) {
 			case 1014:
 				var period = [0, ONE_DAY, ONE_DAY * 7, ONE_DAY * 30, ONE_DAY * 90][idx - 1010];
 				var files = utils.ListFiles(spectrogram_cache).toArray();
+
 				files.forEach(function (item) {
 					if (period == 0 || _fileExpired(item, period)) {
 						utils.RemovePath(item);

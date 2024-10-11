@@ -26,15 +26,17 @@ function _console(x, y, w, h) {
 				});
 
 				var start = 0;
+
 				for (var i = 0; i < lines.length; i++) {
-					var line = lines[i];
 					colours.push({
 						'Start' : start,
 						'Length' : 23,
 						'Colour' : panel.colours.highlight,
 					});
-					start += line.length + this.CRLF.length;
+
+					start += lines[i].length + this.CRLF.length;
 				}
+
 				this.colour_string = JSON.stringify(colours);
 			}
 

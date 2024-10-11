@@ -81,7 +81,9 @@ function _albumart(x, y, w, h) {
 				}
 				break;
 			case 2:
-				if (utils.IsFile(this.path)) _explorer(this.path);
+				if (utils.IsFile(this.path)) {
+					_explorer(this.path);
+				}
 				break;
 			}
 		}
@@ -122,6 +124,7 @@ function _albumart(x, y, w, h) {
 			this.blur_it();
 			this.tooltip = 'Original dimensions: ' + this.img.Width + 'x' + this.img.Height + 'px';
 			this.path = this.img.Path;
+
 			if (this.path.length) {
 				this.tooltip += '\nPath: ' + this.path;
 			}
@@ -138,6 +141,7 @@ function _albumart(x, y, w, h) {
 			if (this.img) {
 				_tt(this.tooltip);
 			}
+
 			this.hover = true;
 			return true;
 		}
@@ -284,8 +288,7 @@ function _albumart(x, y, w, h) {
 
 		if (id < 0) {
 			id = 4;
-		}
-		if (id > 4) {
+		} else if (id > 4) {
 			id = 0;
 		}
 

@@ -21,6 +21,7 @@ function _lastfm_info(x, y, w, h) {
 			if (!_tagged(this.artist)) {
 				return;
 			}
+
 			var url = lastfm.base_url() + '&limit=100&method=' + this.artist_methods[this.properties.artist_method.value].method + '&artist=' + encodeURIComponent(this.artist);
 			break;
 		case 1:
@@ -95,6 +96,7 @@ function _lastfm_info(x, y, w, h) {
 			break;
 		default:
 			var item = this.data[this.index];
+
 			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
 				if (_.startsWith(item.url, 'http')) {
 					utils.Run(item.url);
@@ -147,6 +149,7 @@ function _lastfm_info(x, y, w, h) {
 			break;
 		default:
 			var item = this.data[this.index];
+
 			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
 				window.SetCursor(IDC_HAND);
 				_tt(item.url);
@@ -174,6 +177,7 @@ function _lastfm_info(x, y, w, h) {
 			this.text_width = Math.round(this.w * 0.5);
 			var lastfm_charts_bar_x = this.x + this.clickable_text_x + this.text_width + 10;
 			var unit_width = (this.w - lastfm_charts_bar_x - _scale(50)) / this.data[0].playcount;
+
 			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				var bar_width = Math.ceil(unit_width * this.data[i + this.offset].playcount);
 				this.draw_row(gr, this.data[i + this.offset].rank + '.', panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.clickable_text_x - 5, panel.row_height, DWRITE_TEXT_ALIGNMENT_TRAILING);
@@ -185,6 +189,7 @@ function _lastfm_info(x, y, w, h) {
 		default: // other
 			this.clickable_text_x = 0;
 			this.text_width = this.w;
+
 			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
 			}
@@ -230,11 +235,14 @@ function _lastfm_info(x, y, w, h) {
 				this.chart_methods.forEach(function (item, i) {
 					panel.m.AppendMenuItem(MF_STRING, i + 1120, _.capitalize(item.display));
 				});
+
 				panel.m.CheckMenuRadioItem(1120, 1122, this.properties.charts_method.value + 1120);
 				panel.m.AppendMenuSeparator();
+
 				this.chart_periods.forEach(function (item, i) {
 					panel.m.AppendMenuItem(MF_STRING, i + 1130, _.capitalize(item.display));
 				});
+
 				panel.m.CheckMenuRadioItem(1130, 1135, this.properties.charts_period.value + 1130);
 				panel.m.AppendMenuSeparator();
 			}
@@ -332,6 +340,7 @@ function _lastfm_info(x, y, w, h) {
 						};
 					}, this)
 					.value();
+
 				if (_fileExpired(this.filename, ONE_DAY)) {
 					this.get();
 				}
@@ -349,6 +358,7 @@ function _lastfm_info(x, y, w, h) {
 				this.filename = folders.lastfm + lastfm.username + '.' + this.chart_methods[this.properties.charts_method.value].method + '.' + this.chart_periods[this.properties.charts_period.value].period + '.json';
 				if (utils.IsFile(this.filename)) {
 					var data = _.get(_jsonParseFile(this.filename), this.chart_methods[this.properties.charts_method.value].json, []);
+
 					for (var i = 0; i < data.length; i++) {
 						if (this.properties.charts_method.value == 0) {
 							var name = data[i].name;
@@ -365,6 +375,7 @@ function _lastfm_info(x, y, w, h) {
 							rank : i > 0 && data[i].playcount == data[i - 1].playcount ? this.data[i - 1].rank : i + 1
 						};
 					}
+
 					if (_fileExpired(this.filename, ONE_DAY)) {
 						this.get();
 					}
@@ -373,6 +384,7 @@ function _lastfm_info(x, y, w, h) {
 				}
 			} else {
 				this.filename = folders.lastfm + lastfm.username + '.user.getRecentTracks.json';
+
 				if (utils.IsFile(this.filename)) {
 					this.data = _(_.get(_jsonParseFile(this.filename), 'recenttracks.track', []))
 						.filter('date')

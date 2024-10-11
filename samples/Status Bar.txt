@@ -154,9 +154,13 @@ function on_paint(gr) {
 	gr.Clear(properties.background.value);
 
 	var left_text = '';
-	if (starting) left_text = 'Starting playback...';
-	else if (fb.IsPlaying) left_text = tfo.Eval();
-	else left_text = fb.VersionString;
+
+	if (starting)
+		left_text = 'Starting playback...';
+	else if (fb.IsPlaying)
+		left_text = tfo.Eval();
+	else
+		left_text = fb.VersionString;
 
 	gr.WriteText(left_text, font, properties.text.value, 5, 2, ww - 200 - right_text_width, wh - 4, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_WORD_WRAPPING_WHOLE_WORD, DWRITE_TRIMMING_GRANULARITY_CHARACTER);
 

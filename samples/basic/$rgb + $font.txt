@@ -17,6 +17,7 @@ refresh();
 
 function refresh() {
 	var item = fb.GetFocusItem();
+
 	if (item) {
 		str = tfo.EvalWithMetadb(item);
 	} else {

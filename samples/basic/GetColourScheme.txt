@@ -18,6 +18,7 @@ function on_item_focus_change() {
 
 	colours = [];
 	var metadb = fb.GetFocusItem();
+
 	if (metadb) {
 		img = metadb.GetAlbumArt(); // omitting the type defaults to front
 

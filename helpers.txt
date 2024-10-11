@@ -110,8 +110,12 @@ function DrawRectangle(gr, x, y, w, h, colour) {
 function FillGradientRectangle(gr, x, y, w, h, direction, colour1, colour2) {
 	var stops = [[0, colour1], [1, colour2]];
 	var brush = {Start : [0, 0], Stops: stops};
-	if (direction == 0) brush.End = [0, h];
-	else brush.End = [w, 0];
+
+	if (direction == 0)
+		brush.End = [0, h];
+	else
+		brush.End = [w, 0];
+
 	gr.FillRectangle(x, y, w, h, JSON.stringify(brush));
 }
 
@@ -121,13 +125,21 @@ function EnableMenuIf(condition) {
 
 function CheckMenuIf(condition) {
 	var flags = MF_STRING;
-	if (condition) flags |= MF_CHECKED;
+
+	if (condition) {
+		flags |= MF_CHECKED;
+	}
+
 	return flags;
 }
 
 function GetMenuFlags(enabled, checked) {
 	var flags = enabled ? MF_STRING : MF_GRAYED;
-	if (checked) flags |= MF_CHECKED;
+
+	if (checked) {
+		flags |= MF_CHECKED;
+	}
+
 	return flags;
 }
 
@@ -142,6 +154,7 @@ function CreateFontString(name, size, bold) {
 
 function GetNowPlayingColours() {
 	var metadb = fb.GetNowPlaying();
+
 	if (metadb) {
 		var img = metadb.GetAlbumArt(AlbumArtId.front, false); // 2nd arg is want_stub - we don't
 		if (img) {

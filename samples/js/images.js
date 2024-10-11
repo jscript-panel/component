@@ -345,6 +345,7 @@ function _images() {
 			var folders = _stringToArray(this.properties.tf.value, '\r\n').map(function (item) {
 				return panel.tf(item);
 			});
+
 			this.image_paths = _getFiles(folders, this.exts);
 		} else {
 			this.image_paths = _getFiles(this.folder, this.exts);
@@ -354,10 +355,12 @@ function _images() {
 	this.wheel = function (s) {
 		if (!this.is_bio_panel && utils.IsKeyPressed(VK_SHIFT) && this.properties.aspect.value == image.full) {
 			var value = _clamp(this.properties.blur_opacity.value + (s * 0.05), 0.2, 0.8);
+
 			if (value != this.properties.blur_opacity.value) {
 				this.properties.blur_opacity.value = value;
 				window.Repaint();
 			}
+
 			return;
 		}
 

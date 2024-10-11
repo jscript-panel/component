@@ -56,9 +56,11 @@ function _musicbrainz(x, y, w, h) {
 			var data = _jsonParse(response_text);
 			var max_offset = Math.min(500, data['release-group-count'] || 0) - 100;
 			var rg = data['release-groups'] || [];
+
 			if (rg.length) {
 				Array.prototype.push.apply(this.mb_data, rg);
 			}
+
 			if (this.mb_offset < max_offset) {
 				this.mb_offset += 100;
 				this.get();
@@ -98,6 +100,7 @@ function _musicbrainz(x, y, w, h) {
 			break;
 		default:
 			var item = this.data[this.index];
+
 			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
 				utils.Run(item.url);
 			}
@@ -111,9 +114,10 @@ function _musicbrainz(x, y, w, h) {
 		if (panel.metadb) {
 			var temp_artist = panel.tf(DEFAULT_ARTIST);
 			var temp_id = panel.tf('$if3($meta(musicbrainz_artistid,0),$meta(musicbrainz artist id,0),)');
-			if (this.artist == temp_artist && this.mb_id == temp_id) {
+
+			if (this.artist == temp_artist && this.mb_id == temp_id)
 				return;
-			}
+
 			this.artist = temp_artist;
 			this.mb_id = temp_id;
 			this.update();
@@ -144,6 +148,7 @@ function _musicbrainz(x, y, w, h) {
 			break;
 		default:
 			var item = this.data[this.index];
+
 			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
 				window.SetCursor(IDC_HAND);
 				_tt(item.url);
@@ -162,6 +167,7 @@ function _musicbrainz(x, y, w, h) {
 
 		if (this.properties.mode.value == 0) { // releases
 			this.text_width = this.w - this.spacer_w - 10;
+
 			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				if (this.data[i + this.offset].url == 'SECTION_HEADER') {
 					this.draw_row(gr, this.data[i + this.offset].name, panel.colours.highlight, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
@@ -173,6 +179,7 @@ function _musicbrainz(x, y, w, h) {
 		} else { // links
 			this.clickable_text_x = 0;
 			this.text_width = this.w;
+
 			for (var i = 0; i < Math.min(this.count, this.rows); i++) {
 				this.draw_row(gr, this.data[i + this.offset].name, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height), this.text_width, panel.row_height);
 			}
@@ -230,6 +237,7 @@ function _musicbrainz(x, y, w, h) {
 				this.mb_data = [];
 				this.mb_offset = 0;
 				this.filename = _artistFolder(this.artist) + 'musicbrainz.releases.' + this.mb_id + '.json';
+
 				if (utils.IsFile(this.filename)) {
 					var data = _(_jsonParseFile(this.filename))
 						.sortByOrder(['first-release-date', 'title'], ['desc', 'asc'])
@@ -245,6 +253,7 @@ function _musicbrainz(x, y, w, h) {
 						})
 						.nest(['primary', 'secondary'])
 						.value();
+
 					_.forEach(['Album', 'Single', 'EP', 'Other', 'Broadcast', 'null'], function (primary) {
 						_.forEach(['null', 'Audiobook', 'Compilation', 'Demo', 'DJ-mix', 'Interview', 'Live', 'Mixtape/Street', 'Remix', 'Spokenword', 'Soundtrack'], function (secondary) {
 							var group = _.get(data, primary + '.' + secondary);
@@ -283,11 +292,13 @@ function _musicbrainz(x, y, w, h) {
 							return item.name.split('//')[1].replace('www.', '');
 						})
 						.value();
+
 					this.data.unshift({
 						name : url,
 						url : url,
 						width : url.calc_width2(panel.fonts.normal)
 					});
+
 					if (_fileExpired(this.filename, ONE_DAY)) {
 						this.get();
 					}

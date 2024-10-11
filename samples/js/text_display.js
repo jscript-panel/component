@@ -4,6 +4,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			this.text_layout.Dispose();
 			this.text_layout = null;
 		}
+
 		this.text = '';
 	}
 
@@ -124,12 +125,14 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			break;
 		case 1207:
 			this.properties.albumart.toggle();
+
 			if (this.properties.albumart.enabled) {
 				panel.custom_background = false;
 				albumart.metadb_changed();
 			} else {
 				panel.custom_background = true;
 			}
+
 			this.refresh(true);
 			break;
 		case 1208:
@@ -150,10 +153,12 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			break;
 		case 1230:
 			var tmp = utils.InputBox('Enter a margin here. It will be ignored if Album Art is enabled.', window.Name, this.properties.margin.value);
+
 			if (tmp != this.properties.margin.value) {
 				this.properties.margin.value = tmp;
 				this.size();
 			}
+
 			break;
 		default:
 			albumart.rbtn_up_done(idx);
@@ -172,6 +177,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 
 			if (panel.selection.value == 0 && fb.IsPlaying) {
 				var loc = plman.GetPlayingItemLocation();
+
 				if (loc.IsValid) {
 					tmp = tfo.EvalPlaylistItem(loc.PlaylistIndex, loc.PlaylistItemIndex);
 				} else {
@@ -180,6 +186,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			} else {
 				var PlaylistIndex = plman.ActivePlaylist;
 				var PlaylistItemIndex = plman.GetPlaylistFocusItemIndex(PlaylistIndex);
+
 				if (PlaylistIndex > -1 && PlaylistItemIndex > -1) {
 					tmp = tfo.EvalPlaylistItem(PlaylistIndex, PlaylistItemIndex);
 				} else {
@@ -190,6 +197,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			if (force || tmp != this.text) {
 				this.clear_layout()
 				this.text = tmp;
+
 				if (this.text.length) {
 					var font = JSON.parse(panel.fonts.normal);
 
@@ -227,6 +235,7 @@ function _text_display(x, y, w, h, buttons_or_rating) {
 			break;
 		case 1: // album art top, text bottom
 			var width = panel.w - (margin * 2);
+
 			if (this.text_layout) {
 				this.text_height = this.text_layout.CalcTextHeight(width);
 			}

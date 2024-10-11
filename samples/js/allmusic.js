@@ -178,6 +178,7 @@ function _allmusic(x, y, w, h) {
 	this.parse_search_results = function (response_text) {
 		try {
 			this.review_url = '';
+
 			_(_getElementsByTagName(response_text, 'div'))
 				.filter({className : 'info'})
 				.forEach(function (info_div) {
@@ -207,6 +208,7 @@ function _allmusic(x, y, w, h) {
 					}
 				}, this)
 				.value();
+
 			if (this.review_url.length) {
 				console.log(N, 'A page was found for ' + _q(this.album) + '. Now checking for review...');
 				this.get();

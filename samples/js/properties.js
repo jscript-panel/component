@@ -3,6 +3,7 @@ function _properties(mode, x, y, w, h) {
 		var names = ['FILE NAME', 'FOLDER NAME', 'FILE PATH', 'SUBSONG INDEX', 'FILE SIZE', 'FILE CREATED', 'LAST MODIFIED'];
 		var values = [panel.tf('%filename_ext%'), panel.tf('$directory_path(%path%)'), this.filename, panel.metadb.SubSong, panel.tf('[%filesize_natural%]'), panel.tf('[%file_created%]'), panel.tf('[%last_modified%]')];
 		var urls = ['%filename_ext% IS ', '"$directory_path(%path%)" IS ', '%path% IS ', '%subsong% IS ', '%filesize_natural% IS ', '%file_created% IS ', '%last_modified% IS '];
+
 		for (var i = 0; i < 7; i++) {
 			this.data.push({
 				name : names[i],
@@ -10,6 +11,7 @@ function _properties(mode, x, y, w, h) {
 				url : urls[i] + values[i]
 			});
 		}
+
 		this.add_separator();
 	}
 
@@ -81,21 +83,25 @@ function _properties(mode, x, y, w, h) {
 
 	this.add_tech = function (f) {
 		var duration = utils.FormatDuration(Math.max(0, panel.metadb.Length));
+		var tmp = [];
+
 		this.data.push({
 			name : 'DURATION',
 			value : duration,
 			url : '%length% IS ' + duration,
 		});
-		var tmp = [];
+
 		for (var i = 0; i < f.InfoCount; i++) {
 			var name = f.InfoName(i);
 			var value = f.InfoValue(i).replace(/\s{2,}/g, ' ');
+
 			tmp.push({
 				name : name.toUpperCase(),
 				value : value,
 				url : '%__' + name.toLowerCase() + '% IS ' + value
 			});
 		}
+
 		Array.prototype.push.apply(this.data, _.sortByOrder(tmp, 'name'));
 		this.add_separator();
 	}
@@ -168,6 +174,7 @@ function _properties(mode, x, y, w, h) {
 			break;
 		default:
 			var item = this.data[this.index];
+
 			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
 				if (_.startsWith(item.url, 'http')) {
 					utils.Run(item.url);
@@ -175,6 +182,7 @@ function _properties(mode, x, y, w, h) {
 					plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, item.value, item.url);
 				}
 			}
+
 			break;
 		}
 
@@ -211,6 +219,7 @@ function _properties(mode, x, y, w, h) {
 			var item = this.data[this.index];
 			if (x > this.x + this.clickable_text_x && x < this.x + this.clickable_text_x + Math.min(item.width, this.text_width) && typeof item.url == 'string') {
 				window.SetCursor(IDC_HAND);
+
 				if (_.startsWith(item.url, 'http')) {
 					_tt(item.url);
 				} else {

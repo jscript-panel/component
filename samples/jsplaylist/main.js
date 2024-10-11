@@ -102,10 +102,12 @@ function on_drag_leave() {
 	g_drag_drop_row_id = -1;
 	g_drag_drop_playlist_id = -1;
 	p.list.buttonclicked = false;
+
 	if (cScrollBar.interval) {
 		window.ClearInterval(cScrollBar.interval);
 		cScrollBar.interval = false;
 	}
+
 	window.Repaint();
 }
 
@@ -295,60 +297,6 @@ function on_key_down(vkey) {
 						}, 400);
 					}
 					break;
-				case VK_PGUP:
-					var scrollstep = p.list.totalRowVisible;
-					var new_focus_id = 0;
-					if (p.list.count > 0 && !p.list.keypressed && !cScrollBar.timeout) {
-						p.list.keypressed = true;
-						new_focus_id = (p.list.focusedTrackId > scrollstep) ? p.list.focusedTrackId - scrollstep : 0;
-						if (p.list.focusedTrackId == 0 && p.list.offset > 0) {
-							p.list.scrollItems(1, scrollstep);
-							cScrollBar.timeout = window.SetTimeout(function () {
-								cScrollBar.timeout = false;
-								p.list.scrollItems(1, scrollstep);
-								if (cScrollBar.interval) window.ClearInterval(cScrollBar.interval);
-								cScrollBar.interval = window.SetInterval(function () {
-									p.list.scrollItems(1, scrollstep);
-								}, 60);
-							}, 400);
-						} else {
-							plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-							plman.ClearPlaylistSelection(g_active_playlist);
-							plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-							cScrollBar.timeout = window.SetTimeout(function () {
-								cScrollBar.timeout = false;
-								if (cScrollBar.interval) window.ClearInterval(cScrollBar.interval);
-								cScrollBar.interval = window.SetInterval(function () {
-									new_focus_id = (p.list.focusedTrackId > scrollstep) ? p.list.focusedTrackId - scrollstep : 0;
-									plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-									plman.ClearPlaylistSelection(g_active_playlist);
-									plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-								}, 60);
-							}, 400);
-						}
-					}
-					break;
-				case VK_PGDN:
-					var scrollstep = p.list.totalRowVisible;
-					var new_focus_id = 0;
-					if (p.list.count > 0 && !p.list.keypressed && !cScrollBar.timeout) {
-						p.list.keypressed = true;
-						new_focus_id = (p.list.focusedTrackId < p.list.count - scrollstep) ? p.list.focusedTrackId + scrollstep : p.list.count - 1;
-						plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-						plman.ClearPlaylistSelection(g_active_playlist);
-						plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-						cScrollBar.timeout = window.SetTimeout(function () {
-							cScrollBar.timeout = false;
-							if (cScrollBar.interval) window.ClearInterval(cScrollBar.interval);
-							cScrollBar.interval = window.SetInterval(function () {
-								new_focus_id = (p.list.focusedTrackId < p.list.count - scrollstep) ? p.list.focusedTrackId + scrollstep : p.list.count - 1;
-								plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-								plman.ClearPlaylistSelection(g_active_playlist);
-								plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-							}, 60);
-						}, 400);
-					}
-					break;
 				case VK_RETURN:
 					plman.ExecutePlaylistDefaultAction(g_active_playlist, p.list.focusedTrackId);
 					break;
@@ -518,6 +466,7 @@ function on_key_up(vkey) {
 
 function on_mouse_lbtn_dblclk(x, y, mask) {
 	g_double_clicked = true;
+
 	if (cSettings.visible) {
 		p.settings.on_mouse("lbtn_dblclk", x, y);
 	} else {
@@ -864,8 +813,10 @@ function on_playback_stop(reason) {
 function on_playback_time(time) {
 	g_double_clicked = false;
 	g_seconds = time;
-	if (!cSettings.visible && p.list.nowplaying_y + cRow.playlist_h > p.list.y && p.list.nowplaying_y < p.list.y + p.list.h)
+
+	if (!cSettings.visible && p.list.nowplaying_y + cRow.playlist_h > p.list.y && p.list.nowplaying_y < p.list.y + p.list.h) {
 		window.RepaintRect(p.list.x, p.list.nowplaying_y, p.list.w, cRow.playlist_h);
+	}
 }
 
 function on_playlist_item_ensure_visible(playlist, index) {
@@ -937,9 +888,11 @@ function on_playlists_changed() {
 	g_active_playlist = plman.ActivePlaylist;
 
 	p.topBar.setDatas();
+
 	if (cPlaylistManager.visible && cPlaylistManager.drag_dropped) {
 		window.SetCursor(IDC_ARROW);
 	}
+
 	p.playlistManager.refresh();
 	full_repaint();
 }
@@ -986,20 +939,23 @@ function DrawWallpaper(gr) {
 function GetKeyboardMask() {
 	if (utils.IsKeyPressed(VK_CONTROL))
 		return KMask.ctrl;
-	if (utils.IsKeyPressed(VK_SHIFT))
+	else if (utils.IsKeyPressed(VK_SHIFT))
 		return KMask.shift;
-	return KMask.none;
+	else
+		return KMask.none;
 }
 
 function num(strg, nb) {
 	var i;
 	var str = strg.toString();
 	var k = nb - str.length;
+
 	if (k > 0) {
 		for (i = 0; i < k; i++) {
 			str = "0" + str;
 		}
 	}
+
 	return str.toString();
 }
 
@@ -1064,6 +1020,7 @@ function get_tfo(pattern) {
 
 function renamePlaylist() {
 	var text = p.playlistManager.inputbox.text.trim();
+
 	if (p.playlistManager.inputboxID > -1 && text.length) {
 		plman.RenamePlaylist(p.playlistManager.playlists[p.playlistManager.inputboxID].idx, text);
 		p.playlistManager.inputboxID = -1;
@@ -1082,9 +1039,11 @@ function inputboxPlaylistManager_activate() {
 	p.playlistManager.inputbox.anchor = p.playlistManager.inputbox.Cpos;
 	p.playlistManager.inputbox.SelBegin = p.playlistManager.inputbox.Cpos;
 	p.playlistManager.inputbox.SelEnd = p.playlistManager.inputbox.Cpos;
+
 	if (!cInputbox.cursor_interval) {
 		p.playlistManager.inputbox.resetCursorTimer();
 	}
+
 	p.playlistManager.inputbox.dblclk = true;
 	p.playlistManager.inputbox.SelBegin = 0;
 	p.playlistManager.inputbox.SelEnd = p.playlistManager.inputbox.text.length;
@@ -1165,6 +1124,7 @@ function full_repaint() {
 
 function resize_panels() {
 	cRow.playlist_h = scale(cRow.default_playlist_h);
+
 	if (cList.enableExtraLine) {
 		cRow.playlist_h += scale(6);
 	}
@@ -1178,6 +1138,7 @@ function resize_panels() {
 	// set Size of List
 	var list_h = wh - p.topBar.h - (p.headerBar.visible ? p.headerBar.h + cHeaderBar.borderWidth : 0);
 	p.list.setSize(0, wh - list_h, ww, list_h);
+
 	if (g_init_on_size) {
 		p.list.setItems(true);
 	}
@@ -1232,6 +1193,7 @@ function update_playlist() {
 
 	p.list.setItems(false);
 	p.scrollbar.setCursor(p.list.totalRowVisible, p.list.totalRows, p.list.offset);
+
 	if (cHeaderBar.sortRequested) {
 		window.SetCursor(IDC_ARROW);
 		cHeaderBar.sortRequested = false;
@@ -1344,10 +1306,12 @@ function get_wallpaper() {
 		return null;
 
 	var metadb = fb.GetNowPlaying();
+
 	if (!metadb)
 		return null;
 
 	var img = null;
+
 	if (properties.wallpapertype == -1) {
 		if (utils.IsFile(properties.wallpaperpath)) {
 			img = utils.LoadImage(properties.wallpaperpath);

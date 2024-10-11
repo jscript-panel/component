@@ -73,6 +73,7 @@ function _rating(x, y, h, colour) {
 				this.hrating = Math.ceil((x - this.x) / this.h);
 				window.RepaintRect(this.x, this.y, this.w, this.h);
 			}
+
 			return true;
 		}
 
@@ -92,6 +93,7 @@ function _rating(x, y, h, colour) {
 		_.forEach(this.modes, function (item, i) {
 			panel.s10.AppendMenuItem(EnableMenuIf(this.foo_playcount || i != 1), i + 1000, item);
 		}, this);
+
 		panel.s10.CheckMenuRadioItem(1000, 1002, this.properties.mode.value + 1000);
 		panel.s10.AppendTo(panel.m, MF_STRING, 'Mode');
 		panel.m.AppendMenuItem(EnableMenuIf(this.properties.mode.value == 2), 1004, 'Tag name');
@@ -115,6 +117,7 @@ function _rating(x, y, h, colour) {
 			this.properties.max.value = tmp > 0 ? tmp : this.properties.max.default_;
 			break;
 		}
+
 		this.w = this.h * this.get_max();
 		this.metadb_changed();
 		on_size();
@@ -123,6 +126,7 @@ function _rating(x, y, h, colour) {
 
 	this.set_rating = function () {
 		var handles = fb.CreateHandleList(panel.metadb);
+
 		switch (this.properties.mode.value) {
 		case 1: // foo_playcount
 			handles.RunContextCommand('Playback Statistics/Rating/' + (this.hrating == this.rating ? '<not set>' : this.hrating));
@@ -135,6 +139,7 @@ function _rating(x, y, h, colour) {
 			handles.UpdateFileInfoFromJSON(JSON.stringify(obj));
 			break;
 		}
+
 		handles.Dispose();
 	}
 

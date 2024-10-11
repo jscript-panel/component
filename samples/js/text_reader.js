@@ -63,11 +63,13 @@ function _text_reader(x, y, w, h) {
 				var codepage = utils.DetectCharset(this.filename);
 				str = utils.ReadTextFile(this.filename, codepage);
 			}
+
 			str = str.replace(/\t/g, '    ');
 
 			if (str != this.text) {
 				this.clear_layout()
 				this.text = str;
+
 				if (this.text.length) {
 					this.text_layout = utils.CreateTextLayout(this.text, this.properties.fixed.enabled ? 'Consolas' : panel.fonts.name, _scale(panel.fonts.size.value));
 				}

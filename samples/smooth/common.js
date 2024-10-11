@@ -34,9 +34,12 @@ function on_size() {
 }
 
 function clamp(value, min, max) {
-	if (value < min) return min;
-	if (value > max) return max;
-	return value;
+	if (value < min)
+		return min;
+	else if (value > max)
+		return max;
+	else
+		return value;
 }
 
 function draw_header_bar(gr, text, obj) {
@@ -48,6 +51,7 @@ function draw_header_bar(gr, text, obj) {
 
 function update_extra_font_size(step) {
 	var tmp = clamp(ppt.extra_font_size + step, 0, 10);
+
 	if (ppt.extra_font_size != tmp) {
 		ppt.extra_font_size = tmp;
 		window.SetProperty("SMOOTH.EXTRA.FONT.SIZE", ppt.extra_font_size);
@@ -113,10 +117,12 @@ function generate_filename(cachekey, art_id) {
 function get_art(metadb, cachekey, art_id) {
 	var filename = generate_filename(cachekey, art_id);
 	var img = images.cache[filename];
+
 	if (img)
 		return img;
 
 	img = utils.LoadImage(filename);
+
 	if (img) {
 		images.cache[filename] = img;
 		return img;
@@ -167,9 +173,10 @@ function drawSelectedRectangle(gr, x, y, w, h) {
 function GetKeyboardMask() {
 	if (utils.IsKeyPressed(VK_CONTROL))
 		return KMask.ctrl;
-	if (utils.IsKeyPressed(VK_SHIFT))
+	else if (utils.IsKeyPressed(VK_SHIFT))
 		return KMask.shift;
-	return KMask.none;
+	else
+		return KMask.none;
 }
 
 function button(normal, hover, down) {

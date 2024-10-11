@@ -10,6 +10,7 @@ function _thumbs() {
 		this.img = utils.CreateImage(Math.min(this.columns, this.thumbs.length) * size, this.img_rows * size);
 		var temp_gr = this.img.GetGraphics();
 		var current = 0;
+
 		for (var row = 0; row < this.img_rows; row++) {
 			for (var col = 0; col < this.columns; col++) {
 				if (!this.thumbs[current])
@@ -48,6 +49,7 @@ function _thumbs() {
 		}
 
 		var temp_gr = this.img.GetGraphics();
+
 		_.forEach(this.thumbs, function (item, i) {
 			if (vertical) y = i * size;
 			else x = i * size;
@@ -95,9 +97,9 @@ function _thumbs() {
 	}
 
 	this.download = function () {
-		if (!_tagged(this.artist)) {
+		if (!_tagged(this.artist))
 			return;
-		}
+
 		var url = 'https://www.last.fm/music/' + encodeURIComponent(this.artist) + '/+images';
 		var task_id = utils.HTTPRequestAsync(window.ID, 0, url, this.headers);
 		this.artists[task_id] = this.artist;
@@ -137,6 +139,7 @@ function _thumbs() {
 			var folders = _stringToArray(this.properties.tf.value, '\r\n').map(function (item) {
 				return panel.tf(item);
 			});
+
 			files = _getFiles(folders, this.exts);
 		} else {
 			files = _getFiles(this.folder, this.exts);
@@ -145,6 +148,7 @@ function _thumbs() {
 		if (this.properties.source.value == 1 && files.length > 1) {
 			this.default_file = this.folder + this.defaults[this.artist];
 			var tmp = _.indexOf(files, this.default_file);
+
 			if (tmp > -1) {
 				files.splice(tmp, 1);
 				files.unshift(this.default_file);
@@ -247,6 +251,7 @@ function _thumbs() {
 	this.lbtn_dblclk = function (x, y) {
 		if (this.image_containsxXY(x, y)) {
 			var path = this.images[this.image_index].Path;
+
 			switch (this.properties.double_click_mode.value) {
 			case 0:
 				utils.Run(path);
@@ -283,15 +288,16 @@ function _thumbs() {
 		if (panel.metadb) {
 			if (this.properties.source.value == 0) { // custom folder
 				var temp_folder = panel.tf(this.properties.tf.value);
-				if (this.folder == temp_folder) {
+
+				if (this.folder == temp_folder)
 					return;
-				}
+
 				this.folder = temp_folder;
 			} else { // last.fm
 				var temp_artist = panel.tf(DEFAULT_ARTIST);
-				if (this.artist == temp_artist) {
+				if (this.artist == temp_artist)
 					return;
-				}
+
 				this.artist = temp_artist;
 				this.folder = _artistFolder(this.artist);
 			}
@@ -299,6 +305,7 @@ function _thumbs() {
 			this.artist = '';
 			this.folder = '';
 		}
+
 		this.update();
 	}
 
@@ -306,14 +313,16 @@ function _thumbs() {
 		this.mx = x;
 		this.my = y;
 		this.hover_index = this.images.length;
+
 		switch (true) {
 		case !this.containsXY(x, y):
 			break;
 		case this.properties.mode.value == 0: // grid
-			if (this.overlay) {
+			if (this.overlay)
 				return window.SetCursor(this.close_btn.move(x, y) ? IDC_HAND : IDC_ARROW);
-			}
+
 			var tmp = Math.floor(x / this.properties.px.value);
+
 			if (tmp < this.columns) {
 				this.hover_index = tmp + ((Math.floor(y / this.properties.px.value) + this.offset) * this.columns);
 			}
@@ -327,6 +336,7 @@ function _thumbs() {
 			this.hover_index = Math.floor(x / this.properties.px.value) + this.offset;
 			break;
 		}
+
 		window.SetCursor(this.hover_index < this.images.length ? IDC_HAND : IDC_ARROW);
 	}
 
@@ -351,6 +361,7 @@ function _thumbs() {
 			break;
 		case this.properties.mode.value == 0: // grid
 			gr.DrawImage(this.img, this.x, this.y, this.img.Width, Math.min(this.img.Height - offset_px, this.h), 0, offset_px, this.img.Width, Math.min(this.img.Height - offset_px, this.h));
+
 			if (this.overlay) {
 				_drawOverlay(gr, this.x, this.y, this.w, this.h);
 				this.image_xywh = _drawImage(gr, this.images[this.image_index], 20, 20, panel.w - 40, panel.h - 40, image.full, 1.0, RGB(150, 150, 150));
@@ -366,6 +377,7 @@ function _thumbs() {
 			} else {
 				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
+
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, this.w, Math.min(this.img.Height - offset_px, this.h), 0, offset_px, this.w, Math.min(this.img.Height - offset_px, this.h));
 			break;
@@ -376,6 +388,7 @@ function _thumbs() {
 			} else {
 				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
+
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, this.w, Math.min(this.img.Height - offset_px, this.h), 0, offset_px, this.w, Math.min(this.img.Height - offset_px, this.h));
 			break;
@@ -386,6 +399,7 @@ function _thumbs() {
 			} else {
 				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
+
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, Math.min(this.img.Width - offset_px, this.w), this.img.Height, offset_px, 0, Math.min(this.img.Width - offset_px, this.w), this.img.Height);
 			break;
@@ -396,6 +410,7 @@ function _thumbs() {
 			} else {
 				this.image_xywh = _drawImage(gr, this.images[this.image_index], 0, 0, panel.w, panel.h, this.properties.aspect.value);
 			}
+
 			_drawOverlay(gr, this.x, this.y, this.w, this.h);
 			gr.DrawImage(this.img, this.x, this.y, Math.min(this.img.Width - offset_px, this.w), this.img.Height, offset_px, 0, Math.min(this.img.Width - offset_px, this.w), this.img.Height);
 			break;
@@ -428,9 +443,11 @@ function _thumbs() {
 		} else { // last.fm
 			panel.m.AppendMenuItem(EnableMenuIf(panel.metadb), 1003, 'Download now');
 			panel.m.AppendMenuItem(CheckMenuIf(this.properties.auto_download.enabled), 1004, 'Automatic downloads');
+
 			this.limits.forEach(function (item) {
 				panel.s10.AppendMenuItem(MF_STRING, item + 1010, item);
 			});
+
 			panel.s10.CheckMenuRadioItem(_.first(this.limits) + 1010, _.last(this.limits) + 1010, this.properties.limit.value + 1010);
 			panel.s10.AppendTo(panel.m, MF_STRING, 'Limit');
 			panel.m.AppendMenuSeparator();
@@ -448,12 +465,16 @@ function _thumbs() {
 			this.modes.forEach(function (item, i) {
 				panel.s11.AppendMenuItem(MF_STRING, i + 1050, _.capitalize(item));
 			});
+
 			panel.s11.CheckMenuRadioItem(1050, 1055, this.properties.mode.value + 1050);
 			panel.s11.AppendMenuSeparator();
+
 			var flag = EnableMenuIf(this.properties.mode.value != 5);
+
 			this.pxs.forEach(function (item) {
 				panel.s11.AppendMenuItem(flag, item + 1000, item + 'px');
 			});
+
 			panel.s11.CheckMenuRadioItem(_.first(this.pxs) + 1000, _.last(this.pxs) + 1000, this.properties.px.value + 1000);
 			panel.s11.AppendMenuSeparator();
 			panel.s11.AppendMenuItem(GetMenuFlags(this.properties.mode.value != 5, this.properties.circular.enabled), 1399, 'Circular');
@@ -478,6 +499,7 @@ function _thumbs() {
 				panel.m.CheckMenuRadioItem(1500, 1503, this.properties.aspect.value + 1500);
 				panel.m.AppendMenuSeparator();
 			}
+
 			if (this.properties.source.value == 1 && this.images.length > 1) {
 				panel.m.AppendMenuItem(EnableMenuIf(this.default_file != this.images[this.image_index].Path), 1520, 'Set as default');
 				panel.m.AppendMenuItem(EnableMenuIf(utils.IsFile(this.default_file)), 1521, 'Clear default');
@@ -638,8 +660,12 @@ function _thumbs() {
 
 		if (panel.w < this.properties.px.value || panel.h < this.properties.px.value || this.properties.mode.value == 5) {
 			this.nc = true;
-			if (this.img) this.img.Dispose();
-			this.img = null;
+
+			if (this.img) {
+				this.img.Dispose();
+				this.img = null;
+			}
+
 			this.x = 0;
 			this.y = 0;
 			this.w = 0;
@@ -651,12 +677,15 @@ function _thumbs() {
 				this.y = 0;
 				this.w = panel.w;
 				this.h = panel.h;
+
 				if (!this.nc && this.columns != Math.floor(this.w / this.properties.px.value)) {
 					this.nc = true;
 				}
+
 				this.rows = Math.ceil(this.h / this.properties.px.value);
 				this.columns = Math.floor(this.w / this.properties.px.value);
 				this.img_rows = Math.ceil(this.thumbs.length / this.columns);
+
 				if (this.nc && this.thumbs.length) {
 					this.nc = false;
 					this.create_grid();
@@ -669,6 +698,7 @@ function _thumbs() {
 				this.w = this.properties.px.value;
 				this.h = panel.h;
 				this.rows = Math.ceil(this.h / this.properties.px.value);
+
 				if (this.nc && this.thumbs.length) {
 					this.nc = false;
 					this.create_strip(true);
@@ -681,10 +711,12 @@ function _thumbs() {
 				this.w = panel.w;
 				this.h = this.properties.px.value;
 				this.columns = Math.ceil(this.w / this.properties.px.value);
+
 				if (this.nc && this.thumbs.length) {
 					this.nc = false;
 					this.create_strip(false);
 				}
+
 				break;
 			}
 		}
@@ -705,6 +737,7 @@ function _thumbs() {
 		if (this.properties.mode.value != 5) {
 			this.create_thumbs();
 		}
+
 		this.size(true);
 		window.Repaint();
 	}
@@ -712,14 +745,17 @@ function _thumbs() {
 	this.wheel = function (s) {
 		if (utils.IsKeyPressed(VK_SHIFT) && this.properties.aspect.value == image.full) {
 			var value = _clamp(this.properties.blur_opacity.value + (s * 0.05), 0.2, 0.8);
+
 			if (value != this.properties.blur_opacity.value) {
 				this.properties.blur_opacity.value = value;
 				window.Repaint();
 			}
+
 			return;
 		}
 
 		var offset = this.offset - s;
+
 		switch (true) {
 		case !this.containsXY(this.mx, this.my):
 		case this.properties.mode.value == 0 && this.overlay: // grid

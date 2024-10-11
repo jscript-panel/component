@@ -30,6 +30,7 @@ function _button(x, y, w, h, normal, hover, fn, tiptext) {
 		} else {
 			this.current = this.normal;
 		}
+
 		window.RepaintRect(this.x, this.y, this.w, this.h);
 	}
 
@@ -108,9 +109,12 @@ function _buttons() {
 }
 
 function _clamp(value, min, max) {
-	if (value < min) return min;
-	if (value > max) return max;
-	return value;
+	if (value < min)
+		return min;
+	else if (value > max)
+		return max;
+	else
+		return value;
 }
 
 function _dispose() {
@@ -143,6 +147,7 @@ function _drawImage(gr, img, dst_x, dst_y, dst_w, dst_h, mode, opacity, border) 
 			var src_h = img.Height;
 			var src_x = Math.round((img.Width - src_w) / 2);
 		}
+
 		gr.DrawImage(img, dst_x, dst_y, dst_w, dst_h, src_x + 3, src_y + 3, src_w - 6, src_h - 6, opacity || 1);
 		break;
 	case mode == image.full:
@@ -226,6 +231,7 @@ function _getFiles(folder, exts) {
 	if (!exts) {
 		return files;
 	}
+
 	return _.filter(files, function (item) {
 		var ext = _getExt(item);
 		return _.includes(exts, ext);

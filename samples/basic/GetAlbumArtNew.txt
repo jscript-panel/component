@@ -26,12 +26,17 @@ function update_album_art() {
 	g_metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
 
 	if (g_metadb) {
-		g_img = g_metadb.GetAlbumArt(); // omitting the type defaults to front
+		// omitting the type defaults to front
+		g_img = g_metadb.GetAlbumArt();
 
 		if (g_img) {
-			var path = g_img.Path;
-			g_info = 'Original dimensions: ' + g_img.Width + 'x' + g_img.Height; // add image dimensions to tooltip
-			if (path.length) g_info += '\nPath: ' + path; // add path on new line if present
+			// add image dimensions to tooltip
+			g_info = 'Original dimensions: ' + g_img.Width + 'x' + g_img.Height;
+
+			// add path on new line if present
+			if (g_img.Path.length) {
+				g_info += '\nPath: ' + g_img.Path; 
+			}
 		}
 	}
 

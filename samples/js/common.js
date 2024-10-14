@@ -444,6 +444,7 @@ function _tt(value) {
 
 var doc = new ActiveXObject('htmlfile');
 
+var CRLF = '\r\n';
 var ONE_DAY = 86400;
 var DEFAULT_ARTIST = '$meta(artist,0)';
 var N = window.Name + ':';

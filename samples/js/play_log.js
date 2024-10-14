@@ -26,7 +26,7 @@ function _play_log(x, y, w, h) {
 	}
 
 	this.get_lines = function () {
-		var lines = _stringToArray(this.text, this.CRLF);
+		var lines = _stringToArray(this.text, CRLF);
 
 		if (this.properties.limit.value > 0) {
 			lines = _.take(lines, this.properties.limit.value);
@@ -54,7 +54,7 @@ function _play_log(x, y, w, h) {
 
 			lines.unshift(str);
 
-			this.text = lines.join(this.CRLF);
+			this.text = lines.join(CRLF);
 			_save(this.filename, this.text);
 
 			this.create_layout();
@@ -130,7 +130,7 @@ function _play_log(x, y, w, h) {
 		case 1201:
 			var tmp = Number(utils.InputBox('Enter limit', window.Name, this.properties.limit.value));
 			this.properties.limit.value =  tmp >= 0 ? tmp : this.properties.limit.default_;
-			this.text = this.get_lines().join(this.CRLF);
+			this.text = this.get_lines().join(CRLF);
 			_save(this.filename, this.text);
 			this.create_layout();
 			break;
@@ -216,7 +216,6 @@ function _play_log(x, y, w, h) {
 
 	this.filename = '';
 	this.last = '';
-	this.CRLF = '\r\n';
 	this.tfo = panel.get_tfo(this.properties.tf.value);
 	this.filename = folders.data + 'play_log.txt';
 	this.read_file();

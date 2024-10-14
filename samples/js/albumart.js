@@ -100,7 +100,7 @@ function _albumart(x, y, w, h) {
 			if (this.properties.mode.value == 0) {
 				img = panel.metadb.GetAlbumArt(this.properties.id.value);
 			} else {
-				_stringToArray(this.properties.edit.value, '\r\n').forEach((function (item) {
+				_stringToArray(this.properties.edit.value, CRLF).forEach((function (item) {
 					if (img)
 						return;
 

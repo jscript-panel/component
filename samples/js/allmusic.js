@@ -312,7 +312,6 @@ function _allmusic(x, y, w, h) {
 	this.album = '';
 	this.filename = '';
 	this.filenames = {};
-	this.CRLF = '\r\n';
 	this.review_url = '';
 	this.search_base = 'https://www.allmusic.com/search/albums/';
 	this.history = {};

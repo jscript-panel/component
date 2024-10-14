@@ -135,8 +135,8 @@ function _thumbs() {
 	this.get_files = function () {
 		var files = [];
 
-		if (this.properties.source.value == 0 && _.includes(this.properties.tf.value, '\r\n')) {
-			var folders = _stringToArray(this.properties.tf.value, '\r\n').map(function (item) {
+		if (this.properties.source.value == 0 && _.includes(this.properties.tf.value, CRLF)) {
+			var folders = _stringToArray(this.properties.tf.value, CRLF).map(function (item) {
 				return panel.tf(item);
 			});
 

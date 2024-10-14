@@ -156,7 +156,7 @@ function _lastfm_bio(x, y, w, h) {
 				var arr = [];
 				arr.push(this.parse_extra());
 				arr.push(this.parse());
-				str = arr.filter(function (item) { return item.length > 0; }).join(this.CRLF);
+				str = arr.filter(function (item) { return item.length > 0; }).join(CRLF);
 			} else {
 				str = this.parse();
 			}
@@ -224,7 +224,7 @@ function _lastfm_bio(x, y, w, h) {
 		if (utils.IsFile(this.filename_extra)) {
 			var obj = _jsonParseFile(this.filename_extra);
 			_.forEach(obj, function (value, name) {
-				str += name.trim() + ': ' + value.trim() + this.CRLF;
+				str += name.trim() + ': ' + value.trim() + CRLF;
 
 				if (this.flag.empty() && (name == 'Born In' || name == 'Founded In')) {
 					this.parse_location(value.toLowerCase());
@@ -248,7 +248,7 @@ function _lastfm_bio(x, y, w, h) {
 		if (flag.length) {
 			this.flag = flag;
 		} else {
-			var arr = _stringToArray(this.properties.flag_map.value, this.CRLF);
+			var arr = _stringToArray(this.properties.flag_map.value, CRLF);
 
 			_.forEach(arr, function (item) {
 				var tmp = _stringToArray(item, '|');
@@ -397,7 +397,6 @@ function _lastfm_bio(x, y, w, h) {
 	this.artist = '';
 	this.filename = '';
 	this.filenames = {};
-	this.CRLF = '\r\n';
 	this.langs = ['en', 'de', 'es', 'fr', 'it', 'ja', 'pl', 'pt', 'ru', 'sv', 'tr', 'zh'];
 	this.flag_font = utils.CheckFont('Twemoji Mozilla');
 	this.flag = '';

@@ -14,7 +14,7 @@ function _console(x, y, w, h) {
 			.value();
 
 		if (lines.length > 0) {
-			var str = lines.join(this.CRLF);
+			var str = lines.join(CRLF);
 
 			// apply highlight colour to timestamp if available
 			if (this.properties.timestamp.enabled && panel.colours.text != panel.colours.highlight) {
@@ -34,7 +34,7 @@ function _console(x, y, w, h) {
 						'Colour' : panel.colours.highlight,
 					});
 
-					start += lines[i].length + this.CRLF.length;
+					start += lines[i].length + CRLF.length;
 				}
 
 				this.colour_string = JSON.stringify(colours);
@@ -180,7 +180,6 @@ function _console(x, y, w, h) {
 	this.text = '';
 
 	this.colour_string = '';
-	this.CRLF = '\r\n';
 
 	this.properties = {
 		timestamp : new _p('2K3.TEXT.CONSOLE.TIMESTAMP', true)

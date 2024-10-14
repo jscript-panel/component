@@ -20,27 +20,16 @@ function _albumart(x, y, w, h) {
 	}
 
 	this.get_custom = function (id, type) {
-		var img = null;
-
 		switch (type) {
 		case AlbumArtType.embedded:
-			img = panel.metadb.GetAlbumArtEmbedded(id);
-			break;
+			return panel.metadb.GetAlbumArtEmbedded(id);
 		case AlbumArtType.default:
-			img = panel.metadb.GetAlbumArt(id, false);
-			break;
+			return panel.metadb.GetAlbumArt(id, false);
 		case AlbumArtType.stub:
-			img = fb.GetAlbumArtStub(id);
-			break;
+			return fb.GetAlbumArtStub(id);
+		default:
+			return null;
 		}
-
-		if (img) {
-			// if valid, store the id/type for ShowAlbumArtViewer2
-			this.custom_id = id;
-			this.custom_type = type;
-		}
-
-		return img;
 	}
 
 	this.key_down = function (k) {
@@ -100,10 +89,7 @@ function _albumart(x, y, w, h) {
 			if (this.properties.mode.value == 0) {
 				img = panel.metadb.GetAlbumArt(this.properties.id.value);
 			} else {
-				_stringToArray(this.properties.edit.value, CRLF).forEach((function (item) {
-					if (img)
-						return;
-
+				_.forEach(_stringToArray(this.properties.edit.value, CRLF), function (item) {
 					var id_type = _stringToArray(item, '_');
 					if (id_type.length == 2) {
 						var id = this.ids.indexOf(id_type[0]);
@@ -111,9 +97,16 @@ function _albumart(x, y, w, h) {
 
 						if (id > -1 && type > -1) {
 							img = this.get_custom(id, type);
+
+							if (img) {
+								// if valid, store the id/type for ShowAlbumArtViewer2
+								this.custom_id = id;
+								this.custom_type = type;
+								return false;
+							}
 						}
 					}
-				}).bind(this));
+				}, this);
 			}
 		}
 
